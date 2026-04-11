@@ -141,9 +141,10 @@ export async function POST(request) {
                 { expiresIn: '7d' }
             );
             
-            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+            const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').trim();
             const approvalLink = `${baseUrl}/api/admin/approve-staff?token=${approvalToken}`;
-            const fullAvatarUrl = avatarPath ? `${baseUrl}${avatarPath}` : '';
+            // avatarPath is already a full Vercel Blob URL, no need to prepend baseUrl
+            const fullAvatarUrl = avatarPath || '';
 
             await sendEmail(
                 'nfsugrievanceportal@gmail.com',
