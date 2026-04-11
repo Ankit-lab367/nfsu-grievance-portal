@@ -3,8 +3,8 @@ import dbConnect from '@/lib/dbConnect';
 import AcademicResource from '@/models/AcademicResource';
 import User from '@/models/User';
 import jwt from 'jsonwebtoken';
-import { writeFile } from 'fs/promises';
-import path from 'path';
+import { put } from '@vercel/blob';
+
 export async function POST(req) {
     try {
         await dbConnect();
@@ -34,8 +34,14 @@ export async function POST(req) {
             return NextResponse.json({ success: false, message: 'Missing fields' }, { status: 400 });
         }
         const buffer = Buffer.from(await file.arrayBuffer());
-        const base64Data = buffer.toString('base64');
-        const fileUrl = `data:${file.type};base64,${base64Data}`;
+        const filename = Date.now() + '_' + file.name.replaceAll(' ', '_');
+        
+        const { url } = await put(filename, buffer, {
+            access: 'public',
+            contentType: file.type
+        });
+        
+        const fileUrl = url;
         const newResource = await AcademicResource.create({
             title,
             degree,

@@ -12,6 +12,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.14.0",
     "@google/generative-ai": "^0.24.1",
+    "@vercel/blob": "^2.3.3",
     "axios": "^1.6.5",
     "bcryptjs": "^2.4.3",
     "date-fns": "^3.3.1",

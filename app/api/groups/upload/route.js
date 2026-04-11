@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyToken, extractToken } from '@/lib/auth';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import fs from 'fs';
+import { put } from '@vercel/blob';
 
 export async function POST(req) {
     try {
@@ -23,8 +21,13 @@ export async function POST(req) {
         }
 
         const buffer = Buffer.from(await file.arrayBuffer());
-        const base64Data = buffer.toString('base64');
-        const url = `data:${file.type};base64,${base64Data}`;
+        const filename = `${Date.now()}_${file.name.replaceAll(' ', '_')}`;
+        
+        const { url } = await put(filename, buffer, {
+            access: 'public',
+            contentType: file.type
+        });
+
         const type = file.type.startsWith('image/') ? 'image' : 'file';
 
         return NextResponse.json({

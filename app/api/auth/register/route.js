@@ -9,6 +9,7 @@ import { sendEmail, emailTemplates } from '@/lib/mailer';
 import path from 'path';
 import fs from 'fs/promises';
 import jwt from 'jsonwebtoken';
+import { put } from '@vercel/blob';
 
 export async function POST(request) {
     try {
@@ -106,14 +107,17 @@ export async function POST(request) {
             );
         }
 
-        // Handle Avatar Upload if provided (Base64 for Vercel support)
+        // Handle Avatar Upload if provided (Vercel Blob Storage)
         let avatarPath = '';
         let imageBuffer = null;
         if (avatar && avatar instanceof Blob) {
             imageBuffer = Buffer.from(await avatar.arrayBuffer());
-            const base64Image = imageBuffer.toString('base64');
-            const mimeType = avatar.type || 'image/jpeg';
-            avatarPath = `data:${mimeType};base64,${base64Image}`;
+            const fileName = `${Date.now()}_${name.replace(/\s+/g, '_')}${path.extname(avatar.name) || '.jpg'}`;
+            const { url } = await put(fileName, imageBuffer, {
+                access: 'public',
+                contentType: avatar.type || 'image/jpeg'
+            });
+            avatarPath = url;
         }
 
         const user = await User.create({

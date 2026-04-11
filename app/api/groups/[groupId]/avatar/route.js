@@ -2,9 +2,8 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import ChatGroup from '@/models/ChatGroup';
 import { verifyToken, extractToken } from '@/lib/auth';
-import { writeFile, mkdir } from 'fs/promises';
+import { put } from '@vercel/blob';
 import path from 'path';
-import fs from 'fs';
 
 export async function POST(req, { params }) {
     try {
@@ -39,11 +38,17 @@ export async function POST(req, { params }) {
         }
 
         const buffer = Buffer.from(await file.arrayBuffer());
-        const base64Data = buffer.toString('base64');
-        const url = `data:${file.type};base64,${base64Data}`;
+        const filename = `group_${groupId}_${Date.now()}${path.extname(file.name)}`;
+        
+        const { url } = await put(filename, buffer, {
+            access: 'public',
+            contentType: file.type
+        });
+
+        const groupAvatarUrl = url;
 
         // Update the group record
-        group.avatar = url;
+        group.avatar = groupAvatarUrl;
         await group.save();
 
         const updatedGroup = await ChatGroup.findById(groupId).populate('members', 'name role avatar');
