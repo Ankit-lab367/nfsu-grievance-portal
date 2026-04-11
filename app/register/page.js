@@ -296,6 +296,7 @@ export default function RegisterPage() {
                                     <option value="2" className="bg-white dark:bg-slate-800">2nd Year</option>
                                     <option value="3" className="bg-white dark:bg-slate-800">3rd Year</option>
                                     <option value="4" className="bg-white dark:bg-slate-800">4th Year</option>
+                                    <option value="5" className="bg-white dark:bg-slate-800">5th Year</option>
                                 </select>
                             </div>
                             <div>

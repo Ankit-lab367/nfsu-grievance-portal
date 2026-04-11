@@ -18,6 +18,10 @@ const ChatGroupSchema = new mongoose.Schema(
             ref: 'User',
             required: true,
         },
+        avatar: {
+            type: String,
+            default: null,
+        },
     },
     {
         timestamps: true,

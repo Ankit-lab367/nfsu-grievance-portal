@@ -100,6 +100,15 @@ function Avatar({ user, size = 44 }) {
 }
 
 function GroupAvatar({ group, size = 44 }) {
+    if (group?.avatar) {
+        return (
+            <img 
+                src={group.avatar} 
+                alt={group.name} 
+                style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(245,158,11,0.3)', flexShrink: 0 }}
+            />
+        );
+    }
     return (
         <div style={{
             width: size, height: size, borderRadius: '50%',
@@ -110,6 +119,36 @@ function GroupAvatar({ group, size = 44 }) {
             flexShrink: 0,
         }}>
             {group?.name?.charAt(0).toUpperCase()}
+        </div>
+    );
+}
+
+function ContextMenu({ x, y, userId, onClose }) {
+    const router = useRouter();
+    return (
+        <div 
+            style={{
+                position: 'fixed', top: y, left: x, zIndex: 1000,
+                background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 12, padding: 4, minWidth: 160,
+                boxShadow: '0 10px 15px -3px rgba(0, 7, 20, 0.4)',
+                animation: 'fadeIn 0.15s ease-out'
+            }}
+            onClick={e => e.stopPropagation()}
+        >
+            <button
+                onClick={() => { router.push(`/profile/${userId}`); onClose(); }}
+                style={{
+                    width: '100%', textAlign: 'left', background: 'none', border: 'none',
+                    padding: '10px 12px', color: '#f1f5f9', fontSize: 13, fontWeight: 600,
+                    borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
+                    transition: 'background 0.2s'
+                }}
+                onMouseOver={e => e.target.style.background = 'rgba(255,255,255,0.06)'}
+                onMouseOut={e => e.target.style.background = 'none'}
+            >
+                <FaUser style={{ color: '#94a3b8' }} /> Visit Profile
+            </button>
         </div>
     );
 }
@@ -268,7 +307,7 @@ function ChatPanel({ contact, currentUser, onClose }) {
 }
 
 // GROUP CHAT PANEL
-function GroupChatPanel({ group, currentUser, onClose }) {
+function GroupChatPanel({ group, currentUser, onClose, onDeleted, onUpdate }) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(true);
@@ -277,6 +316,7 @@ function GroupChatPanel({ group, currentUser, onClose }) {
     const [isUploading, setIsUploading] = useState(false);
     const [fullGroup, setFullGroup] = useState(group);
     const fileInputRef = useRef(null);
+    const groupAvatarInputRef = useRef(null);
     const bottomRef = useRef(null);
 
     const fetchMessages = async () => {
@@ -375,6 +415,76 @@ function GroupChatPanel({ group, currentUser, onClose }) {
         }
     };
 
+    const handleRemoveMember = async (memberId) => {
+        if (!window.confirm('Are you sure you want to remove this member?')) return;
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`/api/groups/${group._id}/remove-member`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ memberId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setFullGroup(data.group);
+            } else {
+                alert(data.error);
+            }
+        } catch (err) {
+            console.error('Failed to remove member:', err);
+            alert('Failed to remove member');
+        }
+    };
+
+    const handleGroupAvatarUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`/api/groups/${group._id}/avatar`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData
+            });
+            const data = await res.json();
+            if (data.success) {
+                setFullGroup(data.group);
+                if (onUpdate) onUpdate();
+            } else {
+                alert(data.error || 'Upload failed');
+            }
+        } catch (error) {
+            console.error('Failed to upload group avatar:', error);
+            alert('Upload failed');
+        } finally {
+            if (groupAvatarInputRef.current) groupAvatarInputRef.current.value = '';
+        }
+    };
+
+    const handleDeleteGroup = async () => {
+        if (!window.confirm('WARNING: This will permanently delete the group and ALL messages. This cannot be undone. Area you sure?')) return;
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`/api/groups/${group._id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (onDeleted) onDeleted();
+            } else {
+                alert(data.error);
+            }
+        } catch (err) {
+            console.error('Failed to delete group:', err);
+            alert('Failed to delete group');
+        }
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }}
@@ -420,8 +530,10 @@ function GroupChatPanel({ group, currentUser, onClose }) {
                     </div>
                 ) : (
                     messages.map((msg, idx) => {
-                        const isMe = msg.sender._id === currentUser.id;
-                        const showName = !isMe && (idx === 0 || messages[idx-1].sender._id !== msg.sender._id);
+                        const senderId = msg.sender?._id;
+                        const isMe = senderId === currentUser.id;
+                        const prevSenderId = idx > 0 ? messages[idx-1].sender?._id : null;
+                        const showName = !isMe && (idx === 0 || prevSenderId !== senderId);
 
                         return (
                             <div key={msg._id} style={{ display: 'flex', justifyContent: isMe ? 'flex-end' : 'flex-start', marginBottom: showName ? 6 : 0 }}>
@@ -432,7 +544,7 @@ function GroupChatPanel({ group, currentUser, onClose }) {
                                 )}
                                 <div style={{ maxWidth: '72%' }}>
                                     {showName && (
-                                        <p style={{ margin: '0 0 4px 6px', fontSize: 11, fontWeight: 700, color: '#cbd5e1' }}>{msg.sender.name}</p>
+                                        <p style={{ margin: '0 0 4px 6px', fontSize: 11, fontWeight: 700, color: '#cbd5e1' }}>{msg.sender?.name || 'Deleted User'}</p>
                                     )}
                                     <div style={{
                                         padding: '10px 14px', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
@@ -530,32 +642,78 @@ function GroupChatPanel({ group, currentUser, onClose }) {
                         </div>
                         
                         <div style={{ padding: 24, flex: 1, overflowY: 'auto' }}>
-                            <div style={{ textAlign: 'center', marginBottom: 32 }}>
-                                <GroupAvatar group={fullGroup} size={80} />
-                                <h2 style={{ color: '#f1f5f9', marginTop: 16, marginBottom: 4 }}>{fullGroup.name}</h2>
-                                <p style={{ color: '#64748b', fontSize: 14 }}>Created on {new Date(fullGroup.createdAt).toLocaleDateString()}</p>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+                                <div style={{ position: 'relative' }}>
+                                    <GroupAvatar group={fullGroup} size={88} />
+                                    {fullGroup.admin === currentUser.id && (
+                                        <>
+                                            <input 
+                                                type="file" 
+                                                ref={groupAvatarInputRef} 
+                                                onChange={handleGroupAvatarUpload} 
+                                                style={{ display: 'none' }} 
+                                                accept="image/*"
+                                            />
+                                            <button 
+                                                onClick={() => groupAvatarInputRef.current?.click()}
+                                                style={{ 
+                                                    position: 'absolute', bottom: 0, right: 0, 
+                                                    width: 28, height: 28, borderRadius: '50%', background: '#f59e0b', 
+                                                    border: '2px solid #0f172a', color: '#000', display: 'flex', 
+                                                    alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                                    fontSize: 12
+                                                }}
+                                                title="Change Group Picture"
+                                            >
+                                                <FaImage />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                                <h2 style={{ margin: 0, color: '#f1f5f9', fontSize: 24, fontWeight: 800 }}>{fullGroup.name}</h2>
+                                <p style={{ margin: 0, color: '#64748b', fontSize: 13, fontWeight: 600 }}>Group • {fullGroup.members?.length || 0} Members</p>
                             </div>
 
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                                <h4 style={{ margin: 0, color: '#94a3b8', textTransform: 'uppercase', fontSize: 12, tracking: '0.05em' }}>Members ({fullGroup.members.length})</h4>
-                                {fullGroup.admin === currentUser.id && (
-                                    <button 
-                                        onClick={() => setShowAddMember(true)}
-                                        style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', color: '#f59e0b', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-                                    >
-                                        Add Members
-                                    </button>
-                                )}
+                                <h4 style={{ margin: 0, color: '#94a3b8', textTransform: 'uppercase', fontSize: 12, tracking: '0.05em' }}>Members ({fullGroup.members?.length || 0})</h4>
+                                <div style={{ display: 'flex', gap: 8 }}>
+                                    {fullGroup.admin === currentUser.id && (
+                                        <>
+                                            <button 
+                                                onClick={() => setShowAddMember(true)}
+                                                style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', color: '#f59e0b', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                                            >
+                                                Add Members
+                                            </button>
+                                            <button 
+                                                onClick={handleDeleteGroup}
+                                                style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                                            >
+                                                Delete Group
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                {fullGroup.members.map(member => (
+                                {fullGroup.members?.filter(m => m !== null).map(member => (
                                     <div key={member._id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 12 }}>
                                         <Avatar user={member} size={36} />
                                         <div style={{ flex: 1 }}>
                                             <p style={{ margin: 0, color: '#f1f5f9', fontSize: 14, fontWeight: 600 }}>{member.name} {member._id === fullGroup.admin && <span style={{ color: '#f59e0b', fontSize: 10, background: 'rgba(245,158,11,0.1)', padding: '2px 6px', borderRadius: 4, marginLeft: 8 }}>ADMIN</span>}</p>
                                             <p style={{ margin: 0, color: '#475569', fontSize: 12 }}>{member.role}</p>
                                         </div>
+                                        {fullGroup.admin === currentUser.id && member._id !== currentUser.id && (
+                                            <button 
+                                                onClick={() => handleRemoveMember(member._id)}
+                                                style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', transition: 'all 0.2s' }}
+                                                className="hover:bg-red-500/10"
+                                                title="Remove Member"
+                                            >
+                                                <FaTimes style={{ fontSize: 12 }} />
+                                            </button>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -721,8 +879,25 @@ export default function PersonalTalkingPage() {
     const [newGroupName, setNewGroupName] = useState('');
     const [selectedMembers, setSelectedMembers] = useState([]); // array of user objects
     const [isCreating, setIsCreating] = useState(false);
+    const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, userId: null });
 
     const searchTimeout = useRef(null);
+
+    useEffect(() => {
+        const handleClick = () => setContextMenu(prev => prev.show ? { ...prev, show: false } : prev);
+        window.addEventListener('click', handleClick);
+        return () => window.removeEventListener('click', handleClick);
+    }, []);
+
+    const handleContextMenu = (e, userId) => {
+        e.preventDefault();
+        setContextMenu({
+            show: true,
+            x: e.clientX,
+            y: e.clientY,
+            userId: userId
+        });
+    };
 
     useEffect(() => {
         const userData = localStorage.getItem('user');
@@ -1005,6 +1180,7 @@ export default function PersonalTalkingPage() {
                                             <motion.button
                                                 key={u._id} whileHover={{ backgroundColor: 'rgba(255,255,255,0.06)' }} whileTap={{ scale: 0.98 }}
                                                 onClick={() => { setSelectedGroup(null); setSelectedUser(u); }}
+                                                onContextMenu={(e) => handleContextMenu(e, u._id)}
                                                 style={{
                                                     width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '12px 24px',
                                                     background: selectedUser?._id === u._id ? 'rgba(225,29,72,0.08)' : 'transparent', border: 'none', cursor: 'pointer',
@@ -1064,11 +1240,26 @@ export default function PersonalTalkingPage() {
                     )}
                     {selectedGroup && (
                         <div style={{ flex: 1, overflow: 'hidden' }}>
-                            <GroupChatPanel group={selectedGroup} currentUser={currentUser} onClose={() => setSelectedGroup(null)} />
+                            <GroupChatPanel 
+                                group={selectedGroup} 
+                                currentUser={currentUser} 
+                                onClose={() => setSelectedGroup(null)}
+                                onDeleted={() => { setSelectedGroup(null); fetchGroups(); }}
+                                onUpdate={() => fetchGroups()}
+                            />
                         </div>
                     )}
                 </AnimatePresence>
             </div>
+
+            {contextMenu.show && (
+                <ContextMenu 
+                    x={contextMenu.x} 
+                    y={contextMenu.y} 
+                    userId={contextMenu.userId} 
+                    onClose={() => setContextMenu({ ...contextMenu, show: false })} 
+                />
+            )}
         </div>
     );
 }
