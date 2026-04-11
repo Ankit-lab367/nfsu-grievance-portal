@@ -48,16 +48,6 @@ const nextConfig = {
             }
         ];
     },
-    async rewrites() {
-        return [
-            {
-                source: '/god-mode',
-                destination: '/test_dog',
-            },
-            {
-                source: '/god-mode/:path*',
-                destination: '/test_dog/:path*',
-            },
         ];
     },
 };

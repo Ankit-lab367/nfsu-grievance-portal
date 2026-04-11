@@ -10,11 +10,22 @@ export default function GodModeDashboard() {
     const [showIntro, setShowIntro] = useState(true);
     const [isTransitioning, setIsTransitioning] = useState(false);
     useEffect(() => {
+        const userData = localStorage.getItem('user');
+        if (!userData) {
+            router.push('/login');
+            return;
+        }
+        const user = JSON.parse(userData);
+        if (user.role !== 'super-admin') {
+            router.push('/dashboard');
+            return;
+        }
+
         const timer = setTimeout(() => {
             setShowIntro(false);
         }, 4500); 
         return () => clearTimeout(timer);
-    }, []);
+    }, [router]);
     const handleNavigation = (path) => {
         setIsTransitioning(true);
         setTimeout(() => {

@@ -22,6 +22,7 @@ export async function GET(req) {
         const query = {
             _id: { $ne: decoded.id },
             isActive: true,
+            role: { $ne: 'super-admin' },
         };
 
         if (search.trim()) {

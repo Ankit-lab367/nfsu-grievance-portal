@@ -11,6 +11,7 @@ import {
     FaUserPlus,
     FaCommentDots,
     FaEnvelope,
+    FaSkull,
 } from 'react-icons/fa';
 import Navbar from '@/components/Navbar';
 import ChatbotWidget from '@/components/ChatbotWidget';
@@ -20,6 +21,16 @@ export default function SuperAdminDashboard() {
     const [stats, setStats] = useState(null);
     const [departments, setDepartments] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const handleGodMode = () => {
+        const code = prompt('Enter Safety Code:');
+        if (code === 'everythingdarkhere') {
+            router.push('/test_dog');
+        } else {
+            alert('Access Denied: Incorrect safety code.');
+        }
+    };
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         const userData = localStorage.getItem('user');
@@ -189,7 +200,7 @@ export default function SuperAdminDashboard() {
                     </>
                 )}
                 {}
-                <div className="grid md:grid-cols-2 gap-6 mb-8">
+                <div className="grid md:grid-cols-3 gap-6 mb-8">
                     <button
                         onClick={() => {
                             const name = prompt('Admin name:');
@@ -222,6 +233,20 @@ export default function SuperAdminDashboard() {
                             <div>
                                 <h3 className="text-slate-900 dark:text-white font-bold text-lg">Manage Departments</h3>
                                 <p className="text-slate-500 dark:text-gray-400 text-sm font-medium">Add or edit departments</p>
+                            </div>
+                        </div>
+                    </button>
+                    <button
+                        onClick={handleGodMode}
+                        className="glass-card-theme p-6 border-slate-200 dark:border-white/10 shadow-xl hover:bg-slate-900/10 dark:hover:bg-white/10 transition-all card-hover group text-left border-2 border-red-500/20"
+                    >
+                        <div className="flex items-center space-x-4">
+                            <div className="p-4 bg-gradient-to-r from-slate-900 to-black rounded-lg text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] group-hover:scale-110 transition-transform">
+                                <FaSkull className="text-2xl" />
+                            </div>
+                            <div>
+                                <h3 className="text-slate-900 dark:text-white font-bold text-lg">Enter God Mode</h3>
+                                <p className="text-red-500/80 text-sm font-bold tracking-tight">System Override (Protected)</p>
                             </div>
                         </div>
                     </button>

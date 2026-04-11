@@ -20,7 +20,7 @@ export async function GET(request) {
         }
         const { searchParams } = new URL(request.url);
         const role = searchParams.get('role');
-        let query = {};
+        let query = { role: { $ne: 'super-admin' } };
         if (role) {
             query.role = role;
         }
