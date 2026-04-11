@@ -13,6 +13,7 @@ const nextConfig = {
         unoptimized: process.env.NODE_ENV === 'development',
     },
     experimental: {
+        serverComponentsExternalPackages: ["undici"],
     },
     webpack: (config) => {
         config.resolve.fallback = {
