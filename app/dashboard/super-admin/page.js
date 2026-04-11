@@ -70,37 +70,53 @@ export default function SuperAdminDashboard() {
     };
 
     return (
-        <div className="min-h-screen relative bg-slate-50 dark:bg-background-dark transition-colors duration-500">
+        <div className="min-h-screen relative bg-slate-900 overflow-hidden transition-colors duration-500">
+            {/* Premium Background Image */}
+            <div className="fixed inset-0 z-0">
+                <img 
+                    src="/background.jpeg" 
+                    alt="Background" 
+                    className="w-full h-full object-cover opacity-10"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/50 to-slate-900/80 backdrop-blur-[2px]" />
+            </div>
 
-            <Navbar />
-            <div className="container mx-auto px-6 py-8">
-                {}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4"
-                >
-                    <div>
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Super Admin Dashboard</h1>
-                        <p className="text-slate-600 dark:text-gray-300 font-medium">University-wide Overview & Management</p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3">
-                        <button
-                            onClick={() => alert('Personal Talking feature is under development.')}
-                            className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg hover:shadow-purple-500/30 transition-all active:scale-95"
-                        >
-                            <FaCommentDots />
-                            <span>Personal Talking</span>
-                        </button>
-                        <button
-                            onClick={() => alert('Received Messages feature is under development.')}
-                            className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-xl font-bold shadow-lg hover:shadow-red-600/30 transition-all active:scale-95"
-                        >
-                            <FaEnvelope />
-                            <span>Received Messages</span>
-                        </button>
-                    </div>
-                </motion.div>
+            <div className="relative z-10">
+                <Navbar />
+                <div className="container mx-auto px-6 py-8">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+                    >
+                        <div>
+                            <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight">Super Admin Dashboard</h1>
+                            <p className="text-slate-300 font-medium">University-wide Overview & Management</p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3">
+                            <button
+                                onClick={handleGodMode}
+                                className="flex items-center space-x-2 px-6 py-3 bg-slate-900/40 backdrop-blur-md text-red-500 rounded-xl font-black border-2 border-red-500/30 hover:bg-red-500/10 hover:shadow-[0_0_20px_rgba(239,68,68,0.3)] transition-all active:scale-95 group"
+                            >
+                                <FaSkull className="group-hover:animate-pulse" />
+                                <span>GOD MODE</span>
+                            </button>
+                            <button
+                                onClick={() => alert('Personal Talking feature is under development.')}
+                                className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg hover:shadow-purple-500/30 transition-all active:scale-95"
+                            >
+                                <FaCommentDots />
+                                <span>Personal Talking</span>
+                            </button>
+                            <button
+                                onClick={() => alert('Received Messages feature is under development.')}
+                                className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-xl font-bold shadow-lg hover:shadow-red-600/30 transition-all active:scale-95"
+                            >
+                                <FaEnvelope />
+                                <span>Received Messages</span>
+                            </button>
+                        </div>
+                    </motion.div>
                 {}
                 {stats && (
                     <>
@@ -200,7 +216,7 @@ export default function SuperAdminDashboard() {
                     </>
                 )}
                 {}
-                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <div className="grid md:grid-cols-2 gap-6 mb-8">
                     <button
                         onClick={() => {
                             const name = prompt('Admin name:');
@@ -233,20 +249,6 @@ export default function SuperAdminDashboard() {
                             <div>
                                 <h3 className="text-slate-900 dark:text-white font-bold text-lg">Manage Departments</h3>
                                 <p className="text-slate-500 dark:text-gray-400 text-sm font-medium">Add or edit departments</p>
-                            </div>
-                        </div>
-                    </button>
-                    <button
-                        onClick={handleGodMode}
-                        className="glass-card-theme p-6 border-slate-200 dark:border-white/10 shadow-xl hover:bg-slate-900/10 dark:hover:bg-white/10 transition-all card-hover group text-left border-2 border-red-500/20"
-                    >
-                        <div className="flex items-center space-x-4">
-                            <div className="p-4 bg-gradient-to-r from-slate-900 to-black rounded-lg text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] group-hover:scale-110 transition-transform">
-                                <FaSkull className="text-2xl" />
-                            </div>
-                            <div>
-                                <h3 className="text-slate-900 dark:text-white font-bold text-lg">Enter God Mode</h3>
-                                <p className="text-red-500/80 text-sm font-bold tracking-tight">System Override (Protected)</p>
                             </div>
                         </div>
                     </button>
