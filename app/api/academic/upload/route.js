@@ -34,14 +34,8 @@ export async function POST(req) {
             return NextResponse.json({ success: false, message: 'Missing fields' }, { status: 400 });
         }
         const buffer = Buffer.from(await file.arrayBuffer());
-        const filename = Date.now() + '_' + file.name.replaceAll(' ', '_');
-        const uploadDir = path.join(process.cwd(), 'public/uploads');
-        const fs = require('fs');
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        await writeFile(path.join(uploadDir, filename), buffer);
-        const fileUrl = `/uploads/${filename}`;
+        const base64Data = buffer.toString('base64');
+        const fileUrl = `data:${file.type};base64,${base64Data}`;
         const newResource = await AcademicResource.create({
             title,
             degree,

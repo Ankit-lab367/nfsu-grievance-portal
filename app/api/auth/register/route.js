@@ -106,23 +106,14 @@ export async function POST(request) {
             );
         }
 
-        // Handle Avatar Upload if provided
+        // Handle Avatar Upload if provided (Base64 for Vercel support)
         let avatarPath = '';
         let imageBuffer = null;
         if (avatar && avatar instanceof Blob) {
             imageBuffer = Buffer.from(await avatar.arrayBuffer());
-            const fileName = `${Date.now()}_${name.replace(/\s+/g, '_')}${path.extname(avatar.name) || '.jpg'}`;
-            const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'avatars');
-            
-            // Ensure directory exists
-            try {
-                await fs.access(uploadDir);
-            } catch {
-                await fs.mkdir(uploadDir, { recursive: true });
-            }
-            
-            await fs.writeFile(path.join(uploadDir, fileName), imageBuffer);
-            avatarPath = `/uploads/avatars/${fileName}`;
+            const base64Image = imageBuffer.toString('base64');
+            const mimeType = avatar.type || 'image/jpeg';
+            avatarPath = `data:${mimeType};base64,${base64Image}`;
         }
 
         const user = await User.create({

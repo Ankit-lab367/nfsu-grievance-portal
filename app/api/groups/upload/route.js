@@ -23,16 +23,8 @@ export async function POST(req) {
         }
 
         const buffer = Buffer.from(await file.arrayBuffer());
-        const filename = `${Date.now()}_${file.name.replaceAll(' ', '_')}`;
-        const uploadDir = path.join(process.cwd(), 'public/uploads/chat');
-
-        if (!fs.existsSync(uploadDir)) {
-            await mkdir(uploadDir, { recursive: true });
-        }
-
-        await writeFile(path.join(uploadDir, filename), buffer);
-
-        const url = `/uploads/chat/${filename}`;
+        const base64Data = buffer.toString('base64');
+        const url = `data:${file.type};base64,${base64Data}`;
         const type = file.type.startsWith('image/') ? 'image' : 'file';
 
         return NextResponse.json({
