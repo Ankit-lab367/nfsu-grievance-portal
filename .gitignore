@@ -1,19 +1,72 @@
-/node_modules
-/.pnp
-.pnp.js
-/coverage
-/.next/
-/out/
-/build
+# Dependency directories
+node_modules/
+/jspm_packages/
+
+# Next.js build output
+.next/
+out/
+build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
 .DS_Store
-*.pem
+Thumbs.db
+
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.env*.local
+lerna-debug.log*
+
+# Environmental variables
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Vercel
 .vercel
+
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Temporary Test Outputs
+/diagnosis_output.txt
+/user_status.txt
+/output.html
+/check-icons-2.js
+/check-user-status.js
+/check_students_to_remove.js
+/cleanup-test-users.js
+/cleanup_students.js
+/create-target-user.js
+/create-test-users.js
+/debug-users.js
+/diagnose-login.js
+/list-users.js
+/test-complaint.mjs
+/test-complete-login.js
+/test-login-debug.js
+/test-login-performance.js
+/test-login.js
+/test-mongodb-connection.js
+/test-register-performance.js
+/verify-blocking.js
+/verify-visibility.mjs
+
+# Uploads
 /public/uploads/*
-!/public/uploads/.gitkeep
+!/public/uploads/.gitkeep
