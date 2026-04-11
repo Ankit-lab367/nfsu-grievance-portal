@@ -124,7 +124,9 @@ export async function POST(request) {
             name,
             email: email.toLowerCase(),
             password,
-            enrollmentNumber,
+            // Only include enrollmentNumber if it actually has a value
+            // Passing null breaks the sparse unique index for staff/teachers
+            ...(enrollmentNumber ? { enrollmentNumber } : {}),
             course,
             year: year ? parseInt(year) : undefined,
             phone,
