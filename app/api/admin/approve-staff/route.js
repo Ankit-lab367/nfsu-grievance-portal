@@ -3,6 +3,8 @@ import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import jwt from 'jsonwebtoken';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
     try {
         await dbConnect();
