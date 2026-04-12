@@ -4,14 +4,23 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import ChatbotWidget from '@/components/ChatbotWidget';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaPlus, FaSearch, FaChevronRight, FaImage, FaMapMarkerAlt, FaClock, FaSpinner } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaChevronRight, FaImage, FaMapMarkerAlt, FaClock, FaSpinner, FaTimes } from 'react-icons/fa';
 import Link from 'next/link';
 export default function LostAndFoundPage() {
     const router = useRouter();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
+
     useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            try {
+                setCurrentUser(JSON.parse(storedUser));
+            } catch(e) {}
+        }
+
         const fetchItems = async () => {
             try {
                 const token = localStorage.getItem('token');
@@ -33,6 +42,29 @@ export default function LostAndFoundPage() {
         };
         fetchItems();
     }, []);
+
+    const handleDelete = async (e, id) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!confirm('Are you sure you want to completely delete this item?')) return;
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`/api/lost-and-found/delete?id=${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                setItems(prev => prev.filter(item => item._id !== id));
+            } else {
+                alert(data.message || 'Failed to delete piece');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Failed to delete.');
+        }
+    };
+
     return (
         <div className="min-h-screen relative transition-colors duration-500 overflow-x-hidden">
             {}
@@ -81,8 +113,18 @@ export default function LostAndFoundPage() {
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
+                                    className="relative group"
                                 >
-                                    <Link href={`/lost-and-found/${item._id}`} className="block group">
+                                    {currentUser?.role === 'super-admin' && (
+                                        <button
+                                            onClick={(e) => handleDelete(e, item._id)}
+                                            className="absolute top-3 right-3 z-20 p-2 bg-red-600/90 hover:bg-red-500 text-white rounded-full shadow-xl transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110"
+                                            title="Delete completely"
+                                        >
+                                            <FaTimes />
+                                        </button>
+                                    )}
+                                    <Link href={`/lost-and-found/${item._id}`} className="block h-full">
                                         <div className="glass-card-theme p-0 overflow-hidden border-white/10 shadow-xl transition-all duration-500 group-hover:shadow-2xl group-hover:border-red-500/30 group-hover:-translate-y-1 h-full flex">
                                             {}
                                             <div className="flex-1 p-6 flex flex-col justify-between">
