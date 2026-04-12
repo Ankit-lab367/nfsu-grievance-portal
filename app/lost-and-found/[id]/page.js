@@ -18,8 +18,10 @@ export default function ItemDetailsPage({ params }) {
             try {
                 const token = localStorage.getItem('token');
                 const res = await fetch(`/api/lost-and-found/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${token}` },
+                    cache: 'no-store'
                 });
+                const data = await res.json();
                 if (data.success) {
                     setItem(data.item);
                     if (data.item?.comments && data.item.comments.length > 0) {

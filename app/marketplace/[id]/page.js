@@ -33,8 +33,10 @@ export default function MarketplaceItemDetailsPage({ params }) {
             try {
                 const token = localStorage.getItem('token');
                 const res = await fetch(`/api/marketplace/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${token}` },
+                    cache: 'no-store'
                 });
+                const data = await res.json();
                 if (data.success) {
                     setItem(data.item);
                     if (data.item?.messages && data.item.messages.length > 0) {
