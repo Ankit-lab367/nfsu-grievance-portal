@@ -16,6 +16,41 @@ export default function DiscussionPage() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
     useEffect(() => {
+        const fetchMessages = async (currentUser) => {
+            try {
+                const token = localStorage.getItem('token');
+                const roleType = currentUser.role === 'student' ? 'student' : 'admin';
+                const res = await fetch(`/api/discussion?type=${roleType}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    cache: 'no-store'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const welcomeMsg = {
+                        id: 'welcome_msg',
+                        sender: 'NFSU Bot',
+                        text: `Welcome to the ${currentUser.role === 'student' ? 'Student' : 'Staff'} Discussion Forum! Feel free to share your thoughts.`,
+                        role: 'other',
+                        time: 'System',
+                        isSystem: true
+                    };
+                    const formatted = data.messages.map(m => ({
+                        id: m._id,
+                        sender: m.senderName,
+                        avatar: m.senderAvatar,
+                        text: m.text,
+                        role: m.senderEmail === currentUser.email ? 'self' : 'other',
+                        time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    }));
+                    setMessages([welcomeMsg, ...formatted]);
+                }
+            } catch (err) {
+                console.error("Failed to load messages", err);
+            } finally {
+                setMessagesLoaded(true);
+            }
+        };
+
         const userData = localStorage.getItem('user');
         if (!userData) {
             router.push('/login');
@@ -23,42 +58,53 @@ export default function DiscussionPage() {
         }
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
-        const storageKey = parsedUser.role === 'student' ? 'messages_student' : 'messages_admin';
-        const savedMessages = localStorage.getItem(storageKey);
-        if (savedMessages) {
-            setMessages(JSON.parse(savedMessages));
-        } else {
-            const welcomeMsg = {
-                id: 1,
-                sender: 'NFSU Bot',
-                text: `Welcome to the ${parsedUser.role === 'student' ? 'Student' : 'Staff'} Discussion Forum! Feel free to share your thoughts.`,
-                role: 'other',
-                time: 'System',
-                isSystem: true
-            };
-            setMessages([welcomeMsg]);
-        }
-        setMessagesLoaded(true);
+        fetchMessages(parsedUser);
     }, [router]);
+
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
-    const handleSendMessage = (e) => {
+
+    const handleSendMessage = async (e) => {
         e.preventDefault();
         if (!input.trim() || !user) return;
-        const newMessage = {
-            id: Date.now(),
+        
+        const tempId = Date.now().toString();
+        const roleType = user.role === 'student' ? 'student' : 'admin';
+        
+        const optimisticMessage = {
+            id: tempId,
             sender: user.name || 'You',
             avatar: user.avatar,
             text: input,
             role: 'self',
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         };
-        const updatedMessages = [...messages, newMessage];
-        setMessages(updatedMessages);
+        
+        setMessages(prev => [...prev, optimisticMessage]);
+        const messageText = input;
         setInput('');
-        const storageKey = user.role === 'student' ? 'messages_student' : 'messages_admin';
-        localStorage.setItem(storageKey, JSON.stringify(updatedMessages));
+        
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch('/api/discussion', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    text: messageText,
+                    forumType: roleType
+                })
+            });
+            const data = await res.json();
+            if (!data.success) {
+                console.error(data.message);
+            }
+        } catch (err) {
+            console.error("Failed to post message", err);
+        }
     };
     return (
         <div className="min-h-screen relative transition-colors duration-500 flex flex-col">
