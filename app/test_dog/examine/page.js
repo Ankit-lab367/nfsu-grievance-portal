@@ -100,7 +100,7 @@ export default function ExamineAccountsPage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b border-[#00ff00]/30 pb-4 gap-4">
                     <div className="flex items-center space-x-4">
                         <button
-                            onClick={() => router.push('/god-mode')}
+                            onClick={() => router.push('/test_dog')}
                             className="p-2 hover:bg-[#00ff00]/10 rounded-full transition-colors"
                         >
                             <FaArrowLeft className="text-xl" />

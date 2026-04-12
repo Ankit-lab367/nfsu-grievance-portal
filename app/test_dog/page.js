@@ -34,11 +34,11 @@ export default function GodModeDashboard() {
     };
     const buttons = [
         { label: 'BACK', action: () => router.push('/') },
-        { label: 'EXAMINE ACCOUNTS', action: () => handleNavigation('/god-mode/examine') },
-        { label: 'BLOCK ACCOUNT', action: () => handleNavigation('/god-mode/block') },
-        { label: 'UNBLOCK ACCOUNT', action: () => handleNavigation('/god-mode/unblock') },
-        { label: 'SEE COMPLAINTS', action: () => handleNavigation('/god-mode/complaints') },
-        { label: 'ACADEMIC MATERIAL MANAGER', action: () => handleNavigation('/god-mode/academic') },
+        { label: 'EXAMINE ACCOUNTS', action: () => handleNavigation('/test_dog/examine') },
+        { label: 'BLOCK ACCOUNT', action: () => handleNavigation('/test_dog/block') },
+        { label: 'UNBLOCK ACCOUNT', action: () => handleNavigation('/test_dog/unblock') },
+        { label: 'SEE COMPLAINTS', action: () => handleNavigation('/test_dog/complaints') },
+        { label: 'ACADEMIC MATERIAL MANAGER', action: () => handleNavigation('/test_dog/academic') },
     ];
     return (
         <div className="min-h-screen bg-black overflow-hidden font-mono text-[#00ff00]">

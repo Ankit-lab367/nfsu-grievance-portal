@@ -92,7 +92,7 @@ export default function UnblockAccountPage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b border-blue-500/30 pb-4 gap-4">
                     <div className="flex items-center space-x-4">
                         <button
-                            onClick={() => router.push('/god-mode')}
+                            onClick={() => router.push('/test_dog')}
                             className="p-2 hover:bg-blue-500/10 rounded-full transition-colors text-blue-400"
                         >
                             <FaArrowLeft className="text-xl" />

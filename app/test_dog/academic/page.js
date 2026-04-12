@@ -98,7 +98,7 @@ export default function AcademicManager() {
                 <div className="flex items-center justify-between mb-8 border-b border-[#00ff00]/30 pb-4">
                     <div className="flex items-center space-x-4">
                         <button
-                            onClick={() => router.push('/god-mode')}
+                            onClick={() => router.push('/test_dog')}
                             className="p-2 hover:bg-[#00ff00]/20 rounded transition-colors"
                         >
                             <FaArrowLeft />
