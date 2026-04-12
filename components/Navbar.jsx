@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FaBell, FaMoon, FaSun, FaSignOutAlt, FaUser, FaSearch, FaFileInvoice, FaUniversity, FaChevronDown, FaPhone, FaBook, FaShoppingCart, FaComments, FaCommentDots, FaEnvelope, FaChevronRight } from 'react-icons/fa';
+import { FaBell, FaMoon, FaSun, FaSignOutAlt, FaUser, FaSearch, FaFileInvoice, FaUniversity, FaChevronDown, FaPhone, FaBook, FaShoppingCart, FaComments, FaCommentDots, FaEnvelope, FaChevronRight, FaBars, FaTimes } from 'react-icons/fa';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 export default function Navbar() {
@@ -17,6 +17,8 @@ export default function Navbar() {
     const [hasPendingApps, setHasPendingApps] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
     const [logoutRipple, setLogoutRipple] = useState({ x: 0, y: 0 });
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [mobileAcademicOpen, setMobileAcademicOpen] = useState(false);
     const logoutBtnRef = useRef(null);
     const moreMenuRef = useRef(null);
     useEffect(() => {
@@ -415,14 +417,21 @@ export default function Navbar() {
                     </div>
                     {}
                     <div className="flex items-center space-x-4">
-                        {}
+                        {/* Mobile Menu Toggle */}
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="lg:hidden p-2 text-gray-300 hover:text-white transition-colors"
+                        >
+                            {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+                        </button>
+                        {/* Desktop & Mobile Top Right Buttons */}
                         <button
                             onClick={toggleDarkMode}
                             className="p-2 text-gray-300 hover:text-white transition-colors"
                         >
                             {darkMode ? <FaSun /> : <FaMoon />}
                         </button>
-                        {}
+                        {/* Notifications */}
                         <Link href="/notifications" className="relative p-2 text-gray-300 hover:text-white transition-all hover:scale-110">
                             <FaBell />
                             {unreadCount > 0 && (
@@ -485,6 +494,93 @@ export default function Navbar() {
                     </div>
                 </div>
             </div>
+            
+            {/* Mobile Dropdown Menu */}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="lg:hidden bg-slate-900 border-t border-white/10 overflow-hidden"
+                    >
+                        <div className="px-6 py-4 flex flex-col space-y-4">
+                            <Link href="/lost-and-found" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
+                                <FaSearch className="text-sm" /><span>Lost & Found</span>
+                            </Link>
+                            <Link href="/discussion" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
+                                <FaComments className="text-sm" />
+                                <span>{(user?.role === 'admin' || user?.role === 'super-admin' || user?.role === 'staff') ? 'Faculty Discussion' : 'Discussion'}</span>
+                            </Link>
+                            <Link href="/emergency-contacts" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
+                                <FaPhone className="text-sm" /><span>Emergency Contacts</span>
+                            </Link>
+                            <Link href="/college" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-red-400">
+                                <FaUniversity className="text-sm" /><span>College Details</span>
+                            </Link>
+                            
+                            {(user?.role === 'student' || user?.role === 'admin' || user?.role === 'super-admin' || user?.role === 'staff') && (
+                                <div className="flex flex-col space-y-2">
+                                    <button 
+                                        onClick={() => setMobileAcademicOpen(!mobileAcademicOpen)}
+                                        className="flex items-center justify-between text-gray-300 w-full"
+                                    >
+                                        <div className="flex items-center space-x-3">
+                                            <FaBook className="text-sm text-red-400" /><span>Academic Materials</span>
+                                        </div>
+                                        <FaChevronDown className={`text-xs transition-transform ${mobileAcademicOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    <AnimatePresence>
+                                        {mobileAcademicOpen && (
+                                            <motion.div 
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                className="pl-7 flex flex-col space-y-2"
+                                            >
+                                                {['B.Tech', 'B.Sc', 'M.Sc'].map((degree) => (
+                                                    <div key={degree} className="flex flex-col space-y-1">
+                                                        <span className="text-xs font-bold text-gray-500 uppercase mt-2">{degree}</span>
+                                                        <div className="grid grid-cols-4 gap-2">
+                                                            {Array.from({ length: degree === 'M.Sc' ? 4 : 8 }).map((_, i) => (
+                                                                <Link
+                                                                    key={i}
+                                                                    href={`/academic/${degree.toLowerCase().replace('.', '')}/${i + 1}/notes`}
+                                                                    onClick={() => setIsMobileMenuOpen(false)}
+                                                                    className="bg-white/5 text-gray-300 text-xs text-center py-1.5 rounded border border-white/5 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/50"
+                                                                >
+                                                                    S{i + 1}
+                                                                </Link>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            )}
+
+                            <Link href="/marketplace" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
+                                <FaShoppingCart className="text-sm text-green-400" /><span>Buy and Sell</span>
+                            </Link>
+                            <Link href="/personal-talking" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
+                                <FaCommentDots className="text-sm text-red-400" /><span>Personal Talking</span>
+                            </Link>
+                            <Link href="/received-messages" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-gray-300 hover:text-white">
+                                <div className="flex items-center space-x-3">
+                                    <FaEnvelope className="text-sm text-rose-400" /><span>Received Messages</span>
+                                </div>
+                                {globalUnreadMessages > 0 && (
+                                    <span className="bg-red-500 text-white text-[10px] font-bold rounded-full px-2 py-0.5">
+                                        {globalUnreadMessages > 99 ? '99+' : globalUnreadMessages}
+                                    </span>
+                                )}
+                            </Link>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </nav>
         </>
     );
