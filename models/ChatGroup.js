@@ -22,6 +22,12 @@ const ChatGroupSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        lastSeen: [
+            {
+                user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+                timestamp: { type: Date, default: Date.now },
+            },
+        ],
     },
     {
         timestamps: true,

@@ -880,6 +880,8 @@ export default function PersonalTalkingPage() {
     const [selectedMembers, setSelectedMembers] = useState([]); // array of user objects
     const [isCreating, setIsCreating] = useState(false);
     const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, userId: null });
+    const [unreadSenders, setUnreadSenders] = useState([]);
+    const [unreadGroups, setUnreadGroups] = useState([]);
 
     const searchTimeout = useRef(null);
 
@@ -909,7 +911,26 @@ export default function PersonalTalkingPage() {
         setCurrentUser(JSON.parse(userData));
         fetchUsers('', token);
         fetchGroups(token);
+        fetchUnread(token);
+        
+        const unreadInterval = setInterval(() => fetchUnread(token), 3000);
+        return () => clearInterval(unreadInterval);
     }, []);
+
+    const fetchUnread = async (token) => {
+        try {
+            const res = await fetch('/api/messages/unread', {
+                headers: { Authorization: `Bearer ${token || localStorage.getItem('token')}` },
+            });
+            const data = await res.json();
+            if (data.success) {
+                setUnreadSenders(data.unreadSenders || []);
+                setUnreadGroups(data.unreadGroups || []);
+            }
+        } catch (e) {
+            console.error('Failed to fetch unread in PersonalTalking:', e);
+        }
+    };
 
     const fetchUsers = async (q, token) => {
         setLoadingUsers(true);
@@ -1187,7 +1208,18 @@ export default function PersonalTalkingPage() {
                                                     borderLeft: selectedUser?._id === u._id ? '3px solid #e11d48' : '3px solid transparent', transition: 'all 0.15s',
                                                 }}
                                             >
-                                                <Avatar user={u} size={44} />
+                                                <div style={{ position: 'relative' }}>
+                                                    <Avatar user={u} size={44} />
+                                                    {unreadSenders.includes(u._id) && (
+                                                        <span style={{
+                                                            position: 'absolute', top: -1, right: -1,
+                                                            width: 12, height: 12, background: '#ef4444',
+                                                            border: '2px solid #080c14', borderRadius: '50%',
+                                                            boxShadow: '0 0 10px rgba(239,68,68,0.5)',
+                                                            animation: 'pulse 2s infinite'
+                                                        }} />
+                                                    )}
+                                                </div>
                                                 <div style={{ flex: 1, minWidth: 0 }}>
                                                     <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: selectedUser?._id === u._id ? '#f1f5f9' : '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name}</p>
                                                     <p style={{ margin: '2px 0 0', fontSize: 12, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email}</p>
@@ -1220,7 +1252,18 @@ export default function PersonalTalkingPage() {
                                             borderLeft: selectedGroup?._id === g._id ? '3px solid #f59e0b' : '3px solid transparent', transition: 'all 0.15s',
                                         }}
                                     >
-                                        <GroupAvatar group={g} size={44} />
+                                        <div style={{ position: 'relative' }}>
+                                            <GroupAvatar group={g} size={44} />
+                                            {unreadGroups.includes(g._id) && (
+                                                <span style={{
+                                                    position: 'absolute', top: -1, right: -1,
+                                                    width: 12, height: 12, background: '#f59e0b',
+                                                    border: '2px solid #080c14', borderRadius: '50%',
+                                                    boxShadow: '0 0 10px rgba(245,158,11,0.5)',
+                                                    animation: 'pulse 2s infinite'
+                                                }} />
+                                            )}
+                                        </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>
                                             <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: selectedGroup?._id === g._id ? '#f1f5f9' : '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.name}</p>
                                             <p style={{ margin: '2px 0 0', fontSize: 12, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.members.length} members</p>

@@ -29,6 +29,15 @@ export async function GET(req, { params }) {
             return NextResponse.json({ success: false, error: 'You are not a member of this group' }, { status: 403 });
         }
 
+        // Update lastSeen timestamp for the current user
+        const memberStatusIndex = group.lastSeen.findIndex(ls => ls.user.toString() === decoded.id);
+        if (memberStatusIndex > -1) {
+            group.lastSeen[memberStatusIndex].timestamp = new Date();
+        } else {
+            group.lastSeen.push({ user: decoded.id, timestamp: new Date() });
+        }
+        await group.save();
+
         // Fetch messages and populate sender info
         const messages = await GroupMessage.find({ groupId })
             .sort({ createdAt: 1 })

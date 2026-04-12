@@ -389,19 +389,11 @@ export default function Navbar() {
                                             <Link
                                                 href="/personal-talking"
                                                 onClick={() => setShowMoreMenu(false)}
-                                                className="w-full flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors border-t border-white/5"
-                                            >
-                                                <FaCommentDots className="text-red-400 text-sm" />
-                                                <span className="text-sm font-medium">Personal Talking</span>
-                                            </Link>
-                                            <Link
-                                                href="/received-messages"
-                                                onClick={() => setShowMoreMenu(false)}
                                                 className="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors border-t border-white/5"
                                             >
                                                 <div className="flex items-center space-x-3">
-                                                    <FaEnvelope className="text-rose-400 text-sm" />
-                                                    <span className="text-sm font-medium">Received Messages</span>
+                                                    <FaCommentDots className="text-red-400 text-sm" />
+                                                    <span className="text-sm font-medium">Personal Talking</span>
                                                 </div>
                                                 {globalUnreadMessages > 0 && (
                                                     <span className="flex items-center justify-center min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full px-1">
@@ -564,15 +556,13 @@ export default function Navbar() {
                             <Link href="/marketplace" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
                                 <FaShoppingCart className="text-sm text-green-400" /><span>Buy and Sell</span>
                             </Link>
-                            <Link href="/personal-talking" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
-                                <FaCommentDots className="text-sm text-red-400" /><span>Personal Talking</span>
-                            </Link>
-                            <Link href="/received-messages" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-gray-300 hover:text-white">
+                            <Link href="/personal-talking" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-gray-300 hover:text-white group">
                                 <div className="flex items-center space-x-3">
-                                    <FaEnvelope className="text-sm text-rose-400" /><span>Received Messages</span>
+                                    <FaCommentDots className="text-sm text-red-400 group-hover:scale-110 transition-transform" />
+                                    <span>Personal Talking</span>
                                 </div>
                                 {globalUnreadMessages > 0 && (
-                                    <span className="bg-red-500 text-white text-[10px] font-bold rounded-full px-2 py-0.5">
+                                    <span className="flex items-center justify-center min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full px-1 animate-pulse">
                                         {globalUnreadMessages > 99 ? '99+' : globalUnreadMessages}
                                     </span>
                                 )}
