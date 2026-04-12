@@ -126,7 +126,7 @@ export default function RegisterPage() {
                 password: formData.password,
                 enrollmentNumber: formData.enrollmentNumber,
                 course: formData.course,
-                year: parseInt(formData.year),
+                year: formData.year,
                 phone: formData.phone,
                 role: 'student',
                 otp: otp

@@ -18,11 +18,11 @@ const registerSchema = z.object({
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     role: z.enum(['student', 'teacher', 'staff', 'admin']).optional(),
-    enrollmentNumber: z.string().optional(),
+    enrollmentNumber: z.coerce.string().optional(),
     course: z.string().optional(),
-    year: z.string().regex(/^\d+$/, 'Year must be a number').optional(),
-    phone: z.string().optional(),
-    otp: z.string().min(4, 'Verification code is too short')
+    year: z.coerce.string().regex(/^\d+$/, 'Year must be a number').optional(),
+    phone: z.coerce.string().optional(),
+    otp: z.coerce.string().min(4, 'Verification code is too short')
 });
 
 export async function POST(request) {
