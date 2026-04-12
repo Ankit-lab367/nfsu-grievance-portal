@@ -16,7 +16,8 @@ export default function LostAndFoundPage() {
             try {
                 const token = localStorage.getItem('token');
                 const res = await fetch('/api/lost-and-found', {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${token}` },
+                    cache: 'no-store'
                 });
                 const data = await res.json();
                 if (data.success) {

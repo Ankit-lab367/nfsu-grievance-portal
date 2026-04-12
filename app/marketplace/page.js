@@ -16,7 +16,8 @@ export default function MarketplacePage() {
             try {
                 const token = localStorage.getItem('token');
                 const res = await fetch('/api/marketplace', {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${token}` },
+                    cache: 'no-store'
                 });
                 const data = await res.json();
                 if (data.success) {
