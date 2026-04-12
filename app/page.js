@@ -326,7 +326,7 @@ export default function HomePage() {
                         <div className="text-center text-gray-400">
                             <p>&copy; 2024 National Forensic Sciences University. All rights reserved.</p>
                             <p className="mt-2 text-sm select-none">
-                                Built with <Link href="/secret" className="transition-none cursor-default">❤️</Link> for better student services
+                                Built with ❤️ for better student services
                             </p>
                         </div>
                     </div>
