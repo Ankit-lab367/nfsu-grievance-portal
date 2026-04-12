@@ -545,7 +545,7 @@ export default function Navbar() {
                                                             {Array.from({ length: degree === 'M.Sc' ? 4 : 8 }).map((_, i) => (
                                                                 <Link
                                                                     key={i}
-                                                                    href={`/academic/${degree.toLowerCase().replace('.', '')}/${i + 1}/notes`}
+                                                                    href={`/academic/${degree.toLowerCase().replace('.', '')}/${i + 1}`}
                                                                     onClick={() => setIsMobileMenuOpen(false)}
                                                                     className="bg-white/5 text-gray-300 text-xs text-center py-1.5 rounded border border-white/5 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/50"
                                                                 >
