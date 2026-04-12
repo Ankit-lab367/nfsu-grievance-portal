@@ -3,11 +3,31 @@ import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import { generateToken } from '@/lib/auth';
 import { sanitizeInput } from '@/lib/security';
+import { z } from 'zod';
+import { rateLimit } from '@/lib/rateLimit';
+
+const loginSchema = z.object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(1, 'Password is required')
+});
 export async function POST(request) {
     try {
         await dbConnect();
         const body = await request.json();
-        let { email, password } = body;
+        const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
+        
+        // Apply rate limit: 10 attempts per minute per IP
+        const limiter = await rateLimit(ip, 'login', 10);
+        if (!limiter.success) {
+            return NextResponse.json({ error: 'Too many login attempts. Please try again later.' }, { status: 429 });
+        }
+
+        const result = loginSchema.safeParse(body);
+        if (!result.success) {
+            return NextResponse.json({ error: result.error.errors[0].message }, { status: 400 });
+        }
+
+        let { email, password } = result.data;
         email = sanitizeInput(email);
         if (!email || !password) {
             return NextResponse.json(

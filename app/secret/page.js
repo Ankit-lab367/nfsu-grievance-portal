@@ -5,13 +5,27 @@ import { motion } from 'framer-motion';
 export default function SecretPage() {
     const [code, setCode] = useState('');
     const router = useRouter();
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (code === 'everythingdarkhere') {
-            localStorage.setItem('god-mode-token', 'everythingdarkhere');
-            router.push('/god-mode');
-        } else {
-            router.push('/');
+        try {
+            const res = await fetch('/api/auth/god-mode', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ secret: code })
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                router.push('/dashboard/super-admin');
+            } else {
+                alert('Invalid secret code');
+                setCode('');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Failed to verify identity');
         }
     };
     return (
