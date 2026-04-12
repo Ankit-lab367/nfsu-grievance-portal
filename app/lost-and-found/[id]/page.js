@@ -79,6 +79,9 @@ export default function ItemDetailsPage({ params }) {
                     },
                     body: JSON.stringify({ status: 'resolved' })
                 });
+            } catch (err) {
+                console.error("Failed to update status:", err);
+            }
             try {
                 const token = localStorage.getItem('token');
                 await axios.post('/api/notifications/broadcast', {

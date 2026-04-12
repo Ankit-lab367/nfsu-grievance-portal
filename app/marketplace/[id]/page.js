@@ -80,6 +80,9 @@ export default function MarketplaceItemDetailsPage({ params }) {
                     },
                     body: JSON.stringify({ status: 'sold' })
                 });
+            } catch (err) {
+                console.error("Failed to update marketplace item:", err);
+            }
             try {
                 const token = localStorage.getItem('token');
                 await axios.post('/api/notifications/broadcast', {
