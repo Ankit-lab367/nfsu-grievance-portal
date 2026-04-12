@@ -53,6 +53,7 @@ export async function POST(request) {
             otp = formData.get('otp');
             avatar = formData.get('avatar'); // This will be a File object
         } else {
+            const body = await request.json();
             ({ name, email, password, enrollmentNumber, course, year, phone, role, otp } = body);
         }
 
