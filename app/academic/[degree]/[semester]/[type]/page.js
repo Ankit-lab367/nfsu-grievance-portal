@@ -32,6 +32,7 @@ export default function ResourceListPage() {
     const [uploading, setUploading] = useState(false);
     const [selectedTerm, setSelectedTerm] = useState(null);
     const [uploadForm, setUploadForm] = useState({ title: '', file: null });
+    const [currentUser, setCurrentUser] = useState(null);
 
     const typeLabels = {
         notes: 'Notes',
@@ -40,6 +41,17 @@ export default function ResourceListPage() {
     };
 
     const isPYQ = type === 'pyq';
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            try {
+                setCurrentUser(JSON.parse(storedUser));
+            } catch (e) {
+                console.error("Invalid user data");
+            }
+        }
+    }, []);
 
     useEffect(() => {
         if (!isPYQ || selectedTerm) {
@@ -129,7 +141,7 @@ export default function ResourceListPage() {
                         <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
                         <span>{isPYQ && selectedTerm ? 'Back to Year Selection' : 'Back'}</span>
                     </button>
-                    {(!isPYQ || selectedTerm) && (
+                    {(!isPYQ || selectedTerm) && (!isPYQ || (currentUser && currentUser.role !== 'student')) && (
                         <button
                             onClick={() => setShowUploadModal(true)}
                             className="flex items-center space-x-2 px-6 py-2.5 bg-red-600 hover:bg-rose-700 text-white rounded-lg transition-colors shadow-lg"

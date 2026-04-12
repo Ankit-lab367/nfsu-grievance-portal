@@ -33,6 +33,11 @@ export async function POST(req) {
         if (!file || !title || !degree || !semester || !type) {
             return NextResponse.json({ success: false, message: 'Missing fields' }, { status: 400 });
         }
+        
+        if (type === 'pyq' && user.role === 'student') {
+            return NextResponse.json({ success: false, message: 'Students are not authorized to upload PYQs.' }, { status: 403 });
+        }
+
         const buffer = Buffer.from(await file.arrayBuffer());
         const filename = Date.now() + '_' + file.name.replaceAll(' ', '_');
         
