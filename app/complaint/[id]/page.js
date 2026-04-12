@@ -51,6 +51,21 @@ export default function ComplaintDetailsPage({ params }) {
             if (response.data.success && response.data.complaints.length > 0) {
                 const data = response.data.complaints[0];
                 setComplaint(data);
+                
+                if (data.comments && data.comments.length > 0) {
+                    const mappedComments = data.comments.map(c => ({
+                        id: c._id,
+                        user: c.user,
+                        avatar: c.avatar,
+                        text: c.text,
+                        timestamp: c.timestamp,
+                        upvotes: c.upvotes || 0,
+                        downvotes: c.downvotes || 0,
+                        userVote: null
+                    }));
+                    setComments(mappedComments);
+                }
+
                 const currentUser = JSON.parse(localStorage.getItem('user'));
                 if (data.votes && data.votes.votedBy) {
                     const vote = data.votes.votedBy.find(v => v.userId === currentUser.id);
@@ -118,20 +133,43 @@ export default function ComplaintDetailsPage({ params }) {
             setUpdatingStatus(false);
         }
     };
-    const handleSendComment = (e) => {
+    const handleSendComment = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
-        const comment = {
-            id: Date.now(),
-            user: currentUser?.name || "Anonymous",
-            avatar: currentUser?.avatar,
-            text: newComment,
+        if (!newComment.trim() || !currentUser) return;
+        
+        const text = newComment;
+        setNewComment("");
+        
+        // Optimistic update
+        const optimisticComment = {
+            id: Date.now().toString(),
+            user: currentUser.name || "Anonymous",
+            avatar: currentUser.avatar || null,
+            text: text,
             timestamp: new Date().toISOString(),
             upvotes: 0,
             downvotes: 0
         };
-        setComments([...comments, comment]);
-        setNewComment("");
+        setComments(prev => [...prev, optimisticComment]);
+
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch('/api/complaints/comment', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}` 
+                },
+                body: JSON.stringify({ complaintId: complaint._id, text })
+            });
+            const data = await res.json();
+            if (!data.success) {
+                console.error("Failed to post comment:", data.message);
+                // Hard reload to revert optimistic update or implement proper rollback
+            }
+        } catch (err) {
+            console.error("Error posting comment:", err);
+        }
     };
     const handleCommentVote = (commentId, type) => {
         setComments(prev => prev.map(c => {

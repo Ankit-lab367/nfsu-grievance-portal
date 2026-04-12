@@ -37,7 +37,23 @@ const LostAndFoundSchema = new mongoose.Schema({
         type: String,
         enum: ['active', 'resolved'],
         default: 'active'
-    }
+    },
+    comments: [
+        {
+            user: { type: String, required: true },
+            avatar: { type: String, default: null },
+            text: { type: String, required: true },
+            upvotes: { type: Number, default: 0 },
+            downvotes: { type: Number, default: 0 },
+            timestamp: { type: Date, default: Date.now },
+            votedBy: [
+                {
+                    userId: { type: String, required: true },
+                    voteType: { type: String, enum: ['up', 'down'] },
+                }
+            ]
+        }
+    ]
 }, {
     timestamps: true
 });

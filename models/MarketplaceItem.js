@@ -37,7 +37,15 @@ const MarketplaceItemSchema = new mongoose.Schema({
         type: String,
         enum: ['available', 'sold'],
         default: 'available'
-    }
+    },
+    messages: [
+        {
+            user: { type: String, required: true },
+            avatar: { type: String, default: null },
+            text: { type: String, required: true },
+            timestamp: { type: Date, default: Date.now }
+        }
+    ]
 }, {
     timestamps: true
 });

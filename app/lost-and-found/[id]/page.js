@@ -20,9 +20,21 @@ export default function ItemDetailsPage({ params }) {
                 const res = await fetch(`/api/lost-and-found/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                const data = await res.json();
                 if (data.success) {
                     setItem(data.item);
+                    if (data.item?.comments && data.item.comments.length > 0) {
+                        const mappedComments = data.item.comments.map(c => ({
+                            id: c._id,
+                            user: c.user,
+                            avatar: c.avatar,
+                            text: c.text,
+                            timestamp: c.timestamp,
+                            upvotes: c.upvotes || 0,
+                            downvotes: c.downvotes || 0,
+                            userVote: null
+                        }));
+                        setComments(mappedComments);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching item:", error);
@@ -50,21 +62,42 @@ export default function ItemDetailsPage({ params }) {
         const storedUser = localStorage.getItem('user');
         if (storedUser) setCurrentUser(JSON.parse(storedUser));
     }, []);
-    const handleSendComment = (e) => {
+    const handleSendComment = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
-        const comment = {
-            id: Date.now(),
-            user: currentUser?.name || "Anonymous",
-            avatar: currentUser?.avatar,
-            text: newComment,
+        if (!newComment.trim() || !currentUser) return;
+        
+        const text = newComment;
+        setNewComment("");
+
+        const optimisticComment = {
+            id: Date.now().toString(),
+            user: currentUser.name || "Anonymous",
+            avatar: currentUser.avatar || null,
+            text,
             timestamp: new Date().toISOString(),
             upvotes: 0,
-            downvotes: 0,
-            userVote: null
+            downvotes: 0
         };
-        setComments([...comments, comment]);
-        setNewComment("");
+        setComments(prev => [...prev, optimisticComment]);
+
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch('/api/lost-and-found/comment', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}` 
+                },
+                body: JSON.stringify({ itemId: id, text })
+            });
+
+            const data = await res.json();
+            if (!data.success) {
+                console.error("Failed to post comment:", data.message);
+            }
+        } catch (err) {
+            console.error("Error posting comment:", err);
+        }
     };
     const handleReceived = async () => {
         const receivedBy = window.prompt("Mark as received? Please enter who received this item:");

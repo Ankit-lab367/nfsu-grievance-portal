@@ -35,9 +35,26 @@ export default function MarketplaceItemDetailsPage({ params }) {
                 const res = await fetch(`/api/marketplace/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                const data = await res.json();
                 if (data.success) {
                     setItem(data.item);
+                    if (data.item?.messages && data.item.messages.length > 0) {
+                        const mappedMsgs = data.item.messages.map(m => ({
+                            id: m._id,
+                            user: m.user,
+                            avatar: m.avatar,
+                            text: m.text,
+                            timestamp: m.timestamp
+                        }));
+                        // Prepend the Market Bot message
+                        const botMsg = {
+                            id: 1,
+                            user: "Market Bot",
+                            avatar: null,
+                            text: "Welcome to the negotiation! Be polite and fair with your offers.",
+                            timestamp: data.item.createdAt
+                        };
+                        setMessages([botMsg, ...mappedMsgs]);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching item:", error);
@@ -54,18 +71,40 @@ export default function MarketplaceItemDetailsPage({ params }) {
             maximumFractionDigits: 0
         }).format(price);
     };
-    const handleSendMessage = (e) => {
+    const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim()) return;
-        const msg = {
-            id: Date.now(),
-            user: currentUser?.name || "Anonymous",
-            avatar: currentUser?.avatar,
-            text: newMessage,
+        if (!newMessage.trim() || !currentUser) return;
+        
+        const text = newMessage;
+        setNewMessage("");
+
+        const optimisticMsg = {
+            id: Date.now().toString(),
+            user: currentUser.name || "Anonymous",
+            avatar: currentUser.avatar || null,
+            text,
             timestamp: new Date().toISOString()
         };
-        setMessages([...messages, msg]);
-        setNewMessage("");
+        setMessages(prev => [...prev, optimisticMsg]);
+
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch('/api/marketplace/comment', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}` 
+                },
+                body: JSON.stringify({ itemId: id, text })
+            });
+
+            const data = await res.json();
+            if (!data.success) {
+                console.error("Failed to post message:", data.message);
+            }
+        } catch (err) {
+            console.error("Error posting message:", err);
+        }
     };
     const handleSold = async () => {
         const soldTo = window.prompt("Mark as sold? Please enter who bought this item:");
