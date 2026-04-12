@@ -63,34 +63,44 @@ export default function SellItemPage() {
             if (imagePreview) {
                 finalImage = await compressImage(imagePreview);
             }
-            const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-            const newItem = {
-                id: Date.now().toString(),
-                subject: formData.subject,
-                price: formData.price,
-                description: formData.description,
-                location: formData.location,
-                image: finalImage,
-                time: 'Just now',
-                timestamp: new Date().toISOString(),
-                uploaderId: storedUser.email || 'anonymous'
-            };
-            const existingItems = JSON.parse(localStorage.getItem('marketplace_items') || '[]');
-            localStorage.setItem('marketplace_items', JSON.stringify([newItem, ...existingItems]));
-            setTimeout(() => {
-                alert('Item listed for sale successfully!');
-                router.push('/marketplace');
-            }, 500);
+
+            const token = localStorage.getItem('token');
+            const res = await fetch('/api/marketplace', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    subject: formData.subject,
+                    price: formData.price,
+                    description: formData.description,
+                    location: formData.location,
+                    image: finalImage
+                })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                setTimeout(() => {
+                    alert('Item listed for sale successfully!');
+                    router.push('/marketplace');
+                }, 500);
+            } else {
+                alert(data.message || 'Failed to list item');
+                setLoading(false);
+            }
         } catch (error) {
             console.error('Marketplace upload error:', error);
-            if (error.name === 'QuotaExceededError') {
-                alert('Upload failed: Even with compression, the image is too big. Please try a different photo.');
+            if (error.name === 'QuotaExceededError' || error.message.includes('413')) {
+                alert('Upload failed: The image is too large even after compression. Please try a smaller photo.');
             } else {
                 alert('An unexpected error occurred. Please try again.');
             }
             setLoading(false);
         }
     };
+
     return (
         <div className="min-h-screen relative transition-colors duration-500">
             {}

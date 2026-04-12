@@ -11,12 +11,26 @@ export default function ItemDetailsPage({ params }) {
     const router = useRouter();
     const { id } = params;
     const [item, setItem] = useState(null);
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
-        const storedItems = JSON.parse(localStorage.getItem('lost_and_found_items') || '[]');
-        const foundItem = storedItems.find(i => i.id === id);
-        if (foundItem) {
-            setItem(foundItem);
-        }
+        const fetchItem = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`/api/lost-and-found/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    setItem(data.item);
+                }
+            } catch (error) {
+                console.error("Error fetching item:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchItem();
     }, [id]);
     const [showComments, setShowComments] = useState(false);
     const [comments, setComments] = useState([
@@ -55,9 +69,16 @@ export default function ItemDetailsPage({ params }) {
     const handleReceived = async () => {
         const receivedBy = window.prompt("Mark as received? Please enter who received this item:");
         if (receivedBy !== null) {
-            const storedItems = JSON.parse(localStorage.getItem('lost_and_found_items') || '[]');
-            const updatedItems = storedItems.filter(i => i.id !== id);
-            localStorage.setItem('lost_and_found_items', JSON.stringify(updatedItems));
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`/api/lost-and-found/${id}`, {
+                    method: 'PATCH',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ status: 'resolved' })
+                });
             try {
                 const token = localStorage.getItem('token');
                 await axios.post('/api/notifications/broadcast', {
@@ -102,7 +123,7 @@ export default function ItemDetailsPage({ params }) {
                                         {item.type}
                                     </span>
                                     <span className="text-xs text-gray-500 flex items-center gap-2">
-                                        <FaClock /> {item.time}
+                                        <FaClock /> {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : item.time}
                                     </span>
                                     <span className="text-xs text-gray-500 flex items-center gap-2 border-l border-white/10 pl-3">
                                         <FaMapMarkerAlt className="text-red-500" /> {item.location}
@@ -160,6 +181,10 @@ export default function ItemDetailsPage({ params }) {
                                 </div>
                             </div>
                         </motion.div>
+                    ) : loading ? (
+                        <div className="text-center py-20 flex justify-center items-center">
+                            <div className="w-8 h-8 rounded-full border-t-2 border-red-500 animate-spin"></div>
+                        </div>
                     ) : (
                         <div className="text-center py-20">
                             <h2 className="text-2xl font-bold text-white">Item not found</h2>

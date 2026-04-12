@@ -11,6 +11,7 @@ export default function MarketplaceItemDetailsPage({ params }) {
     const router = useRouter();
     const { id } = params;
     const [item, setItem] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [showNegotiation, setShowNegotiation] = useState(false);
     const [messages, setMessages] = useState([
         {
@@ -23,14 +24,28 @@ export default function MarketplaceItemDetailsPage({ params }) {
     ]);
     const [newMessage, setNewMessage] = useState("");
     const [currentUser, setCurrentUser] = useState(null);
+
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) setCurrentUser(JSON.parse(storedUser));
-        const storedItems = JSON.parse(localStorage.getItem('marketplace_items') || '[]');
-        const foundItem = storedItems.find(i => i.id === id);
-        if (foundItem) {
-            setItem(foundItem);
-        }
+        
+        const fetchItem = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`/api/marketplace/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    setItem(data.item);
+                }
+            } catch (error) {
+                console.error("Error fetching item:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchItem();
     }, [id]);
     const formatPrice = (price) => {
         return new Intl.NumberFormat('en-IN', {
@@ -55,9 +70,16 @@ export default function MarketplaceItemDetailsPage({ params }) {
     const handleSold = async () => {
         const soldTo = window.prompt("Mark as sold? Please enter who bought this item:");
         if (soldTo !== null) {
-            const storedItems = JSON.parse(localStorage.getItem('marketplace_items') || '[]');
-            const updatedItems = storedItems.filter(i => i.id !== id);
-            localStorage.setItem('marketplace_items', JSON.stringify(updatedItems));
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`/api/marketplace/${id}`, {
+                    method: 'PATCH',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ status: 'sold' })
+                });
             try {
                 const token = localStorage.getItem('token');
                 await axios.post('/api/notifications/broadcast', {
@@ -121,7 +143,7 @@ export default function MarketplaceItemDetailsPage({ params }) {
                                             <FaMapMarkerAlt /> {item.location}
                                         </span>
                                         <span className="flex items-center gap-1.5 py-1.5 px-4 bg-white/5 rounded-full border border-white/10">
-                                            <FaClock /> Posted {item.time}
+                                            <FaClock /> Posted {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : item.time}
                                         </span>
                                     </div>
                                     <div className="text-4xl md:text-6xl font-black text-green-600 dark:text-green-400 flex items-center gap-4">
@@ -139,7 +161,7 @@ export default function MarketplaceItemDetailsPage({ params }) {
                                         <FaComments className="text-xl" />
                                         <span>Comments & Negotiation</span>
                                     </motion.button>
-                                    {currentUser && item.uploaderId === currentUser.email && (
+                                    {currentUser && item.uploaderId === currentUser.email && item.status !== 'sold' && (
                                         <motion.button
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
@@ -160,6 +182,10 @@ export default function MarketplaceItemDetailsPage({ params }) {
                                 </p>
                             </div>
                         </motion.div>
+                    ) : loading ? (
+                        <div className="text-center py-20 flex justify-center items-center">
+                            <div className="w-10 h-10 rounded-full border-t-2 border-red-500 animate-spin"></div>
+                        </div>
                     ) : (
                         <div className="text-center py-20">
                             <h2 className="text-3xl font-black text-white italic">Item vanished from Market!</h2>

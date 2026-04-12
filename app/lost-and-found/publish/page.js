@@ -63,25 +63,34 @@ export default function PublishItemPage() {
             if (imagePreview) {
                 finalImage = await compressImage(imagePreview);
             }
-            const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-            const newItem = {
-                id: Date.now().toString(),
-                subject: formData.subject,
-                description: formData.description,
-                type: formData.type,
-                location: formData.location,
-                image: finalImage,
-                time: 'Just now',
-                timestamp: new Date().toISOString(),
-                uploaderId: storedUser.email || 'anonymous'
-            };
-            const existingItems = JSON.parse(localStorage.getItem('lost_and_found_items') || '[]');
-            localStorage.setItem('lost_and_found_items', JSON.stringify([newItem, ...existingItems]));
-            alert('Submitted successfully!');
-            router.push('/lost-and-found');
+
+            const token = localStorage.getItem('token');
+            const res = await fetch('/api/lost-and-found', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    subject: formData.subject,
+                    description: formData.description,
+                    type: formData.type,
+                    location: formData.location,
+                    image: finalImage
+                })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert('Submitted successfully!');
+                router.push('/lost-and-found');
+            } else {
+                alert(data.message || 'Failed to submit item');
+                setLoading(false);
+            }
         } catch (error) {
             console.error('Lost & Found upload error:', error);
-            if (error.name === 'QuotaExceededError') {
+            if (error.name === 'QuotaExceededError' || error.message.includes('413')) {
                 alert('Upload failed: The image is too large even after compression. Please try a smaller photo.');
             } else {
                 alert('An unexpected error occurred. Please try again.');
@@ -89,6 +98,7 @@ export default function PublishItemPage() {
             setLoading(false);
         }
     };
+
     return (
         <div className="min-h-screen relative transition-colors duration-500">
             {}
