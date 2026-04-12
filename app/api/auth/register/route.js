@@ -42,16 +42,23 @@ export async function POST(request) {
         
         if (contentType.includes('multipart/form-data')) {
             const formData = await request.formData();
-            name = formData.get('name');
-            email = formData.get('email');
-            password = formData.get('password');
-            enrollmentNumber = formData.get('enrollmentNumber');
-            course = formData.get('course');
-            year = formData.get('year');
-            phone = formData.get('phone');
-            role = formData.get('role');
-            otp = formData.get('otp');
-            avatar = formData.get('avatar'); // This will be a File object
+            
+            // Extract with null-to-undefined conversion for Zod optional compatibility
+            const getField = (name) => {
+                const val = formData.get(name);
+                return val !== null ? val : undefined;
+            };
+
+            name = getField('name');
+            email = getField('email');
+            password = getField('password');
+            enrollmentNumber = getField('enrollmentNumber');
+            course = getField('course');
+            year = getField('year');
+            phone = getField('phone');
+            role = getField('role');
+            otp = getField('otp');
+            avatar = formData.get('avatar'); // File object
         } else {
             const body = await request.json();
             ({ name, email, password, enrollmentNumber, course, year, phone, role, otp } = body);
@@ -62,7 +69,11 @@ export async function POST(request) {
         });
 
         if (!result.success) {
-            return NextResponse.json({ error: result.error.errors[0].message }, { status: 400 });
+            // Safely extract the first error message
+            const errorMessage = result.error.errors?.[0]?.message || 
+                               result.error.issues?.[0]?.message || 
+                               'Validation failed';
+            return NextResponse.json({ error: errorMessage }, { status: 400 });
         }
 
         // Check if OTP is provided
