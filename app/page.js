@@ -244,27 +244,6 @@ export default function HomePage() {
                     </motion.div>
                 </section>
 
-                <section className="container mx-auto px-6 py-12">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {[
-                            { number: '1000+', label: 'Complaints Resolved' },
-                            { number: '95%', label: 'Success Rate' },
-                            { number: '24h', label: 'Avg Response Time' },
-                            { number: '9', label: 'Departments' },
-                        ].map((stat, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: isLoaded ? 1 : 0, scale: isLoaded ? 1 : 0.9 }}
-                                transition={{ delay: 0.2 + index * 0.1 }}
-                                className="glass-card-theme p-6 text-center shadow-lg border-white/10"
-                            >
-                                <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">{stat.number}</h3>
-                                <p className="text-gray-400 text-sm font-medium">{stat.label}</p>
-                            </motion.div>
-                        ))}
-                    </div>
-                </section>
 
                 <section className="container mx-auto px-6 py-20">
                     <div className="text-center mb-12">
