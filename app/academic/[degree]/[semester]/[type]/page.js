@@ -75,6 +75,25 @@ export default function ResourceListPage() {
         }
     };
 
+    const handleDeleteResource = async (id) => {
+        if (!confirm('Are you sure you want to delete this resource?')) return;
+        
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.delete(`/api/academic/delete?id=${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                setResources(prev => prev.filter(r => r._id !== id));
+            } else {
+                alert(response.data.message || 'Failed to delete resource');
+            }
+        } catch (error) {
+            console.error('Delete error:', error);
+            alert('Failed to delete resource. Please try again.');
+        }
+    };
+
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             setUploadForm({ ...uploadForm, file: e.target.files[0] });
@@ -236,19 +255,32 @@ export default function ResourceListPage() {
                                             className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/10 hover:bg-white/15 transition-all group"
                                         >
                                             <div className="flex items-start justify-between mb-4">
-                                                <div className="p-3 bg-white/10 rounded-lg">
-                                                    {getFileIcon(resource.fileType)}
+                                                <div className="flex space-x-2">
+                                                    <div className="p-3 bg-white/10 rounded-lg">
+                                                        {getFileIcon(resource.fileType)}
+                                                    </div>
                                                 </div>
-                                                <a
-                                                    href={resource.fileUrl}
-                                                    download
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
-                                                    title="Download"
-                                                >
-                                                    <FaDownload />
-                                                </a>
+                                                <div className="flex items-center space-x-1">
+                                                    {currentUser?.role === 'super-admin' && (
+                                                        <button
+                                                            onClick={() => handleDeleteResource(resource._id)}
+                                                            className="p-2 text-red-400 hover:text-white hover:bg-red-500/80 rounded-full transition-colors"
+                                                            title="Delete Resource"
+                                                        >
+                                                            <FaTimes />
+                                                        </button>
+                                                    )}
+                                                    <a
+                                                        href={resource.fileUrl}
+                                                        download
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                                                        title="Download"
+                                                    >
+                                                        <FaDownload />
+                                                    </a>
+                                                </div>
                                             </div>
                                             <h3 className="text-white font-semibold text-lg mb-1 truncate" title={resource.title}>
                                                 {resource.title}
