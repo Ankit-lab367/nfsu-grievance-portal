@@ -38,7 +38,6 @@ export default function GodModeDashboard() {
         { label: 'BLOCK ACCOUNT', action: () => handleNavigation('/test_dog/block') },
         { label: 'UNBLOCK ACCOUNT', action: () => handleNavigation('/test_dog/unblock') },
         { label: 'SEE COMPLAINTS', action: () => handleNavigation('/test_dog/complaints') },
-        { label: 'ACADEMIC MATERIAL MANAGER', action: () => handleNavigation('/test_dog/academic') },
     ];
     return (
         <div className="min-h-screen bg-black overflow-hidden font-mono text-[#00ff00]">

@@ -39,7 +39,6 @@ const ComplaintSchema = new mongoose.Schema(
             type: String,
             required: [true, 'Department is required'],
             enum: [
-                'Academics',
                 'Hostel',
                 'IT',
                 'Library',

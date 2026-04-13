@@ -90,11 +90,10 @@ export async function POST(request) {
     } catch (error) {
         console.error('Login error details:', {
             message: error.message,
-            stack: error.stack,
-            body: body
+            stack: error.stack
         });
         return NextResponse.json(
-            { error: 'Login failed' },
+            { error: `Login failed: ${error.message}` },
             { status: 500 }
         );
     }

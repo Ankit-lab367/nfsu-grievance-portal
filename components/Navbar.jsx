@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FaBell, FaMoon, FaSun, FaSignOutAlt, FaUser, FaSearch, FaFileInvoice, FaUniversity, FaChevronDown, FaPhone, FaBook, FaShoppingCart, FaComments, FaCommentDots, FaEnvelope, FaChevronRight, FaBars, FaTimes } from 'react-icons/fa';
+import axios from 'axios';
+import { FaBell, FaMoon, FaSun, FaSignOutAlt, FaUser, FaSearch, FaFileInvoice, FaUniversity, FaChevronDown, FaPhone, FaBook, FaShoppingCart, FaComments, FaCommentDots, FaEnvelope, FaChevronRight, FaBars, FaTimes, FaThLarge, FaBolt } from 'react-icons/fa';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 export default function Navbar() {
@@ -10,15 +11,12 @@ export default function Navbar() {
     const [darkMode, setDarkMode] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showMoreMenu, setShowMoreMenu] = useState(false);
-    const [academicSubmenu, setAcademicSubmenu] = useState(null); 
-    const [activeDegree, setActiveDegree] = useState(null); 
     const [unreadCount, setUnreadCount] = useState(0);
     const [globalUnreadMessages, setGlobalUnreadMessages] = useState(0);
     const [hasPendingApps, setHasPendingApps] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
     const [logoutRipple, setLogoutRipple] = useState({ x: 0, y: 0 });
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [mobileAcademicOpen, setMobileAcademicOpen] = useState(false);
     const logoutBtnRef = useRef(null);
     const moreMenuRef = useRef(null);
     useEffect(() => {
@@ -43,8 +41,6 @@ export default function Navbar() {
         const handleClickOutside = (event) => {
             if (moreMenuRef.current && !moreMenuRef.current.contains(event.target)) {
                 setShowMoreMenu(false);
-                setAcademicSubmenu(null);
-                setActiveDegree(null);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -88,6 +84,34 @@ export default function Navbar() {
             localStorage.setItem('theme', 'light');
         }
     };
+
+    const handleForenSyncJump = async () => {
+        if (!user) {
+            alert("Please log in to access ForenSync!");
+            router.push('/login');
+            return;
+        }
+
+        try {
+            // Task 2: POST request to /api/sso/generate-code to mint a secure ticket
+            const response = await axios.post('/api/sso/generate-code', {
+                email: user.email,
+                name: user.name
+            });
+
+            if (response.data.success && response.data.code) {
+                const ssoCode = response.data.code;
+                // Task 2: Redirect to ForenSync's catch page
+                window.location.href = `https://www.forensync.me/sso-login?code=${ssoCode}`;
+            } else {
+                throw new Error('Failed to generate SSO ticket');
+            }
+        } catch (err) {
+            console.error('SSO Jump Error:', err.message);
+            alert('Failed to connect to ForenSync. Please try again later.');
+        }
+    };
+
     useEffect(() => {
         const fetchUnread = async () => {
             const token = localStorage.getItem('token');
@@ -257,6 +281,15 @@ export default function Navbar() {
                         </Link>
                         {}
                         <div className="hidden lg:flex items-center ml-12 space-x-8 border-l border-white/10 pl-12">
+                            {user && (
+                                <Link
+                                    href={user.role === 'student' ? '/dashboard/student' : user.role === 'super-admin' ? '/dashboard/super-admin' : '/dashboard/admin'}
+                                    className="flex items-center space-x-2 text-gray-400 hover:text-white transition-all duration-200 group"
+                                >
+                                    <FaThLarge className="text-sm group-hover:scale-110" />
+                                    <span className="text-sm font-semibold tracking-tight">Dashboard</span>
+                                </Link>
+                            )}
                             <Link
                                 id="nav-lost-found"
                                 href="/lost-and-found"
@@ -274,20 +307,12 @@ export default function Navbar() {
                                     {(user?.role === 'admin' || user?.role === 'super-admin' || user?.role === 'staff') ? 'Faculty Discussion' : 'Discussion'}
                                 </span>
                             </Link>
-                            <Link
-                                href="/emergency-contacts"
-                                className="flex items-center space-x-2 text-gray-400 hover:text-white transition-all duration-200 group"
+                             <Link
+                                href="/marketplace"
+                                className="flex items-center space-x-2 text-gray-400 hover:text-green-400 transition-all duration-200 group"
                             >
-                                <FaPhone className="text-sm group-hover:scale-110" />
-                                <span className="text-sm font-semibold tracking-tight">Emergency Contacts</span>
-                            </Link>
-
-                            <Link
-                                href="/college"
-                                className="flex items-center space-x-2 text-gray-400 hover:text-red-400 transition-all duration-200 group"
-                            >
-                                <FaUniversity className="text-sm group-hover:scale-110" />
-                                <span className="text-sm font-medium">College Details</span>
+                                <FaShoppingCart className="text-sm group-hover:scale-110" />
+                                <span className="text-sm font-semibold tracking-tight">Buy and Sell</span>
                             </Link>
                             {}
                             <div className="relative" ref={moreMenuRef}>
@@ -309,82 +334,21 @@ export default function Navbar() {
                                             exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                             className="absolute left-0 mt-2 w-56 glass-card-theme shadow-2xl py-2 border border-slate-200 dark:border-white/10 z-50 origin-top-left"
                                         >
-                                            {/* Academic Dropdown */}
-                                            {(user?.role === 'student' || user?.role === 'admin' || user?.role === 'super-admin' || user?.role === 'staff') && (
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setAcademicSubmenu(academicSubmenu === 'degrees' ? null : 'degrees');
-                                                        setActiveDegree(null);
-                                                    }}
-                                                    className={`w-full flex items-center justify-between px-4 py-3 transition-colors ${academicSubmenu === 'degrees' ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white'}`}
-                                                >
-                                                    <div className="flex items-center space-x-3">
-                                                        <FaBook className="text-red-400 text-sm" />
-                                                        <span className="text-sm font-medium">Academic Materials</span>
-                                                    </div>
-                                                    <FaChevronRight className={`text-[10px] transition-transform ${academicSubmenu === 'degrees' ? 'rotate-90 md:rotate-0' : ''}`} />
-                                                </button>
-                                            )}
-                                            {}
-                                            <AnimatePresence>
-                                                {academicSubmenu === 'degrees' && (
-                                                    <motion.div
-                                                        initial={{ opacity: 0, x: -10 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        exit={{ opacity: 0, x: -10 }}
-                                                        className="absolute left-full top-0 ml-1 w-48 glass-card-theme border border-slate-200 dark:border-white/10 shadow-2xl py-2 z-[60]"
-                                                    >
-                                                        {['B.Tech', 'B.Sc', 'M.Sc'].map((degree) => (
-                                                            <button
-                                                                key={degree}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    const degreeKey = degree.toLowerCase().replace('.', '');
-                                                                    setActiveDegree(activeDegree === degreeKey ? null : degreeKey);
-                                                                }}
-                                                                className={`w-full flex items-center justify-between px-4 py-3 transition-colors ${activeDegree === degree.toLowerCase().replace('.', '') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white'}`}
-                                                            >
-                                                                <span className="text-sm font-medium">{degree}</span>
-                                                                <FaChevronRight className="text-[10px]" />
-                                                            </button>
-                                                        ))}
-                                                        {}
-                                                        <AnimatePresence>
-                                                            {activeDegree && (
-                                                                <motion.div
-                                                                    initial={{ opacity: 0, x: -10 }}
-                                                                    animate={{ opacity: 1, x: 0 }}
-                                                                    exit={{ opacity: 0, x: -10 }}
-                                                                    className="absolute left-full top-0 ml-1 w-40 glass-card-theme border border-slate-200 dark:border-white/10 shadow-2xl py-2 overflow-y-auto max-h-[300px] z-[70]"
-                                                                >
-                                                                    {Array.from({ length: activeDegree === 'msc' ? 4 : 8 }).map((_, i) => (
-                                                                        <Link
-                                                                            key={i}
-                                                                            href={`/academic/${activeDegree}/${i + 1}`}
-                                                                            onClick={() => {
-                                                                                setShowMoreMenu(false);
-                                                                                setAcademicSubmenu(null);
-                                                                                setActiveDegree(null);
-                                                                            }}
-                                                                            className="block w-full text-left px-4 py-2.5 text-xs font-medium text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
-                                                                        >
-                                                                            {activeDegree.toUpperCase()} Sem {i + 1}
-                                                                        </Link>
-                                                                    ))}
-                                                                </motion.div>
-                                                            )}
-                                                        </AnimatePresence>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
                                             <Link
-                                                href="/marketplace"
+                                                href="/college"
                                                 onClick={() => setShowMoreMenu(false)}
                                                 className="w-full flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
                                             >
-                                                <FaShoppingCart className="text-green-400 text-sm" />
-                                                <span className="text-sm font-medium">Buy and Sell</span>
+                                                <FaUniversity className="text-red-400 text-sm" />
+                                                <span className="text-sm font-medium">College Details</span>
+                                            </Link>
+                                            <Link
+                                                href="/emergency-contacts"
+                                                onClick={() => setShowMoreMenu(false)}
+                                                className="w-full flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors border-t border-white/5"
+                                            >
+                                                <FaPhone className="text-blue-400 text-sm" />
+                                                <span className="text-sm font-medium">Emergency Contacts</span>
                                             </Link>
                                             <Link
                                                 href="/personal-talking"
@@ -417,6 +381,48 @@ export default function Navbar() {
                             {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
                         </button>
                         {/* Desktop & Mobile Top Right Buttons */}
+                        {}
+                        <div className="relative group">
+                            <motion.button
+                                initial={{ opacity: 0, x: 20 }}
+                                whileHover={{ scale: 1.05, y: -2 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={handleForenSyncJump}
+                                animate={{ 
+                                    opacity: 1,
+                                    x: 0,
+                                    boxShadow: darkMode 
+                                        ? ["0 0 5px rgba(225,29,72,0.1)", "0 0 20px rgba(225,29,72,0.4)", "0 0 5px rgba(225,29,72,0.1)"]
+                                        : ["0 0 5px rgba(220,38,38,0.05)", "0 0 15px rgba(220,38,38,0.3)", "0 0 5px rgba(220,38,38,0.05)"]
+                                }}
+                                transition={{ 
+                                    boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                                    opacity: { duration: 0.5 },
+                                    x: { duration: 0.5 }
+                                }}
+                                className="flex items-center space-x-2 px-3 md:px-4 py-1.5 rounded-lg bg-white/5 dark:bg-black/40 border border-red-500/30 text-white transition-all backdrop-blur-xl shadow-lg z-50 group"
+                            >
+                                <div className="relative">
+                                    <FaBolt className="text-red-500 text-sm group-hover:rotate-12 transition-transform" />
+                                    <motion.div 
+                                        animate={{ opacity: [0.3, 1, 0.3] }}
+                                        transition={{ duration: 1.5, repeat: Infinity }}
+                                        className="absolute inset-0 bg-red-400 blur-[4px] rounded-full"
+                                    />
+                                </div>
+                                <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-white">
+                                    ForenSync
+                                </span>
+                            </motion.button>
+                            
+                            {/* Tooltip */}
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-[100] w-max">
+                                <div className="bg-slate-900 border border-white/10 text-white text-[10px] font-bold py-1.5 px-3 rounded-md shadow-2xl uppercase tracking-widest whitespace-nowrap">
+                                    for better exam practice go here
+                                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 border-l border-t border-white/10 rotate-45" />
+                                </div>
+                            </div>
+                        </div>
                         <button
                             onClick={toggleDarkMode}
                             className="p-2 text-gray-300 hover:text-white transition-colors"
@@ -497,6 +503,15 @@ export default function Navbar() {
                         className="lg:hidden bg-slate-900 border-t border-white/10 overflow-hidden"
                     >
                         <div className="px-6 py-4 flex flex-col space-y-4">
+                            {user && (
+                                <Link 
+                                    href={user.role === 'student' ? '/dashboard/student' : user.role === 'super-admin' ? '/dashboard/super-admin' : '/dashboard/admin'}
+                                    onClick={() => setIsMobileMenuOpen(false)} 
+                                    className="flex items-center space-x-3 text-gray-300 hover:text-white"
+                                >
+                                    <FaThLarge className="text-sm" /><span>Dashboard</span>
+                                </Link>
+                            )}
                             <Link href="/lost-and-found" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
                                 <FaSearch className="text-sm" /><span>Lost & Found</span>
                             </Link>
@@ -504,55 +519,6 @@ export default function Navbar() {
                                 <FaComments className="text-sm" />
                                 <span>{(user?.role === 'admin' || user?.role === 'super-admin' || user?.role === 'staff') ? 'Faculty Discussion' : 'Discussion'}</span>
                             </Link>
-                            <Link href="/emergency-contacts" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
-                                <FaPhone className="text-sm" /><span>Emergency Contacts</span>
-                            </Link>
-                            <Link href="/college" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-red-400">
-                                <FaUniversity className="text-sm" /><span>College Details</span>
-                            </Link>
-                            
-                            {(user?.role === 'student' || user?.role === 'admin' || user?.role === 'super-admin' || user?.role === 'staff') && (
-                                <div className="flex flex-col space-y-2">
-                                    <button 
-                                        onClick={() => setMobileAcademicOpen(!mobileAcademicOpen)}
-                                        className="flex items-center justify-between text-gray-300 w-full"
-                                    >
-                                        <div className="flex items-center space-x-3">
-                                            <FaBook className="text-sm text-red-400" /><span>Academic Materials</span>
-                                        </div>
-                                        <FaChevronDown className={`text-xs transition-transform ${mobileAcademicOpen ? 'rotate-180' : ''}`} />
-                                    </button>
-                                    <AnimatePresence>
-                                        {mobileAcademicOpen && (
-                                            <motion.div 
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                className="pl-7 flex flex-col space-y-2"
-                                            >
-                                                {['B.Tech', 'B.Sc', 'M.Sc'].map((degree) => (
-                                                    <div key={degree} className="flex flex-col space-y-1">
-                                                        <span className="text-xs font-bold text-gray-500 uppercase mt-2">{degree}</span>
-                                                        <div className="grid grid-cols-4 gap-2">
-                                                            {Array.from({ length: degree === 'M.Sc' ? 4 : 8 }).map((_, i) => (
-                                                                <Link
-                                                                    key={i}
-                                                                    href={`/academic/${degree.toLowerCase().replace('.', '')}/${i + 1}`}
-                                                                    onClick={() => setIsMobileMenuOpen(false)}
-                                                                    className="bg-white/5 text-gray-300 text-xs text-center py-1.5 rounded border border-white/5 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/50"
-                                                                >
-                                                                    S{i + 1}
-                                                                </Link>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            )}
-
                             <Link href="/marketplace" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
                                 <FaShoppingCart className="text-sm text-green-400" /><span>Buy and Sell</span>
                             </Link>
@@ -567,6 +533,15 @@ export default function Navbar() {
                                     </span>
                                 )}
                             </Link>
+                            <div className="pt-4 border-t border-white/5 space-y-4">
+                                <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold px-3">More Links</p>
+                                <Link href="/college" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-red-400">
+                                    <FaUniversity className="text-sm" /><span>College Details</span>
+                                </Link>
+                                <Link href="/emergency-contacts" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
+                                    <FaPhone className="text-sm" /><span>Emergency Contacts</span>
+                                </Link>
+                            </div>
                         </div>
                     </motion.div>
                 )}

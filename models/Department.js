@@ -6,7 +6,6 @@ const DepartmentSchema = new mongoose.Schema(
             required: true,
             unique: true,
             enum: [
-                'Academics',
                 'Hostel',
                 'IT',
                 'Library',

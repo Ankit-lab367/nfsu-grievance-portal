@@ -20,7 +20,6 @@ export default function CreateComplaintPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const departments = [
-        'Academics',
         'Hostel',
         'IT',
         'Library',
@@ -31,7 +30,6 @@ export default function CreateComplaintPage() {
         'Others',
     ];
     const categories = {
-        Academics: ['Course Content', 'Faculty Issue', 'Exam Related', 'Timetable', 'Other'],
         Hostel: ['Room Facilities', 'Food Quality', 'Maintenance', 'Security', 'Other'],
         IT: ['Internet/Wi-Fi', 'Lab Equipment', 'Software Access', 'Server Issues', 'Other'],
         Library: ['Book Availability', 'Study Space', 'Timings', 'Staff Behavior', 'Other'],

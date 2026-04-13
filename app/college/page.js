@@ -24,14 +24,6 @@ const collegeCategories = [
         shadow: "shadow-red-900/40"
     },
     {
-        title: "Academic Related",
-        description: "Course structures, syllabus, and academic calendars.",
-        icon: FaGraduationCap,
-        color: "from-blue-600 to-cyan-700",
-        href: "/college/academic",
-        shadow: "shadow-blue-900/40"
-    },
-    {
         title: "Administrative Related",
         description: "Rules, regulations, departments, and administrative support.",
         icon: FaUserTie,
@@ -83,7 +75,7 @@ export default function CollegeHub() {
                             College Hub
                         </h1>
                         <p className="text-gray-400 text-lg max-w-2xl mx-auto font-medium">
-                            Explore every dimension of our institution. From academic excellence to vibrant events, find everything you need right here.
+                            Explore every dimension of our institution. From administrative support to vibrant events, find everything you need right here.
                         </p>
                     </motion.div>
                 </div>

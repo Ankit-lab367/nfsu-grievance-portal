@@ -76,7 +76,7 @@ export default function HomePage() {
     ];
 
     const departments = [
-        'Academics', 'Hostel', 'IT', 'Library',
+        'Hostel', 'IT', 'Library',
         'Admin', 'Finance', 'Exam', 'Security', 'Others'
     ];
 

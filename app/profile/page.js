@@ -46,21 +46,7 @@ export default function ProfilePage() {
         return `${y}th Year`;
     };
 
-    const getDaysUntilNextYear = () => {
-        const now = new Date();
-        let targetYear = now.getFullYear();
-        
-        // If it's August 1st or later, the next change is next year
-        if (now.getMonth() > 7 || (now.getMonth() === 7 && now.getDate() >= 1)) {
-            targetYear++;
-        }
-        
-        const target = new Date(`August 1, ${targetYear} 00:00:00`);
-        const diff = target.getTime() - now.getTime();
-        return Math.ceil(diff / (1000 * 60 * 60 * 24));
-    };
 
-    const daysLeft = getDaysUntilNextYear();
 
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
@@ -183,23 +169,7 @@ export default function ProfilePage() {
                                         <p className="font-semibold">{user.email}</p>
                                     </div>
                                 </div>
-                                {user.role === 'student' && (
-                                    <div className="bg-gradient-to-r from-red-600/10 to-rose-900/10 p-5 rounded-xl border border-red-500/20 md:col-span-2 flex items-center justify-between">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="w-12 h-12 rounded-full bg-red-600/20 flex items-center justify-center text-red-500">
-                                                <FaClock className="text-xl animate-pulse" />
-                                            </div>
-                                            <div>
-                                                <p className="text-xs text-rose-400 uppercase tracking-wider font-bold">Academic Year Progression</p>
-                                                <p className="text-sm text-gray-300">Automatic promotion to next year</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-2xl font-black text-white">{daysLeft}</p>
-                                            <p className="text-[10px] text-gray-400 uppercase font-bold">Days Left</p>
-                                        </div>
-                                    </div>
-                                )}
+
                             </div>
                         </div>
                     </div>

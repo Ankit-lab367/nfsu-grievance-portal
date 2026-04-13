@@ -28,17 +28,6 @@ const categoryData = {
             { label: "Recognition", value: "INIs" }
         ]
     },
-    academic: {
-        title: "Academic Related",
-        icon: FaGraduationCap,
-        color: "text-blue-500",
-        description: "Everything related to your degree, syllabus, and academic progression.",
-        stats: [
-            { label: "Courses", value: "50+" },
-            { label: "Departments", value: "12" },
-            { label: "Students", value: "5000+" }
-        ]
-    },
     administrative: {
         title: "Administrative Related",
         icon: FaUserTie,
@@ -76,7 +65,7 @@ const categoryData = {
         title: "Teachers Related",
         icon: FaChalkboardTeacher,
         color: "text-pink-500",
-        description: "Faculty portal, directory, and academic specializations.",
+        description: "Faculty portal, directory, and professional specializations.",
         stats: [
             { label: "Faculty", value: "200+" },
             { label: "PhDs", value: "85%" },
