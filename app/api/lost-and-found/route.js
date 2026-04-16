@@ -1,15 +1,8 @@
-export const dynamic = 'force-dynamic';
-
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
+import dbConnect from '@/lib/dbConnect';
 import LostAndFound from '@/models/LostAndFound';
 import jwt from 'jsonwebtoken';
 import { put } from '@vercel/blob';
-
-const connectDB = async () => {
-    if (mongoose.connections[0].readyState) return;
-    await mongoose.connect(process.env.MONGODB_URI);
-};
 
 function getUserFromToken(request) {
     const token = request.headers.get('authorization')?.split(' ')[1];
@@ -24,7 +17,7 @@ function getUserFromToken(request) {
 // GET all active lost & found items
 export async function GET(request) {
     try {
-        await connectDB();
+        await dbConnect();
         const user = getUserFromToken(request);
         if (!user) {
             return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -42,13 +35,16 @@ export async function GET(request) {
 // POST a new lost & found item
 export async function POST(request) {
     try {
-        await connectDB();
+        await dbConnect();
         const user = getUserFromToken(request);
         if (!user) {
+            console.error('POST /api/lost-and-found: Unauthorized access attempt');
             return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
         }
         const body = await request.json();
         const { subject, description, type, location, image } = body;
+
+        console.log(`POST /api/lost-and-found: Creating ${type} item: ${subject}`);
 
         if (!subject || !description || !type || !location) {
             return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
@@ -59,19 +55,34 @@ export async function POST(request) {
 
         let imageUrl = null;
         if (image) {
-            const match = image.match(/^data:image\/(\w+);base64,(.+)$/);
-            if (match) {
-                const ext = match[1];
-                const base64Data = match[2];
-                const buffer = Buffer.from(base64Data, 'base64');
-                const filename = `lost-found-${Date.now()}.${ext}`;
-                const { url } = await put(filename, buffer, {
-                    access: 'public',
-                    contentType: `image/${ext}`
-                });
-                imageUrl = url;
-            } else if (image.startsWith('http')) {
-                 imageUrl = image;
+            try {
+                if (image.startsWith('data:image')) {
+                    const match = image.match(/^data:image\/(\w+);base64,(.+)$/);
+                    if (match) {
+                        const ext = match[1];
+                        const base64Data = match[2];
+                        const buffer = Buffer.from(base64Data, 'base64');
+                        const filename = `lost-found-${Date.now()}.${ext}`;
+                        
+                        // Check if BLOB_READ_WRITE_TOKEN is available
+                        if (process.env.BLOB_READ_WRITE_TOKEN) {
+                            const { url } = await put(filename, buffer, {
+                                access: 'public',
+                                contentType: `image/${ext}`
+                            });
+                            imageUrl = url;
+                        } else {
+                            console.warn('Vercel Blob token is missing. Falling back to base64 storage.');
+                            imageUrl = image; // Fallback to base64 if no token
+                        }
+                    }
+                } else if (image.startsWith('http')) {
+                    imageUrl = image;
+                }
+            } catch (imageError) {
+                console.error('Error uploading image to Vercel Blob:', imageError);
+                console.warn('Falling back to direct image storage (base64) due to upload error.');
+                imageUrl = image; // Safe fallback so the request doesn't crash
             }
         }
 
@@ -81,13 +92,14 @@ export async function POST(request) {
             type,
             location,
             image: imageUrl,
-            uploaderId: user.email || user.id,
+            uploaderId: user.email || user.id || 'anonymous_user',
             uploaderName: user.name || 'Anonymous'
         });
 
+        console.log(`POST /api/lost-and-found: Successfully stored item ${newItem._id}`);
         return NextResponse.json({ success: true, item: newItem }, { status: 201 });
     } catch (error) {
-        console.error('Error creating lost & found item:', error);
-        return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
+        console.error('CRITICAL: Error creating lost & found item:', error);
+        return NextResponse.json({ success: false, message: error.message || 'Internal Server Error' }, { status: 500 });
     }
 }

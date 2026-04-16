@@ -50,9 +50,7 @@ export default function LoginPage() {
         e.preventDefault();
         setError('');
 
-        const emailLower = formData.email.toLowerCase();
-        if (!emailLower.endsWith('@gmail.com')) {
-        }
+
 
         setLoading(true);
 

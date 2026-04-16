@@ -15,19 +15,40 @@ export async function POST(request) {
         }
 
         // 1. Task: Server-to-server verification with ForenSync
-        // Header: x-sso-secret
         const ssoSecret = process.env.SSO_SHARED_SECRET;
-        const response = await axios.post('https://forensync-backend.onrender.com/api/sso/verify-code', 
-            { code }, 
-            { 
-                headers: { 
-                    'x-sso-secret': ssoSecret,
-                    'Content-Type': 'application/json'
-                } 
-            }
-        );
+        
+        if (!ssoSecret) {
+            console.error('SSO_SHARED_SECRET is not configured in environment variables');
+            return NextResponse.json({ error: 'Internal Server Error: SSO configuration missing' }, { status: 500 });
+        }
 
-        if (!response.data || !response.data.success) {
+        let response;
+        try {
+            response = await axios.post('https://forensync-backend.onrender.com/api/sso/verify-code', 
+                { code }, 
+                { 
+                    headers: { 
+                        'x-sso-secret': ssoSecret,
+                        'Content-Type': 'application/json'
+                    } 
+                }
+            );
+        } catch (axiosError) {
+            console.error('ForenSync Verification Error Response:', {
+                status: axiosError.response?.status,
+                data: axiosError.response?.data,
+                message: axiosError.message
+            });
+            
+            return NextResponse.json({ 
+                error: 'SSO Verification Failed',
+                details: axiosError.response?.data?.error || axiosError.message 
+            }, { status: axiosError.response?.status || 500 });
+        }
+
+        // Check for email in response instead of success
+        if (!response.data || !response.data.email) {
+            console.error('ForenSync returned invalid data format:', response.data);
             return NextResponse.json({ error: 'Invalid or expired SSO code' }, { status: 401 });
         }
 
@@ -71,10 +92,10 @@ export async function POST(request) {
         }, { status: 200 });
 
     } catch (error) {
-        console.error('SSO Verification Error:', error.message);
+        console.error('Unexpected SSO error:', error.message);
         return NextResponse.json({ 
             error: 'SSO Verification Failed',
-            details: error.response?.data?.error || error.message 
+            details: error.message 
         }, { status: 500 });
     }
 }

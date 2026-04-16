@@ -43,12 +43,7 @@ export async function POST(request) {
                 { status: 401 }
             );
         }
-        if (user.role === 'student' && !email.toLowerCase().endsWith('@gmail.com')) {
-            return NextResponse.json(
-                { error: 'Student access is restricted to official emails (@gmail.com) only.' },
-                { status: 403 }
-            );
-        }
+
         const dbTime = Date.now() - dbStart;
         if (!user.isActive) {
             return NextResponse.json(

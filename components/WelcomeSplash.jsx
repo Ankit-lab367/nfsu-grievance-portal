@@ -214,9 +214,10 @@ export default function WelcomeSplash({ user, show, onDone }) {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.2 }}
                         transition={{ delay: 1.1 }}
+                        className="px-6 text-center"
                         style={{
                             position: 'absolute', bottom: 28,
-                            color: 'white', fontSize: 10, letterSpacing: 5,
+                            color: 'white', fontSize: 'min(10px, 3vw)', letterSpacing: 5,
                             textTransform: 'uppercase', fontWeight: 700,
                         }}
                     >

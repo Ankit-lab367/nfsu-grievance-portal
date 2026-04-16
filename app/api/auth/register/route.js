@@ -110,19 +110,9 @@ export async function POST(request) {
         }
         const userRole = role || 'student';
 
-        if (userRole === 'student' && !emailLower.endsWith('@gmail.com')) {
-            return NextResponse.json(
-                { error: 'Students must use a valid Gmail address (@gmail.com) to register.' },
-                { status: 400 }
-            );
-        }
+
         
-        if ((userRole === 'teacher' || userRole === 'staff') && !emailLower.endsWith('@gmail.com')) {
-            return NextResponse.json(
-                { error: 'Teachers and Staff must use a valid Gmail address (@gmail.com) to register.' },
-                { status: 400 }
-            );
-        }
+
         if (userRole === 'student' && !enrollmentNumber) {
             return NextResponse.json(
                 { error: 'Enrollment number is required for students' },

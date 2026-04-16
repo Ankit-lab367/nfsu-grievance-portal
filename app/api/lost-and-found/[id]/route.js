@@ -1,13 +1,7 @@
-export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
+import dbConnect from '@/lib/dbConnect';
 import LostAndFound from '@/models/LostAndFound';
 import jwt from 'jsonwebtoken';
-
-const connectDB = async () => {
-    if (mongoose.connections[0].readyState) return;
-    await mongoose.connect(process.env.MONGODB_URI);
-};
 
 function getUserFromToken(request) {
     const token = request.headers.get('authorization')?.split(' ')[1];
@@ -22,7 +16,7 @@ function getUserFromToken(request) {
 // GET single item by ID
 export async function GET(request, { params }) {
     try {
-        await connectDB();
+        await dbConnect();
         const user = getUserFromToken(request);
         if (!user) {
             return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -41,7 +35,7 @@ export async function GET(request, { params }) {
 // PATCH — mark item as resolved
 export async function PATCH(request, { params }) {
     try {
-        await connectDB();
+        await dbConnect();
         const user = getUserFromToken(request);
         if (!user) {
             return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });

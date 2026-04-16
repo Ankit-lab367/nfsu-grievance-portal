@@ -64,10 +64,7 @@ export default function RegisterPage() {
             setError('Please enter your email address first.');
             return;
         }
-        if (!formData.email.toLowerCase().endsWith('@gmail.com')) {
-            setError('Students must use a valid Gmail address (@gmail.com).');
-            return;
-        }
+
 
         setOtpLoading(true);
         setError('');
@@ -106,10 +103,7 @@ export default function RegisterPage() {
             setError('Password must be at least 6 characters');
             return;
         }
-        if (!formData.email.toLowerCase().endsWith('@gmail.com')) {
-            setError('Students must use a valid Gmail address (@gmail.com) to register.');
-            return;
-        }
+
         if (!formData.phone || formData.phone.length !== 10) {
             setError('Phone number must be exactly 10 digits');
             return;
@@ -203,7 +197,7 @@ export default function RegisterPage() {
                                         onChange={handleChange}
                                         required
                                         className="w-full pl-12 pr-4 py-3 bg-white/5 dark:bg-white/5 border border-white/10 rounded-xl dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all font-medium"
-                                        placeholder="yourname@gmail.com"
+                                        placeholder="yourname@example.com"
                                     />
                                     <button
                                         type="button"

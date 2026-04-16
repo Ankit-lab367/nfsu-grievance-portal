@@ -199,8 +199,8 @@ export default function HomePage() {
                         transition={{ duration: 0.8 }}
                         className="text-center max-w-6xl mx-auto"
                     >
-                        <div className="mb-2 py-6">
-                            <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold font-serif whitespace-nowrap">
+                        <div className="mb-2 py-6 px-4">
+                            <h2 className="text-xl sm:text-5xl md:text-6xl font-bold font-serif leading-tight">
                                 <motion.span
                                     className="bg-[length:200%_auto] bg-gradient-to-r from-red-600 via-white to-rose-400 dark:from-red-400 dark:via-white dark:to-rose-300 text-transparent bg-clip-text"
                                     animate={{

@@ -15,10 +15,7 @@ export async function POST(request) {
 
         const emailLower = email.toLowerCase();
 
-        // Re-apply domain restrictions to prevent spam
-        if (!emailLower.endsWith('@gmail.com')) {
-            return NextResponse.json({ error: 'Only Gmail addresses (@gmail.com) are allowed to register.' }, { status: 400 });
-        }
+
 
         // Generate 6-digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();

@@ -49,10 +49,7 @@ export default function TeacherRegisterPage() {
             setError('Please enter your email address first.');
             return;
         }
-        if (!formData.email.toLowerCase().endsWith('@gmail.com')) {
-            setError('Teachers must use a valid Gmail address (@gmail.com).');
-            return;
-        }
+
 
         setOtpLoading(true);
         setError('');
@@ -91,10 +88,7 @@ export default function TeacherRegisterPage() {
             setError('Password must be at least 6 characters');
             return;
         }
-        if (!formData.email.toLowerCase().endsWith('@gmail.com')) {
-            setError('Teachers must use a valid Gmail address (@gmail.com) to register.');
-            return;
-        }
+
         if (!otp) {
             setError('Please enter the verification code sent to your email.');
             return;
@@ -194,7 +188,7 @@ export default function TeacherRegisterPage() {
                                         onChange={handleChange}
                                         required
                                         className="w-full pl-12 pr-4 py-3 bg-slate-900/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all font-medium"
-                                        placeholder="yourname@gmail.com"
+                                        placeholder="yourname@example.com"
                                     />
                                     <button
                                         type="button"
