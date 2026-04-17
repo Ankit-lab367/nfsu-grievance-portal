@@ -102,7 +102,7 @@ export default function Navbar() {
             if (response.data.success && response.data.code) {
                 const ssoCode = response.data.code;
                 // Task 2: Redirect to ForenSync's catch page
-                window.location.href = `https://www.forensync.me/sso-login?code=${ssoCode}`;
+                window.location.href = `https://www.forensync.me/sso-verify?code=${ssoCode}`;
             } else {
                 throw new Error('Failed to generate SSO ticket');
             }
