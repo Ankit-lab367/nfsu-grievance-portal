@@ -59,7 +59,7 @@ export async function POST(request) {
         
         const courseMap = {
             'bsc-msc-forensic': 'B.Sc-M.Sc Forensic Science',
-            'btech-mtech-cse': 'B.Tech-M.Tech Cyber Security',
+            'btech-mtech-cybersecurity': 'B.Tech-M.Tech Cyber Security',
             'msc-forensic': 'M.Sc Forensic Science',
             'msc-cyber': 'M.Sc Cyber Security',
             'mba-cyber': 'MBA Cyber Security',
