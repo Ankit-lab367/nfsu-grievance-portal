@@ -78,4 +78,43 @@ export async function PUT(request) {
             { status: 500 }
         );
     }
+}
+
+export async function PATCH(request) {
+    try {
+        await dbConnect();
+        const token = extractToken(request.headers.get('authorization'));
+        if (!token) {
+            return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+        }
+        const decoded = verifyToken(token);
+        if (!decoded) {
+            return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+        }
+        
+        const body = await request.json();
+        const { phone } = body;
+        
+        if (!phone) {
+            return NextResponse.json({ error: 'Phone number is required' }, { status: 400 });
+        }
+        
+        const user = await User.findByIdAndUpdate(
+            decoded.id,
+            { $set: { phone } },
+            { new: true }
+        ).select('-password');
+        
+        return NextResponse.json({
+            success: true,
+            message: 'Phone number updated successfully',
+            user
+        });
+    } catch (error) {
+        console.error('Profile phone update error:', error);
+        return NextResponse.json(
+            { error: error.message || 'Failed to update phone number' },
+            { status: 500 }
+        );
+    }
 }
