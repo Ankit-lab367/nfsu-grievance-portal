@@ -370,16 +370,12 @@ export default function HomePage() {
                                     alignItems: 'stretch', 
                                     marginBottom: 24, 
                                     overflowX: 'auto',
-                                    paddingLeft: '10px',
-                                    paddingRight: '10px',
-                                    scrollbarWidth: 'none', /* Firefox */
-                                    msOverflowStyle: 'none',  /* IE and Edge */
+                                    paddingLeft: '16px',
+                                    paddingRight: '16px',
+                                    paddingBottom: '12px',
+                                    width: '100%',
+                                    WebkitOverflowScrolling: 'touch',
                                 }}>
-                                    <style dangerouslySetInnerHTML={{ __html: `
-                                        div::-webkit-scrollbar {
-                                            display: none;
-                                        }
-                                    `}} />
 
                                     {/* Ankit Card */}
                                     {[
@@ -415,8 +411,8 @@ export default function HomePage() {
                                         },
                                     ].map((dev) => (
                                         <div key={dev.name} style={{
-                                            flex: '1 1 auto',
-                                            minWidth: 160,
+                                            flex: '0 0 auto',
+                                            width: 170,
                                             background: 'rgba(255,255,255,0.03)',
                                             border: '1px solid rgba(255,255,255,0.07)',
                                             borderRadius: 18,
