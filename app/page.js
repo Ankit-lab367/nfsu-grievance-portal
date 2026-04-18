@@ -19,6 +19,7 @@ export default function HomePage() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [transitioning, setTransitioning] = useState(false);
     const [ripple, setRipple] = useState({ x: 0, y: 0 });
+    const [showAboutDev, setShowAboutDev] = useState(false);
     const btnRef = useRef(null);
 
     const handleLoginClick = (e) => {
@@ -241,6 +242,13 @@ export default function HomePage() {
                                 Track Complaint
                             </Link>
                         </div>
+                        <button
+                            id="about-developer-btn"
+                            onClick={() => setShowAboutDev(true)}
+                            className="mt-5 text-sm text-gray-500 hover:text-gray-300 transition-colors duration-300 underline underline-offset-4 decoration-dotted cursor-pointer tracking-wide"
+                        >
+                            About Developers
+                        </button>
                     </motion.div>
                 </section>
 
@@ -310,6 +318,190 @@ export default function HomePage() {
                         </div>
                     </div>
                 </footer>
+
+                {/* About Developer Modal */}
+                <AnimatePresence>
+                    {showAboutDev && (
+                        <motion.div
+                            key="about-dev-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.25 }}
+                            className="fixed inset-0 z-[9999] flex items-center justify-center"
+                            style={{ backdropFilter: 'blur(12px)', background: 'rgba(0,0,0,0.65)' }}
+                            onClick={() => setShowAboutDev(false)}
+                        >
+                            <motion.div
+                                key="about-dev-card"
+                                initial={{ opacity: 0, scale: 0.85, y: 30 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.85, y: 30 }}
+                                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                onClick={e => e.stopPropagation()}
+                                style={{
+                                    background: 'linear-gradient(135deg, rgba(20,5,5,0.95) 0%, rgba(30,10,10,0.97) 100%)',
+                                    border: '1px solid rgba(255,255,255,0.08)',
+                                    borderRadius: 24,
+                                    padding: '36px 28px 32px',
+                                    maxWidth: 1000,
+                                    width: '95%',
+                                    textAlign: 'center',
+                                    boxShadow: '0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(220,38,38,0.15)',
+                                }}
+                            >
+                                {/* Heading */}
+                                <h3 style={{ color: 'white', fontWeight: 800, fontSize: 20, marginBottom: 6, letterSpacing: '-0.3px' }}>
+                                    About Developers
+                                </h3>
+                                <div style={{
+                                    width: 40, height: 2,
+                                    background: 'linear-gradient(to right, transparent, #e11d48, transparent)',
+                                    margin: '0 auto 28px', borderRadius: 2
+                                }} />
+
+                                {/* Developer cards — single horizontal row */}
+                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', gap: 14, justifyContent: 'center', alignItems: 'stretch', marginBottom: 24, overflowX: 'auto' }}>
+
+                                    {/* Ankit Card */}
+                                    {[
+                                        {
+                                            img: '/ankit-profile.png',
+                                            name: 'Ankit',
+                                            role: 'Developer & Creator',
+                                            linkedin: 'https://www.linkedin.com/in/ankit-153533391?utm_source=share_via&utm_content=profile&utm_medium=member_android',
+                                        },
+                                        {
+                                            img: '/om-profile.png',
+                                            name: 'Om Prakash',
+                                            role: 'Developer & Creator',
+                                            linkedin: 'https://www.linkedin.com/in/om-prakash-3286a8389?utm_source=share_via&utm_content=profile&utm_medium=member_android',
+                                        },
+                                        {
+                                            img: '/raju-profile.png',
+                                            name: 'Raju Ranjan',
+                                            role: 'Developer & Creator',
+                                            linkedin: 'https://www.linkedin.com/in/raju-ranjan-925233391',
+                                        },
+                                        {
+                                            img: '/sidhant-profile.png',
+                                            name: 'Sidhant Singh Gaur',
+                                            role: 'Developer & Creator',
+                                            linkedin: 'https://www.linkedin.com/in/sidhant-singh-gaur-688396207?utm_source=share_via&utm_content=profile&utm_medium=member_android',
+                                        },
+                                        {
+                                            img: '/rajat-profile.png',
+                                            name: 'Rajat P',
+                                            role: 'Developer & Creator',
+                                            linkedin: 'https://www.linkedin.com/in/rajat-p-b63b64378?utm_source=share_via&utm_content=profile&utm_medium=member_android',
+                                        },
+                                    ].map((dev) => (
+                                        <div key={dev.name} style={{
+                                            flex: '1 1 auto',
+                                            minWidth: 160,
+                                            background: 'rgba(255,255,255,0.03)',
+                                            border: '1px solid rgba(255,255,255,0.07)',
+                                            borderRadius: 18,
+                                            padding: '20px 14px 18px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                        }}>
+                                            {/* Photo */}
+                                            <div style={{
+                                                width: 80, height: 80,
+                                                borderRadius: '50%',
+                                                padding: 3,
+                                                background: 'linear-gradient(135deg, #dc2626, #9f1239)',
+                                                boxShadow: '0 0 20px rgba(220,38,38,0.4)',
+                                                marginBottom: 12,
+                                                flexShrink: 0,
+                                            }}>
+                                                <img
+                                                    src={dev.img}
+                                                    alt={dev.name}
+                                                    style={{
+                                                        width: '100%', height: '100%',
+                                                        borderRadius: '50%',
+                                                        objectFit: 'cover',
+                                                        objectPosition: 'center top',
+                                                        display: 'block',
+                                                    }}
+                                                />
+                                            </div>
+                                            {/* Name */}
+                                            <p style={{ 
+                                                color: 'white', 
+                                                fontWeight: 800, 
+                                                fontSize: 15, 
+                                                marginBottom: 3,
+                                                whiteSpace: 'nowrap',
+                                                width: '100%',
+                                                textAlign: 'center'
+                                            }}>
+                                                {dev.name}
+                                            </p>
+                                            {/* Role */}
+                                            <p style={{ color: '#6b7280', fontSize: 11, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 16 }}>
+                                                {dev.role}
+                                            </p>
+                                            {/* LinkedIn */}
+                                            <a
+                                                href={dev.linkedin}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                                                    padding: '8px 18px',
+                                                    background: 'linear-gradient(135deg, #0077b5, #005983)',
+                                                    color: 'white', textDecoration: 'none',
+                                                    borderRadius: 10, fontWeight: 700, fontSize: 13,
+                                                    boxShadow: '0 4px 16px rgba(0,119,181,0.35)',
+                                                    transition: 'transform 0.2s, box-shadow 0.2s',
+                                                }}
+                                                onMouseEnter={e => {
+                                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,119,181,0.55)';
+                                                }}
+                                                onMouseLeave={e => {
+                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,119,181,0.35)';
+                                                }}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                                </svg>
+                                                LinkedIn
+                                            </a>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Close */}
+                                <button
+                                    onClick={() => setShowAboutDev(false)}
+                                    style={{
+                                        background: 'transparent',
+                                        color: '#6b7280', border: '1px solid rgba(255,255,255,0.1)',
+                                        borderRadius: 10, padding: '7px 28px',
+                                        fontWeight: 500, fontSize: 13, cursor: 'pointer',
+                                        transition: 'color 0.2s, border-color 0.2s',
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.color = '#d1d5db';
+                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.color = '#6b7280';
+                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                                    }}
+                                >
+                                    Close
+                                </button>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );
