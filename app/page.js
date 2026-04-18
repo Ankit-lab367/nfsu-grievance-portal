@@ -361,7 +361,25 @@ export default function HomePage() {
                                 }} />
 
                                 {/* Developer cards — single horizontal row */}
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', gap: 14, justifyContent: 'center', alignItems: 'stretch', marginBottom: 24, overflowX: 'auto' }}>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    flexDirection: 'row', 
+                                    flexWrap: 'nowrap', 
+                                    gap: 14, 
+                                    justifyContent: 'flex-start', 
+                                    alignItems: 'stretch', 
+                                    marginBottom: 24, 
+                                    overflowX: 'auto',
+                                    paddingLeft: '10px',
+                                    paddingRight: '10px',
+                                    scrollbarWidth: 'none', /* Firefox */
+                                    msOverflowStyle: 'none',  /* IE and Edge */
+                                }}>
+                                    <style dangerouslySetInnerHTML={{ __html: `
+                                        div::-webkit-scrollbar {
+                                            display: none;
+                                        }
+                                    `}} />
 
                                     {/* Ankit Card */}
                                     {[
