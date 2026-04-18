@@ -160,23 +160,23 @@ export default function HomePage() {
                 <nav className="bg-black/20 backdrop-blur-lg border-b border-white/10 sticky top-0 z-50 transition-colors duration-500">
                     <div className="container mx-auto px-6 py-4">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-2 sm:space-x-3">
                                 <img
                                     src="/logo.png"
                                     alt="NFSU Logo"
-                                    className="w-12 h-12 object-contain"
+                                    className="w-9 h-9 sm:w-12 sm:h-12 object-contain flex-shrink-0"
                                 />
-                                <div>
-                                    <h1 className="text-white font-bold text-xl">NFSU</h1>
-                                    <p className="text-gray-400 text-xs">Grievance Portal</p>
+                                <div className="flex flex-col">
+                                    <h1 className="text-white font-bold text-base sm:text-xl whitespace-nowrap">NFSU Portal</h1>
+                                    <p className="text-gray-400 text-[9px] sm:text-xs whitespace-nowrap">Grievance System</p>
                                 </div>
                             </div>
-                            <div className="flex space-x-4">
+                            <div className="flex items-center space-x-2 sm:space-x-4">
                                 <button
                                     id="navbar-login-btn"
                                     ref={btnRef}
                                     onClick={handleLoginClick}
-                                    className="px-6 py-2 text-gray-300 hover:text-white transition-colors font-semibold relative overflow-hidden group"
+                                    className="px-3 sm:px-6 py-2 text-gray-300 hover:text-white transition-colors font-semibold text-sm sm:text-base relative overflow-hidden group"
                                 >
                                     <span className="relative z-10">Login</span>
                                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-red-500 to-rose-700 group-hover:w-full transition-all duration-500 rounded-full" />
@@ -184,7 +184,7 @@ export default function HomePage() {
                                 <Link
                                     id="navbar-register-btn"
                                     href="/register-selection"
-                                    className="px-6 py-2 bg-gradient-to-r from-red-600 to-rose-800 text-white rounded-lg hover:shadow-lg hover:shadow-red-600/50 transition-all font-medium"
+                                    className="px-3 sm:px-6 py-2 bg-gradient-to-r from-red-600 to-rose-800 text-white rounded-lg hover:shadow-lg hover:shadow-red-600/50 transition-all font-medium text-sm sm:text-base whitespace-nowrap"
                                 >
                                     Register
                                 </Link>

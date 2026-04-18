@@ -268,15 +268,15 @@ export default function Navbar() {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
                         {}
-                        <Link href="/" className="flex items-center space-x-3">
+                        <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
                             <img
                                 src="/logo.png"
                                 alt="NFSU Logo"
-                                className="w-10 h-10 object-contain"
+                                className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
                             />
-                            <div>
-                                <h1 className="text-white font-bold text-lg leading-tight uppercase tracking-wider">NFSU Portal</h1>
-                                <p className="text-gray-400 text-[10px] uppercase tracking-widest font-bold">Grievance System</p>
+                            <div className="flex flex-col">
+                                <h1 className="text-white font-bold text-sm sm:text-lg leading-tight uppercase tracking-wider truncate max-w-[120px] sm:max-w-none">NFSU Portal</h1>
+                                <p className="text-gray-400 text-[8px] sm:text-[10px] uppercase tracking-widest font-bold">Grievance System</p>
                             </div>
                         </Link>
                         {}
@@ -381,61 +381,63 @@ export default function Navbar() {
                             {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
                         </button>
                         {/* Desktop & Mobile Top Right Buttons */}
-                        {}
-                        <div className="relative group">
-                            <motion.button
-                                initial={{ opacity: 0, x: 20 }}
-                                whileHover={{ scale: 1.05, y: -2 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={handleForenSyncJump}
-                                animate={{ 
-                                    opacity: 1,
-                                    x: 0,
-                                    boxShadow: darkMode 
-                                        ? ["0 0 5px rgba(225,29,72,0.1)", "0 0 20px rgba(225,29,72,0.4)", "0 0 5px rgba(225,29,72,0.1)"]
-                                        : ["0 0 5px rgba(220,38,38,0.05)", "0 0 15px rgba(220,38,38,0.3)", "0 0 5px rgba(220,38,38,0.05)"]
-                                }}
-                                transition={{ 
-                                    boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-                                    opacity: { duration: 0.5 },
-                                    x: { duration: 0.5 }
-                                }}
-                                className="flex items-center space-x-2 px-3 md:px-4 py-1.5 rounded-lg bg-white/5 dark:bg-black/40 border border-red-500/30 text-white transition-all backdrop-blur-xl shadow-lg z-50 group"
-                            >
-                                <div className="relative">
-                                    <FaBolt className="text-red-500 text-sm group-hover:rotate-12 transition-transform" />
-                                    <motion.div 
-                                        animate={{ opacity: [0.3, 1, 0.3] }}
-                                        transition={{ duration: 1.5, repeat: Infinity }}
-                                        className="absolute inset-0 bg-red-400 blur-[4px] rounded-full"
-                                    />
-                                </div>
-                                <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-white">
-                                    ForenSync
-                                </span>
-                            </motion.button>
-                            
-                            {/* Tooltip */}
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-[100] w-max">
-                                <div className="bg-slate-900 border border-white/10 text-white text-[10px] font-bold py-1.5 px-3 rounded-md shadow-2xl uppercase tracking-widest whitespace-nowrap">
-                                    for better exam practice go here
-                                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 border-l border-t border-white/10 rotate-45" />
+                        {/* Desktop Only Buttons - Hidden on Mobile */}
+                        <div className="hidden lg:flex items-center space-x-4">
+                            <div className="relative group">
+                                <motion.button
+                                    initial={{ opacity: 0, x: 20 }}
+                                    whileHover={{ scale: 1.05, y: -2 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={handleForenSyncJump}
+                                    animate={{ 
+                                        opacity: 1,
+                                        x: 0,
+                                        boxShadow: darkMode 
+                                            ? ["0 0 5px rgba(225,29,72,0.1)", "0 0 20px rgba(225,29,72,0.4)", "0 0 5px rgba(225,29,72,0.1)"]
+                                            : ["0 0 5px rgba(220,38,38,0.05)", "0 0 15px rgba(220,38,38,0.3)", "0 0 5px rgba(220,38,38,0.05)"]
+                                    }}
+                                    transition={{ 
+                                        boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                                        opacity: { duration: 0.5 },
+                                        x: { duration: 0.5 }
+                                    }}
+                                    className="flex items-center space-x-2 px-4 py-1.5 rounded-lg bg-white/5 dark:bg-black/40 border border-red-500/30 text-white transition-all backdrop-blur-xl shadow-lg z-50 group"
+                                >
+                                    <div className="relative">
+                                        <FaBolt className="text-red-500 text-sm group-hover:rotate-12 transition-transform" />
+                                        <motion.div 
+                                            animate={{ opacity: [0.3, 1, 0.3] }}
+                                            transition={{ duration: 1.5, repeat: Infinity }}
+                                            className="absolute inset-0 bg-red-400 blur-[4px] rounded-full"
+                                        />
+                                    </div>
+                                    <span className="text-xs font-black uppercase tracking-[0.2em] text-white">
+                                        ForenSync
+                                    </span>
+                                </motion.button>
+                                
+                                {/* Tooltip */}
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-[100] w-max">
+                                    <div className="bg-slate-900 border border-white/10 text-white text-[10px] font-bold py-1.5 px-3 rounded-md shadow-2xl uppercase tracking-widest whitespace-nowrap">
+                                        for better exam practice go here
+                                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 border-l border-t border-white/10 rotate-45" />
+                                    </div>
                                 </div>
                             </div>
+                            <button
+                                onClick={toggleDarkMode}
+                                className="p-2 text-gray-300 hover:text-white transition-colors"
+                            >
+                                {darkMode ? <FaSun /> : <FaMoon />}
+                            </button>
+                            {/* Notifications */}
+                            <Link href="/notifications" className="relative p-2 text-gray-300 hover:text-white transition-all hover:scale-110">
+                                <FaBell />
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                                )}
+                            </Link>
                         </div>
-                        <button
-                            onClick={toggleDarkMode}
-                            className="p-2 text-gray-300 hover:text-white transition-colors"
-                        >
-                            {darkMode ? <FaSun /> : <FaMoon />}
-                        </button>
-                        {/* Notifications */}
-                        <Link href="/notifications" className="relative p-2 text-gray-300 hover:text-white transition-all hover:scale-110">
-                            <FaBell />
-                            {unreadCount > 0 && (
-                                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                            )}
-                        </Link>
                         {}
                         {user && (
                             <div className="relative">
@@ -540,6 +542,40 @@ export default function Navbar() {
                                 </Link>
                                 <Link href="/emergency-contacts" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
                                     <FaPhone className="text-sm" /><span>Emergency Contacts</span>
+                                </Link>
+                                <button
+                                    onClick={() => {
+                                        handleForenSyncJump();
+                                        setIsMobileMenuOpen(false);
+                                    }}
+                                    className="w-full flex items-center space-x-3 text-gray-300 hover:text-red-400"
+                                >
+                                    <FaBolt className="text-red-500 text-sm" /><span>Go to ForenSync</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        toggleDarkMode();
+                                        setIsMobileMenuOpen(false);
+                                    }}
+                                    className="w-full flex items-center space-x-3 text-gray-300 hover:text-white"
+                                >
+                                    {darkMode ? <FaSun className="text-orange-400 text-sm" /> : <FaMoon className="text-blue-400 text-sm" />}
+                                    <span>{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                                </button>
+                                <Link
+                                    href="/notifications"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="flex items-center justify-between text-gray-300 hover:text-white"
+                                >
+                                    <div className="flex items-center space-x-3">
+                                        <FaBell className="text-sm text-yellow-500" />
+                                        <span>Notifications</span>
+                                    </div>
+                                    {unreadCount > 0 && (
+                                        <span className="flex items-center justify-center min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full px-1">
+                                            {unreadCount}
+                                        </span>
+                                    )}
                                 </Link>
                             </div>
                         </div>
