@@ -212,13 +212,14 @@ export default function WelcomeSplash({ user, show, onDone }) {
                     {}
                     <motion.p
                         initial={{ opacity: 0 }}
-                        animate={{ opacity: 0.2 }}
+                        animate={{ opacity: 0.6 }}
                         transition={{ delay: 1.1 }}
                         className="px-6 text-center"
                         style={{
-                            position: 'absolute', bottom: 28,
-                            color: 'white', fontSize: 'min(10px, 3vw)', letterSpacing: 5,
+                            position: 'absolute', bottom: 28, left: 0, width: '100%',
+                            color: 'white', fontSize: 'min(10px, 3vw)', letterSpacing: 1,
                             textTransform: 'uppercase', fontWeight: 700,
+                            whiteSpace: 'normal',
                         }}
                     >
                         National Forensic Sciences University
