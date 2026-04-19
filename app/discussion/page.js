@@ -10,47 +10,65 @@ export default function DiscussionPage() {
     const [user, setUser] = useState(null);
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState([]);
-    const messagesEndRef = useRef(null);
     const [messagesLoaded, setMessagesLoaded] = useState(false);
+    const messagesEndRef = useRef(null);
+    const pollingInterval = useRef(null);
+
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
-    useEffect(() => {
-        const fetchMessages = async (currentUser) => {
-            try {
-                const token = localStorage.getItem('token');
-                const roleType = currentUser.role === 'student' ? 'student' : 'admin';
-                const res = await fetch(`/api/discussion?type=${roleType}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                    cache: 'no-store'
-                });
-                const data = await res.json();
-                if (data.success) {
-                    const welcomeMsg = {
-                        id: 'welcome_msg',
-                        sender: 'NFSU Bot',
-                        text: `Welcome to the ${currentUser.role === 'student' ? 'Student' : 'Staff'} Discussion Forum! Feel free to share your thoughts.`,
-                        role: 'other',
-                        time: 'System',
-                        isSystem: true
-                    };
-                    const formatted = data.messages.map(m => ({
-                        id: m._id,
-                        sender: m.senderName,
-                        avatar: m.senderAvatar,
-                        text: m.text,
-                        role: m.senderEmail === currentUser.email ? 'self' : 'other',
-                        time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    }));
-                    setMessages([welcomeMsg, ...formatted]);
-                }
-            } catch (err) {
-                console.error("Failed to load messages", err);
-            } finally {
-                setMessagesLoaded(true);
-            }
-        };
 
+    const fetchMessages = async (currentUser, silent = false) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            
+            const roleType = currentUser.role === 'student' ? 'student' : 'admin';
+            const res = await fetch(`/api/discussion?type=${roleType}`, {
+                headers: { Authorization: `Bearer ${token}` },
+                cache: 'no-store'
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                const welcomeMsg = {
+                    id: 'welcome_msg',
+                    sender: 'NFSU Bot',
+                    text: `Welcome to the ${currentUser.role === 'student' ? 'Student' : 'Staff'} Discussion Forum! Feel free to share your thoughts.`,
+                    role: 'other',
+                    time: 'System',
+                    isSystem: true
+                };
+
+                const formatted = data.messages.map(m => ({
+                    id: m._id,
+                    sender: m.senderName,
+                    avatar: m.senderAvatar,
+                    text: m.text,
+                    senderEmail: m.senderEmail,
+                    role: m.senderEmail === currentUser.email ? 'self' : 'other',
+                    time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                }));
+
+                const newMessages = [welcomeMsg, ...formatted];
+                
+                setMessages(prev => {
+                    // Only update if there are new messages or changes
+                    if (prev.length === newMessages.length && 
+                        prev[prev.length - 1]?.id === newMessages[newMessages.length - 1]?.id) {
+                        return prev;
+                    }
+                    return newMessages;
+                });
+            }
+        } catch (err) {
+            if (!silent) console.error("Failed to load messages", err);
+        } finally {
+            if (!silent) setMessagesLoaded(true);
+        }
+    };
+
+    useEffect(() => {
         const userData = localStorage.getItem('user');
         if (!userData) {
             router.push('/login');
@@ -58,7 +76,20 @@ export default function DiscussionPage() {
         }
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
+
+        // Initial fetch
         fetchMessages(parsedUser);
+
+        // Setup polling every 3 seconds
+        pollingInterval.current = setInterval(() => {
+            fetchMessages(parsedUser, true);
+        }, 3000);
+
+        return () => {
+            if (pollingInterval.current) {
+                clearInterval(pollingInterval.current);
+            }
+        };
     }, [router]);
 
     useEffect(() => {
@@ -99,7 +130,10 @@ export default function DiscussionPage() {
                 })
             });
             const data = await res.json();
-            if (!data.success) {
+            if (data.success) {
+                // Instantly fetch to sync with DB state (optional but good for consistency)
+                fetchMessages(user, true);
+            } else {
                 console.error(data.message);
             }
         } catch (err) {
