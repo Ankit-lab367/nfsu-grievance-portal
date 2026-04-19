@@ -211,7 +211,7 @@ export default function HomePage() {
                         transition={{ duration: 0.8 }}
                         className="text-center max-w-6xl mx-auto"
                     >
-                        <div className="mb-0 pt-0 pb-0 px-4 relative">
+                        <div className="mb-2 pt-0 pb-2 px-4 relative">
                             <h2 className="text-2xl md:text-5xl lg:text-6xl font-bold font-serif tracking-tighter leading-tight text-center mx-auto overflow-visible relative text-white">
                                 <motion.span
                                     initial={{ opacity: 0 }}
@@ -229,17 +229,8 @@ export default function HomePage() {
                             variants={{
                                 animate: { transition: { staggerChildren: 0.1 } }
                             }}
-                            className="text-4xl md:text-7xl font-black dark:text-white mb-8 leading-none flex flex-col items-center -mt-2 md:-mt-4"
+                            className="text-4xl md:text-7xl font-black dark:text-white mb-8 leading-none flex flex-col items-center"
                         >
-                            <motion.span 
-                                variants={{
-                                    initial: { opacity: 0, x: -20 },
-                                    animate: { opacity: 1, x: 0 }
-                                }}
-                                className="text-sm font-mono tracking-[0.4em] text-red-500 mb-4 opacity-70"
-                            >
-                                [ TERMINAL: NEXUSS_01 ]
-                            </motion.span>
                             <motion.span
                                 variants={{
                                     initial: { opacity: 0, filter: 'blur(10px)' },
