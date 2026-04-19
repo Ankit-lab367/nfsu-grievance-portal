@@ -201,9 +201,9 @@ export default function HomePage() {
                         className="text-center max-w-6xl mx-auto"
                     >
                         <div className="mb-2 py-6 px-4">
-                            <h2 className="text-xl sm:text-5xl md:text-6xl font-bold font-serif leading-tight">
+                            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-serif leading-tight overflow-hidden">
                                 <motion.span
-                                    className="bg-[length:200%_auto] bg-gradient-to-r from-red-600 via-white to-rose-400 dark:from-red-400 dark:via-white dark:to-rose-300 text-transparent bg-clip-text"
+                                    className="bg-[length:200%_auto] bg-gradient-to-r from-red-600 via-white to-rose-400 dark:from-red-400 dark:via-white dark:to-rose-300 text-transparent bg-clip-text whitespace-nowrap block"
                                     animate={{
                                         backgroundPosition: ["0% center", "100% center", "0% center"],
                                         filter: ["brightness(1)", "brightness(1.5)", "brightness(1)"],
