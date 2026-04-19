@@ -193,37 +193,72 @@ export default function HomePage() {
                     </div>
                 </nav>
 
-                <section className="container mx-auto px-6 py-20">
+                <section id="hero" className="container mx-auto px-6 pt-10 pb-20 relative overflow-hidden">
+                    {/* Cyber Grid Overlay */}
+                    <div className="absolute inset-x-0 top-0 h-full bg-[linear-gradient(rgba(225,29,72,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(225,29,72,0.03)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)] pointer-events-none" />
+                    
+                    {/* Animated Scanline */}
+                    <motion.div 
+                        initial={{ top: '-100%' }}
+                        animate={{ top: '100%' }}
+                        transition={{ duration: 4, ease: "linear", repeat: Infinity }}
+                        className="absolute inset-x-0 h-[1px] bg-red-500/20 shadow-[0_0_20px_rgba(225,29,72,0.4)] z-0 pointer-events-none"
+                    />
+
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
                         transition={{ duration: 0.8 }}
                         className="text-center max-w-6xl mx-auto"
                     >
-                        <div className="mb-2 py-6 px-4">
-                            <h2 className="text-lg sm:text-4xl md:text-5xl lg:text-6xl font-bold font-serif leading-relaxed text-center mx-auto [text-wrap:balance] overflow-visible">
+                        <div className="mb-0 pt-0 pb-0 px-4 relative">
+                            <h2 className="text-2xl md:text-5xl lg:text-6xl font-bold font-serif tracking-tighter leading-tight text-center mx-auto overflow-visible relative text-white">
                                 <motion.span
-                                    className="bg-[length:200%_auto] bg-gradient-to-r from-red-700 via-rose-700 to-red-900 dark:from-red-400 dark:via-white dark:to-rose-300 text-transparent bg-clip-text whitespace-normal lg:whitespace-nowrap inline-block"
-                                    animate={{
-                                        backgroundPosition: ["0% center", "100% center", "0% center"],
-                                        filter: ["brightness(1)", "brightness(1.5)", "brightness(1)"],
-                                    }}
-                                    transition={{
-                                        duration: 6,
-                                        repeat: Infinity,
-                                        ease: "easeInOut"
-                                    }}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="bg-[length:200%_auto] bg-gradient-to-r from-red-700 via-rose-700 to-red-900 dark:from-red-400 dark:via-white dark:to-rose-300 text-transparent bg-clip-text whitespace-normal inline-block"
                                 >
                                     National Forensic Sciences University
                                 </motion.span>
+                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-red-600/30" />
                             </h2>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-bold dark:text-white mb-6 leading-tight">
-                            Grievance Redressal
-                            <span className="block mt-2 bg-gradient-to-r from-red-600 via-rose-500 to-red-800 dark:from-red-400 dark:via-rose-400 dark:to-red-600 text-transparent bg-clip-text">
-                                Made Simple
-                            </span>
-                        </h1>
+                        <motion.h1 
+                            initial="initial"
+                            animate="animate"
+                            variants={{
+                                animate: { transition: { staggerChildren: 0.1 } }
+                            }}
+                            className="text-4xl md:text-7xl font-black dark:text-white mb-8 leading-none flex flex-col items-center -mt-2 md:-mt-4"
+                        >
+                            <motion.span 
+                                variants={{
+                                    initial: { opacity: 0, x: -20 },
+                                    animate: { opacity: 1, x: 0 }
+                                }}
+                                className="text-sm font-mono tracking-[0.4em] text-red-500 mb-4 opacity-70"
+                            >
+                                [ TERMINAL: NEXUSS_01 ]
+                            </motion.span>
+                            <motion.span
+                                variants={{
+                                    initial: { opacity: 0, filter: 'blur(10px)' },
+                                    animate: { opacity: 1, filter: 'blur(0px)' }
+                                }}
+                                className="uppercase tracking-tighter text-white"
+                            >
+                                Network for Exchange,
+                            </motion.span>
+                            <motion.span 
+                                variants={{
+                                    initial: { opacity: 0, y: 10 },
+                                    animate: { opacity: 1, y: 0 }
+                                }}
+                                className="block mt-2 bg-gradient-to-r from-red-600 via-rose-400 to-red-600 text-transparent bg-clip-text drop-shadow-[0_0_15px_rgba(225,29,72,0.4)]"
+                            >
+                                Updates & Student Services
+                            </motion.span>
+                        </motion.h1>
                         <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
                             A transparent, efficient, and secure platform for students and staff to voice their concerns
                             and track resolutions in real-time with AI-powered assistance.
