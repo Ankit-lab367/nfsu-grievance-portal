@@ -137,9 +137,7 @@ export default function StaffRegisterPage() {
             signupData.append('otp', otp);
             signupData.append('avatar', avatar);
 
-            const response = await axios.post('/api/auth/register', signupData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            const response = await axios.post('/api/auth/register', signupData);
 
             if (response.data.success) {
                 if (response.data.pendingVerification) {

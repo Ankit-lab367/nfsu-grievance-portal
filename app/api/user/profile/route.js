@@ -39,33 +39,73 @@ export async function PUT(request) {
         if (!decoded) {
             return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
         }
-        const formData = await request.formData();
+
+        let formData;
+        try {
+            formData = await request.formData();
+        } catch (err) {
+            console.error('Error parsing form data:', err);
+            return NextResponse.json({ error: 'Failed to parse form data. Ensure the request is multipart/form-data with a valid boundary.' }, { status: 400 });
+        }
+
         const file = formData.get('avatar');
         let avatarUrl;
-        if (file && file.size > 0) {
+
+        if (file && typeof file !== 'string' && file.size > 0) {
+            // Validate file size (5MB limit)
+            const MAX_SIZE = 5 * 1024 * 1024;
+            if (file.size > MAX_SIZE) {
+                return NextResponse.json({ error: 'File size exceeds 5MB limit' }, { status: 400 });
+            }
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                return NextResponse.json({ error: 'Only image files are allowed' }, { status: 400 });
+            }
+
             const uploadsDir = join(process.cwd(), 'public', 'uploads', 'avatars');
             try {
                 await mkdir(uploadsDir, { recursive: true });
             } catch (err) {
-                console.log('Directory exists or creation failed:', err);
+                console.error('Directory creation error:', err);
             }
+
             const bytes = await file.arrayBuffer();
             const buffer = Buffer.from(bytes);
+            
+            const originalName = file.name || 'avatar.png';
             const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-            const filename = `${uniqueSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`; 
+            const sanitizedName = originalName.replace(/[^a-zA-Z0-9.-]/g, '');
+            const filename = `${uniqueSuffix}-${sanitizedName}`; 
             const filepath = join(uploadsDir, filename);
+            
             await writeFile(filepath, buffer);
             avatarUrl = `/uploads/avatars/${filename}`;
         }
+
         const updateData = {};
         if (avatarUrl) {
             updateData.avatar = avatarUrl;
         }
+
+        if (Object.keys(updateData).length === 0) {
+             return NextResponse.json({ 
+                success: true, 
+                message: 'No changes detected',
+                user: await User.findById(decoded.id).select('-password')
+            });
+        }
+
         const user = await User.findByIdAndUpdate(
             decoded.id,
             { $set: updateData },
             { new: true }
         ).select('-password');
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
         return NextResponse.json({
             success: true,
             message: 'Profile updated successfully',
@@ -74,7 +114,7 @@ export async function PUT(request) {
     } catch (error) {
         console.error('Profile update error:', error);
         return NextResponse.json(
-            { error: error.message || 'Failed to update profile' },
+            { error: error.message || 'Internal server error while updating profile' },
             { status: 500 }
         );
     }

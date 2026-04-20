@@ -89,8 +89,7 @@ export default function ResolveComplaintPage({ params }) {
             });
             const response = await axios.patch('/api/complaints/update', formData, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
+                    Authorization: `Bearer ${token}`
                 }
             });
             if (response.data.success) {

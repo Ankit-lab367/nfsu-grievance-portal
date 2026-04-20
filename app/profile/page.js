@@ -67,7 +67,6 @@ export default function ProfilePage() {
             const response = await axios.put('/api/user/profile', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data',
                 }
             });
             if (response.data.success) {

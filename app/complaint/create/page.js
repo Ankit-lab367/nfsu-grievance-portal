@@ -91,7 +91,6 @@ export default function CreateComplaintPage() {
             const response = await axios.post('/api/complaints/create', data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data',
                 },
             });
             if (response.data.success) {
