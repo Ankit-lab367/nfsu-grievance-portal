@@ -26,13 +26,13 @@ export async function POST(req) {
             return NextResponse.json({ success: false, error: 'At least one member must be selected' }, { status: 400 });
         }
 
-        // Verify members exist
+        
         const users = await User.find({ _id: { $in: memberIds } });
         if (users.length !== memberIds.length) {
              return NextResponse.json({ success: false, error: 'Some selected members do not exist' }, { status: 404 });
         }
 
-        // Include the creator in the members list if not already
+        
         const finalMembers = new Set([...memberIds, decoded.id]);
 
         const group = await ChatGroup.create({

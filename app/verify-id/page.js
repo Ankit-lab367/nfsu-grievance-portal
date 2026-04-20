@@ -9,8 +9,8 @@ export default function VerifyIDPage() {
     const router = useRouter();
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
-    const [status, setStatus] = useState('idle'); // idle, scanning, matching, success, error
-    const [patternMatch, setPatternMatch] = useState('searching'); // searching, detected, steady, mismatch
+    const [status, setStatus] = useState('idle'); 
+    const [patternMatch, setPatternMatch] = useState('searching'); 
     const [error, setError] = useState('');
     const [user, setUser] = useState(null);
     const [progress, setProgress] = useState(0);
@@ -41,7 +41,7 @@ export default function VerifyIDPage() {
                 videoRef.current.srcObject = stream;
             }
             
-            // Start scanning - scanner will just wait passively until correct ID is shown
+            
             simulateScan();
         } catch (err) {
             console.error('Camera error:', err);
@@ -72,7 +72,7 @@ export default function VerifyIDPage() {
             const g = data[i + 1];
             const b = data[i + 2];
 
-            // Convert to HSL-ish
+            
             const max = Math.max(r, g, b);
             const min = Math.min(r, g, b);
             const l = (max + min) / 2;
@@ -88,13 +88,13 @@ export default function VerifyIDPage() {
             }
             const s = l > 0 && l < 255 ? d / (255 - Math.abs(2 * l - 255)) : 0;
 
-            // Signature 1: University Navy Blue (Hue 190-270, Low Light)
+            
             if (h > 180 && h < 280 && l < 160 && s > 0.1) blueScore++;
             
-            // Signature 2: Logo Gold/Yellow/Red (Hue 0-80, High Saturation)
+            
             if (h < 85 && s > 0.25 && l > 30) logoScore++;
             
-            // Signature 3: White Text/High Highlights (High Lightness, Low Saturation)
+            
             if (l > 200 && s < 0.2) whiteScore++;
         }
 
@@ -102,8 +102,8 @@ export default function VerifyIDPage() {
         const lPerc = (logoScore / totalPixels) * 100;
         const wPerc = (whiteScore / totalPixels) * 100;
 
-        // Strict Requirement: Navy Blue AND Logo signatures
-        // Thresholds lowered to work at normal holding distance
+        
+        
         const isStrictMatch = bPerc > 5 && lPerc > 0.08;
         const isPartialMatch = bPerc > 2;
 
@@ -125,7 +125,7 @@ export default function VerifyIDPage() {
             const isMatch = checkPattern();
             
             if (isMatch) {
-                // Progress faster if match is solid
+                
                 currentProgress += Math.random() * 5 + 3;
                 if (currentProgress >= 100) {
                     currentProgress = 100;
@@ -147,12 +147,12 @@ export default function VerifyIDPage() {
             });
 
             if (response.data.success) {
-                // Update local storage user data
+                
                 const updatedUser = { ...user, isVerifiedID: true };
                 localStorage.setItem('user', JSON.stringify(updatedUser));
                 setStatus('success');
                 
-                // Stop camera stream
+                
                 if (videoRef.current && videoRef.current.srcObject) {
                     videoRef.current.srcObject.getTracks().forEach(track => track.stop());
                 }
@@ -165,7 +165,7 @@ export default function VerifyIDPage() {
 
     return (
         <div className="min-h-screen bg-[#050101] text-white flex flex-col items-center justify-center p-6 overflow-hidden relative">
-            {/* Ambient Background Elements */}
+            {}
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-900/20 blur-[120px] rounded-full" />
             <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-rose-900/10 blur-[120px] rounded-full" />
             
@@ -174,7 +174,7 @@ export default function VerifyIDPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="z-10 w-full max-w-2xl"
             >
-                {/* Header Area */}
+                {}
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center space-x-3 mb-4 px-4 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full">
                         <FaShieldAlt className="text-red-500 text-sm" />
@@ -184,7 +184,7 @@ export default function VerifyIDPage() {
                     <p className="text-gray-400 max-w-md mx-auto">Please show your official student ID card to the camera to activate your portal access.</p>
                 </div>
 
-                {/* Main Console */}
+                {}
                 <div className="glass-card-theme relative p-1 overflow-hidden">
                     <AnimatePresence mode="wait">
                         {status === 'idle' && (
@@ -225,15 +225,15 @@ export default function VerifyIDPage() {
                                     className="w-full h-full object-cover"
                                 />
                                 
-                                {/* Scanning Overlay */}
+                                {}
                                 <div className="absolute inset-0 border-2 border-red-500/30">
-                                    {/* Corners */}
+                                    {}
                                     <div className="absolute top-4 left-4 w-10 h-10 border-t-4 border-l-4 border-red-500 rounded-tl-lg" />
                                     <div className="absolute top-4 right-4 w-10 h-10 border-t-4 border-r-4 border-red-500 rounded-tr-lg" />
                                     <div className="absolute bottom-4 left-4 w-10 h-10 border-b-4 border-l-4 border-red-500 rounded-bl-lg" />
                                     <div className="absolute bottom-4 right-4 w-10 h-10 border-b-4 border-r-4 border-red-500 rounded-br-lg" />
                                     
-                                    {/* Laser Line */}
+                                    {}
                                     {status === 'scanning' && (
                                         <motion.div 
                                             animate={{ top: ['10%', '90%'] }}
@@ -242,7 +242,7 @@ export default function VerifyIDPage() {
                                         />
                                     )}
 
-                                    {/* Floating reference box */}
+                                    {}
                                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[85%] h-[60%] border-2 border-dashed border-white/40 rounded-2xl flex items-center justify-center">
                                         <span className="text-xs font-bold text-white/50 uppercase tracking-widest text-center px-4">
                                             Show your ID card here
@@ -250,7 +250,7 @@ export default function VerifyIDPage() {
                                     </div>
                                 </div>
 
-                                {/* Status Indicators */}
+                                {}
                                 <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
                                     <div className="flex flex-col space-y-1">
                                         <div className="flex items-center space-x-3">
@@ -301,7 +301,7 @@ export default function VerifyIDPage() {
                             </motion.div>
                         )}
 
-                        {/* Fraud state removed for passive rejection */}
+                        {}
 
                         {status === 'error' && (
                             <motion.div 
@@ -326,7 +326,7 @@ export default function VerifyIDPage() {
                     </AnimatePresence>
                 </div>
 
-                {/* Footer Reference */}
+                {}
                 <div className="mt-12 text-center text-gray-500 text-xs">
                     <p className="mb-4 uppercase tracking-[0.2em]">Secure Authentication Protocol</p>
                     <div className="flex items-center justify-center space-x-6 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all">

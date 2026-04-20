@@ -44,7 +44,7 @@ export async function POST(request) {
                     const filename = `complaint-${uniqueSuffix}-${sanitizedName}`;
                     let fileUrl = null;
 
-                    // Try Vercel Blob first
+                    
                     if (hasBlobToken) {
                         try {
                             const bytes = await file.arrayBuffer();
@@ -58,7 +58,7 @@ export async function POST(request) {
                         }
                     }
 
-                    // Fallback to local storage
+                    
                     if (!fileUrl) {
                         const uploadsDir = join(process.cwd(), 'public', 'uploads', 'complaints');
                         try {

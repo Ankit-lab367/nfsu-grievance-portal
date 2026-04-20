@@ -55,13 +55,13 @@ export async function PUT(request) {
         let avatarUrl;
 
         if (file && typeof file !== 'string' && file.size > 0) {
-            // Validate file size (5MB limit)
+            
             const MAX_SIZE = 5 * 1024 * 1024;
             if (file.size > MAX_SIZE) {
                 return NextResponse.json({ error: 'File size exceeds 5MB limit' }, { status: 400 });
             }
 
-            // Validate file type
+            
             if (!file.type.startsWith('image/')) {
                 return NextResponse.json({ error: 'Only image files are allowed' }, { status: 400 });
             }
@@ -71,7 +71,7 @@ export async function PUT(request) {
             const sanitizedName = originalName.replace(/[^a-zA-Z0-9.-]/g, '');
             const filename = `avatar-${uniqueSuffix}-${sanitizedName}`;
 
-            // Check if BLOB_READ_WRITE_TOKEN is available (Vercel Production)
+            
             if (process.env.BLOB_READ_WRITE_TOKEN) {
                 try {
                     const bytes = await file.arrayBuffer();
@@ -82,11 +82,11 @@ export async function PUT(request) {
                     avatarUrl = url;
                 } catch (blobError) {
                     console.error('Vercel Blob upload failed:', blobError);
-                    // Fallback will happen below if needed, but we log the error
+                    
                 }
             }
             
-            // Fallback to local storage (Development only)
+            
             if (!avatarUrl) {
                 const uploadsDir = join(process.cwd(), 'public', 'uploads', 'avatars');
                 try {

@@ -17,7 +17,7 @@ export async function GET(request) {
 
         let decoded;
         try {
-            // Trim the JWT_SECRET in case of environment variable whitespace issues
+            
             const secret = (process.env.JWT_SECRET || '').trim();
             decoded = jwt.verify(token, secret);
         } catch (jwtError) {

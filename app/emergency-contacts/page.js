@@ -154,7 +154,7 @@ export default function EmergencyContacts() {
                     <div className="grid grid-cols-1 gap-8">
 
 
-                        {/* Contacts Table */}
+                        {}
                         <div className="overflow-hidden rounded-2xl border border-white/10 glass-card-theme shadow-2xl">
                             <table className="w-full text-left border-collapse">
                                 <thead className="bg-white/5 border-b border-white/10">
@@ -207,7 +207,7 @@ export default function EmergencyContacts() {
                             </table>
                         </div>
 
-                        {/* Additional Info Cards */}
+                        {}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="p-8 rounded-2xl glass-card-theme border border-white/10 hover:border-blue-500/30 transition-all group">
                                 <h4 className="text-white font-bold text-xl mb-3 flex items-center space-x-2">

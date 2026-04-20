@@ -1,4 +1,4 @@
-// Performance Test - Login
+
 const axios = require('axios');
 const API_URL = 'http://localhost:3000';
 async function testLogin() {

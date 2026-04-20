@@ -18,19 +18,19 @@ export async function GET(req) {
 
         await dbConnect();
 
-        // Count unread messages where the current user is the receiver
+        
         const totalUnread = await DirectMessage.countDocuments({
             receiver: decoded.id,
             isRead: false,
         });
 
-        // Get list of distinct senders who have unread messages for the current user
+        
         const unreadPublishers = await DirectMessage.distinct('sender', {
             receiver: decoded.id,
             isRead: false,
         });
         
-        // --- Group Unread Logic ---
+        
         const userGroups = await ChatGroup.find({ members: decoded.id }).lean();
         const unreadGroupIds = [];
         
@@ -38,8 +38,8 @@ export async function GET(req) {
             const memberStatus = group.lastSeen?.find(ls => ls.user.toString() === decoded.id);
             const lastSeenTime = memberStatus ? memberStatus.timestamp : new Date(0);
             
-            // Check if there are any messages in this group created after lastSeenTime
-            // (Exclude messages sent by the user themselves)
+            
+            
             const hasUnread = await GroupMessage.exists({
                 groupId: group._id,
                 sender: { $ne: decoded.id },

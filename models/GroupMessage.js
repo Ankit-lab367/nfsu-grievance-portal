@@ -21,7 +21,7 @@ const GroupMessageSchema = new mongoose.Schema(
         attachments: [
             {
                 url: String,
-                type: String, // 'image' or 'file'
+                type: String, 
                 name: String,
             },
         ],

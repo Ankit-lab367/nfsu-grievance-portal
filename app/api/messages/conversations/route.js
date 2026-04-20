@@ -17,13 +17,13 @@ export async function GET(req) {
 
         await dbConnect();
 
-        // 1. Find all distinct users the current user has interacted with
+        
         const sentMessages = await DirectMessage.distinct('receiver', { sender: decoded.id });
         const receivedMessages = await DirectMessage.distinct('sender', { receiver: decoded.id });
         
         const allContactIds = [...new Set([...sentMessages.map(id => id.toString()), ...receivedMessages.map(id => id.toString())])];
 
-        // 2. Fetch the latest message for each contact to build the conversation list
+        
         const conversations = [];
 
         for (const contactId of allContactIds) {
@@ -35,14 +35,14 @@ export async function GET(req) {
             }).sort({ createdAt: -1 }).lean();
 
             if (latestMessage) {
-                // Determine if there are unread messages from this contact
+                
                 const unreadCount = await DirectMessage.countDocuments({
                     sender: contactId,
                     receiver: decoded.id,
                     isRead: false,
                 });
 
-                // Get contact user details
+                
                 const contactUser = await User.findById(contactId).select('name role avatar email').lean();
 
                 if (contactUser && unreadCount > 0) {
@@ -55,7 +55,7 @@ export async function GET(req) {
             }
         }
 
-        // 3. Sort conversations by most recent message
+        
         conversations.sort((a, b) => new Date(b.latestMessage.createdAt) - new Date(a.latestMessage.createdAt));
 
         return NextResponse.json({ success: true, conversations });

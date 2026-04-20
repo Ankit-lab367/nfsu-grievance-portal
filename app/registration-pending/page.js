@@ -23,12 +23,12 @@ export default function RegistrationPendingPage() {
                 if (response.data.isActive) {
                     setIsApproved(true);
                     
-                    // Update stored user data
+                    
                     const userData = JSON.parse(localStorage.getItem('user') || '{}');
                     userData.isActive = true;
                     localStorage.setItem('user', JSON.stringify(userData));
 
-                    // Show success message briefly then redirect
+                    
                     setTimeout(() => {
                         const role = response.data.role;
                         if (role === 'admin' || role === 'staff') {
@@ -45,7 +45,7 @@ export default function RegistrationPendingPage() {
             }
         };
 
-        const interval = setInterval(checkStatus, 5000); // Check every 5 seconds
+        const interval = setInterval(checkStatus, 5000); 
         return () => clearInterval(interval);
     }, [router]);
     return (

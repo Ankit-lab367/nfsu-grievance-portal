@@ -23,13 +23,13 @@ export async function POST(req) {
             return NextResponse.json({ success: false, error: 'Receiver ID and content are required' }, { status: 400 });
         }
 
-        // Verify receiver exists
+        
         const receiver = await User.findById(receiverId);
         if (!receiver) {
             return NextResponse.json({ success: false, error: 'Receiver not found' }, { status: 404 });
         }
         
-        // Ensure sender and receiver are not the same
+        
         if (decoded.id === receiverId) {
              return NextResponse.json({ success: false, error: 'Cannot send message to yourself' }, { status: 400 });
         }

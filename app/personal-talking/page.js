@@ -153,7 +153,7 @@ function ContextMenu({ x, y, userId, onClose }) {
     );
 }
 
-// Actual 1-ON-1 chat panel
+
 function ChatPanel({ contact, currentUser, onClose }) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
@@ -306,7 +306,7 @@ function ChatPanel({ contact, currentUser, onClose }) {
     );
 }
 
-// GROUP CHAT PANEL
+
 function GroupChatPanel({ group, currentUser, onClose, onDeleted, onUpdate }) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
@@ -753,7 +753,7 @@ function AddMemberOverlay({ group, onClose, onAdded }) {
             });
             const data = await res.json();
             if (data.success) {
-                // Filter out existing members
+                
                 const existingIds = group.members.map(m => m._id);
                 setUsers(data.users.filter(u => !existingIds.includes(u._id)));
             }
@@ -861,23 +861,23 @@ function AddMemberOverlay({ group, onClose, onAdded }) {
 export default function PersonalTalkingPage() {
     const router = useRouter();
     const [currentUser, setCurrentUser] = useState(null);
-    const [activeTab, setActiveTab] = useState('members'); // 'members' or 'groups'
+    const [activeTab, setActiveTab] = useState('members'); 
 
-    // Members state
+    
     const [users, setUsers] = useState([]);
     const [search, setSearch] = useState('');
     const [loadingUsers, setLoadingUsers] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
 
-    // Groups state
+    
     const [groups, setGroups] = useState([]);
     const [loadingGroups, setLoadingGroups] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState(null);
     
-    // Create Group state
+    
     const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
     const [newGroupName, setNewGroupName] = useState('');
-    const [selectedMembers, setSelectedMembers] = useState([]); // array of user objects
+    const [selectedMembers, setSelectedMembers] = useState([]); 
     const [isCreating, setIsCreating] = useState(false);
     const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, userId: null });
     const [unreadSenders, setUnreadSenders] = useState([]);
@@ -940,7 +940,7 @@ export default function PersonalTalkingPage() {
             });
             const data = await res.json();
             if (data.success) {
-                // exclude current user from the list locally
+                
                 const me = JSON.parse(localStorage.getItem('user'));
                 setUsers(data.users.filter(u => u._id !== me.id));
             }
@@ -1011,7 +1011,7 @@ export default function PersonalTalkingPage() {
         }
     };
 
-    // Grouping for members tab
+    
     const grouped = users.reduce((acc, u) => {
         const key = u.role;
         if (!acc[key]) acc[key] = [];
@@ -1101,7 +1101,7 @@ export default function PersonalTalkingPage() {
             )}
 
             <div style={{ height: 'calc(100vh - 73px)', display: 'flex', overflow: 'hidden' }}>
-                {/* Sidebar */}
+                {}
                 <div style={{
                     width: (selectedUser || selectedGroup) ? 340 : '100%', maxWidth: (selectedUser || selectedGroup) ? 340 : undefined,
                     flexShrink: 0, display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(255,255,255,0.07)',
@@ -1125,7 +1125,7 @@ export default function PersonalTalkingPage() {
                                     const role = currentUser?.role;
                                     if (role === 'student') router.push('/dashboard/student');
                                     else if (role === 'super-admin') router.push('/dashboard/super-admin');
-                                    else router.push('/dashboard/admin'); // handles staff, admin, teacher
+                                    else router.push('/dashboard/admin'); 
                                 }}
                                 style={{
                                     display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px',
@@ -1137,7 +1137,7 @@ export default function PersonalTalkingPage() {
                             </button>
                         </div>
 
-                        {/* Tabs */}
+                        {}
                         <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 4, marginBottom: 16 }}>
                             <button
                                 onClick={() => setActiveTab('members')}

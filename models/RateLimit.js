@@ -18,11 +18,11 @@ const rateLimitSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-        expires: 60 // This will automatically delete the document after 60 seconds (1 minute window)
+        expires: 60 
     }
 });
 
-// Compound index for faster searching
+
 rateLimitSchema.index({ ip: 1, endpoint: 1 });
 
 const RateLimit = mongoose.models.RateLimit || mongoose.model('RateLimit', rateLimitSchema);

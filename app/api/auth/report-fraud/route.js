@@ -7,7 +7,7 @@ export async function POST(request) {
     try {
         await dbConnect();
         
-        // Get token from headers
+        
         const authHeader = request.headers.get('authorization');
         const token = extractToken(authHeader);
         
@@ -20,13 +20,13 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
         }
         
-        // Identify user for logging
+        
         const user = await User.findById(decoded.id);
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
         
-        // Log the incident but do NOT deactivate (per user request)
+        
         console.warn(`⚠️ SECURITY ALERT: User ${user.email} provided an unrecognized ID card pattern.`);
         
         return NextResponse.json({

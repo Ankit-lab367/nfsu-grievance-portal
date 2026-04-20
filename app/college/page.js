@@ -105,7 +105,7 @@ function CategoryCard({ category, index, onNotify }) {
             className="group relative cursor-pointer"
             onClick={onNotify}
         >
-            {/* Glow Effect */}
+            {}
             <div 
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[2rem] blur-[30px]"
                 style={{ 
@@ -115,7 +115,7 @@ function CategoryCard({ category, index, onNotify }) {
             />
 
             <div className="relative h-[340px] rounded-[2rem] p-8 overflow-hidden bg-white/[0.03] backdrop-blur-3xl border border-white/[0.08] group-hover:border-white/[0.15] transition-all duration-300 shadow-2xl">
-                {/* Background Pattern */}
+                {}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-white/[0.05] to-transparent rounded-full -mr-20 -mt-20 blur-2xl" />
                 
                 <div className="h-full flex flex-col justify-between relative z-10">
@@ -151,7 +151,7 @@ function CategoryCard({ category, index, onNotify }) {
                     </div>
                 </div>
 
-                {/* Animated Inner Glow */}
+                {}
                 <div className={`absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-tr ${category.color} opacity-0 group-hover:opacity-10 blur-3xl transition-opacity duration-700`} />
             </div>
         </motion.div>
@@ -171,7 +171,7 @@ export default function CollegeHub() {
             <GlobalBackground />
             <Navbar />
 
-            {/* Premium Notification Toast */}
+            {}
             <AnimatePresence>
                 {notification && (
                     <motion.div
@@ -192,7 +192,7 @@ export default function CollegeHub() {
             </AnimatePresence>
 
             <main className="relative pt-32 pb-32 px-6 max-w-7xl mx-auto z-10">
-                {/* Header Section */}
+                {}
                 <div className="text-center mb-24 relative">
                     <motion.div
                         initial={{ opacity: 0, y: -20 }}
@@ -215,11 +215,11 @@ export default function CollegeHub() {
                         </p>
                     </motion.div>
 
-                    {/* Decorative Blurs */}
+                    {}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-blue-500/5 blur-[120px] -z-10 pointer-events-none" />
                 </div>
 
-                {/* Grid Section */}
+                {}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {collegeCategories.map((category, index) => (
                         <CategoryCard 
@@ -231,7 +231,7 @@ export default function CollegeHub() {
                     ))}
                 </div>
 
-                {/* Back Button */}
+                {}
                 <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

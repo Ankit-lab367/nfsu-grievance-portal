@@ -13,7 +13,7 @@ function getUserFromToken(request) {
     }
 }
 
-// GET single item by ID
+
 export async function GET(request, { params }) {
     try {
         await dbConnect();
@@ -32,7 +32,7 @@ export async function GET(request, { params }) {
     }
 }
 
-// PATCH — mark item as resolved
+
 export async function PATCH(request, { params }) {
     try {
         await dbConnect();

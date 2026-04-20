@@ -29,12 +29,12 @@ export async function POST(req, { params }) {
             return NextResponse.json({ success: false, error: 'Group not found' }, { status: 404 });
         }
 
-        // Verify that the requester is the admin
+        
         if (group.admin.toString() !== decoded.id) {
             return NextResponse.json({ success: false, error: 'Only group admins can add members' }, { status: 403 });
         }
 
-        // Filter out already existing members
+        
         const currentMembers = group.members.map(m => m.toString());
         const newMembers = memberIds.filter(id => !currentMembers.includes(id));
 
@@ -42,7 +42,7 @@ export async function POST(req, { params }) {
             return NextResponse.json({ success: false, error: 'All specified users are already members' }, { status: 400 });
         }
 
-        // Verify users exist
+        
         const users = await User.find({ _id: { $in: newMembers } });
         if (users.length !== newMembers.length) {
             return NextResponse.json({ success: false, error: 'Some users do not exist' }, { status: 404 });

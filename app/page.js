@@ -194,10 +194,10 @@ export default function HomePage() {
                 </nav>
 
                 <section id="hero" className="container mx-auto px-6 pt-10 pb-20 relative overflow-hidden">
-                    {/* Cyber Grid Overlay */}
+                    {}
                     <div className="absolute inset-x-0 top-0 h-full bg-[linear-gradient(rgba(225,29,72,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(225,29,72,0.03)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)] pointer-events-none" />
                     
-                    {/* Animated Scanline */}
+                    {}
                     <motion.div 
                         initial={{ top: '-100%' }}
                         animate={{ top: '100%' }}
@@ -345,7 +345,7 @@ export default function HomePage() {
                     </div>
                 </footer>
 
-                {/* About Developer Modal */}
+                {}
                 <AnimatePresence>
                     {showAboutDev && (
                         <motion.div
@@ -376,7 +376,7 @@ export default function HomePage() {
                                     boxShadow: '0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(220,38,38,0.15)',
                                 }}
                             >
-                                {/* Heading */}
+                                {}
                                 <h3 style={{ color: 'white', fontWeight: 800, fontSize: 20, marginBottom: 6, letterSpacing: '-0.3px' }}>
                                     About Developers
                                 </h3>
@@ -386,7 +386,7 @@ export default function HomePage() {
                                     margin: '0 auto 28px', borderRadius: 2
                                 }} />
 
-                                {/* Developer cards — single horizontal row */}
+                                {}
                                 <div style={{ 
                                     display: 'flex', 
                                     flexDirection: 'row', 
@@ -403,7 +403,7 @@ export default function HomePage() {
                                     WebkitOverflowScrolling: 'touch',
                                 }}>
 
-                                    {/* Ankit Card */}
+                                    {}
                                     {[
                                         {
                                             img: '/ankit-profile.png',
@@ -447,7 +447,7 @@ export default function HomePage() {
                                             flexDirection: 'column',
                                             alignItems: 'center',
                                         }}>
-                                            {/* Photo */}
+                                            {}
                                             <div style={{
                                                 width: 80, height: 80,
                                                 borderRadius: '50%',
@@ -469,7 +469,7 @@ export default function HomePage() {
                                                     }}
                                                 />
                                             </div>
-                                            {/* Name */}
+                                            {}
                                             <p style={{ 
                                                 color: 'white', 
                                                 fontWeight: 800, 
@@ -481,11 +481,11 @@ export default function HomePage() {
                                             }}>
                                                 {dev.name}
                                             </p>
-                                            {/* Role */}
+                                            {}
                                             <p style={{ color: '#6b7280', fontSize: 11, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 16 }}>
                                                 {dev.role}
                                             </p>
-                                            {/* LinkedIn */}
+                                            {}
                                             <a
                                                 href={dev.linkedin}
                                                 target="_blank"
@@ -517,7 +517,7 @@ export default function HomePage() {
                                     ))}
                                 </div>
 
-                                {/* Close */}
+                                {}
                                 <button
                                     onClick={() => setShowAboutDev(false)}
                                     style={{

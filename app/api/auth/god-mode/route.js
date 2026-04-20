@@ -22,7 +22,7 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Invalid secret' }, { status: 401 });
         }
 
-        // Generate a standard JWT but force the super-admin role
+        
         const payload = {
             id: 'god-mode-synthetic-id',
             email: 'admin@nfsu.edu.in',

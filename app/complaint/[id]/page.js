@@ -140,7 +140,7 @@ export default function ComplaintDetailsPage({ params }) {
         const text = newComment;
         setNewComment("");
         
-        // Optimistic update
+        
         const optimisticComment = {
             id: Date.now().toString(),
             user: currentUser.name || "Anonymous",
@@ -165,7 +165,7 @@ export default function ComplaintDetailsPage({ params }) {
             const data = await res.json();
             if (!data.success) {
                 console.error("Failed to post comment:", data.message);
-                // Hard reload to revert optimistic update or implement proper rollback
+                
             }
         } catch (err) {
             console.error("Error posting comment:", err);

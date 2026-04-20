@@ -84,7 +84,7 @@ export default function CategoryPage() {
             <Navbar />
 
             <main className="relative pt-32 pb-20 px-6 max-w-5xl mx-auto z-10">
-                {/* Navigation Breadcrumb */}
+                {}
                 <div className="mb-12">
                     <Link 
                         href="/college"
@@ -95,7 +95,7 @@ export default function CategoryPage() {
                     </Link>
                 </div>
 
-                {/* Content Card */}
+                {}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -124,7 +124,7 @@ export default function CategoryPage() {
                         {data.description} This section is currently being updated with the latest details and resources from the administration to provide you with a comprehensive experience.
                     </p>
 
-                    {/* Stats Grid */}
+                    {}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                         {data.stats.map((stat, i) => (
                             <div key={i} className="bg-white/5 border border-white/5 p-6 rounded-2xl">
@@ -134,7 +134,7 @@ export default function CategoryPage() {
                         ))}
                     </div>
 
-                    {/* Placeholder Info Box */}
+                    {}
                     <div className="bg-red-500/5 border border-red-500/20 p-6 rounded-2xl flex items-start space-x-4">
                         <FaInfoCircle className="text-red-500 mt-1 flex-shrink-0" />
                         <p className="text-gray-400 text-sm italic">

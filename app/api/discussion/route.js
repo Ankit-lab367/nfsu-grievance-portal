@@ -20,7 +20,7 @@ function getUserFromToken(request) {
     }
 }
 
-// GET messages for a specific forum type
+
 export async function GET(request) {
     try {
         await connectDB();
@@ -33,7 +33,7 @@ export async function GET(request) {
         const forumType = searchParams.get('type') || 'student';
 
         const messages = await DiscussionMessage.find({ forumType })
-            .sort({ createdAt: 1 }) // Older first
+            .sort({ createdAt: 1 }) 
             .lean();
 
         return NextResponse.json({ success: true, messages });
@@ -43,7 +43,7 @@ export async function GET(request) {
     }
 }
 
-// POST a new message
+
 export async function POST(request) {
     try {
         await connectDB();

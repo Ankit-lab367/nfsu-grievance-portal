@@ -14,7 +14,7 @@ export async function POST(request) {
             return NextResponse.json({ error: 'SSO code is required' }, { status: 400 });
         }
 
-        // 1. Task: Server-to-server verification with ForenSync
+        
         const ssoSecret = process.env.SSO_SHARED_SECRET;
         
         if (!ssoSecret) {
@@ -46,7 +46,7 @@ export async function POST(request) {
             }, { status: axiosError.response?.status || 500 });
         }
 
-        // Check for email in response instead of success
+        
         if (!response.data || !response.data.email) {
             console.error('ForenSync returned invalid data format:', response.data);
             return NextResponse.json({ error: 'Invalid or expired SSO code' }, { status: 401 });
@@ -71,11 +71,11 @@ export async function POST(request) {
         };
         const mappedCourse = formatProgramId(programId);
 
-        // 2. Task: Find or Create User
+        
         let user = await User.findOne({ email: email.toLowerCase() });
 
         if (!user) {
-            // Create a new user account via SSO if they don't exist
+            
             const randomPassword = crypto.randomBytes(16).toString('hex');
             
             user = await User.create({
@@ -86,19 +86,19 @@ export async function POST(request) {
                 enrollmentNumber: rollNumber,
                 course: mappedCourse,
                 year,
-                isVerifiedID: true, // Verified via partner
+                isVerifiedID: true, 
                 isActive: true
             });
             console.log(`✨ New user created via ForenSync SSO: ${email}`);
         } else {
-            // Auto-enrich existing users if their data is missing or out of sync
+            
             user.lastLogin = new Date();
             if (name) user.name = name;
             if (rollNumber) user.enrollmentNumber = rollNumber;
             if (mappedCourse) user.course = mappedCourse;
             if (year && !user.year) user.year = year;
             if (mappedRole && user.role === 'student' && mappedRole !== 'student') {
-                 // only upgrade roles, don't downgrade admins
+                 
                  user.role = mappedRole;
             } else if (mappedRole && !user.role) {
                  user.role = mappedRole;
@@ -111,7 +111,7 @@ export async function POST(request) {
 
         const isProfileComplete = !!user.phone;
 
-        // 3. Task: Generate standard JWT token
+        
         const token = generateToken(user);
 
         return NextResponse.json({

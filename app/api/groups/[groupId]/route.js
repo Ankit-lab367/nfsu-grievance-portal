@@ -24,15 +24,15 @@ export async function DELETE(req, { params }) {
             return NextResponse.json({ success: false, error: 'Group not found' }, { status: 404 });
         }
 
-        // Verify that the requester is the admin
+        
         if (group.admin.toString() !== decoded.id) {
             return NextResponse.json({ success: false, error: 'Only the group creator can delete this group' }, { status: 403 });
         }
 
-        // 1. Delete all messages associated with this group
+        
         await GroupMessage.deleteMany({ groupId });
 
-        // 2. Delete the group itself
+        
         await ChatGroup.findByIdAndDelete(groupId);
 
         return NextResponse.json({ success: true, message: 'Group and all data deleted successfully' });

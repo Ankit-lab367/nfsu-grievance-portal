@@ -31,7 +31,7 @@ export async function POST(request) {
         
         const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
 
-        // Apply rate limit: 5 attempts per minute per IP for registration
+        
         const limiter = await rateLimit(ip, 'register', 5);
         if (!limiter.success) {
             return NextResponse.json({ error: 'Too many registration attempts. Please try again later.' }, { status: 429 });
@@ -43,7 +43,7 @@ export async function POST(request) {
         if (contentType.includes('multipart/form-data')) {
             const formData = await request.formData();
             
-            // Extract with null-to-undefined conversion for Zod optional compatibility
+            
             const getField = (name) => {
                 const val = formData.get(name);
                 return val !== null ? val : undefined;
@@ -58,7 +58,7 @@ export async function POST(request) {
             phone = getField('phone');
             role = getField('role');
             otp = getField('otp');
-            avatar = formData.get('avatar'); // File object
+            avatar = formData.get('avatar'); 
         } else {
             const body = await request.json();
             ({ name, email, password, enrollmentNumber, course, year, phone, role, otp } = body);
@@ -69,33 +69,33 @@ export async function POST(request) {
         });
 
         if (!result.success) {
-            // Safely extract the first error message
+            
             const errorMessage = result.error.errors?.[0]?.message || 
                                result.error.issues?.[0]?.message || 
                                'Validation failed';
             return NextResponse.json({ error: errorMessage }, { status: 400 });
         }
 
-        // Check if OTP is provided
+        
         if (!otp) {
             return NextResponse.json({ error: 'Verification code is required' }, { status: 400 });
         }
 
         const emailLower = email.toLowerCase();
 
-        // Check if OTP exists for this email
+        
         const otpRecord = await OTP.findOne({ email: emailLower });
         if (!otpRecord) {
             return NextResponse.json({ error: 'Invalid or expired verification code' }, { status: 400 });
         }
 
-        // Compare provided OTP with hashed OTP in database
+        
         const isMatch = await bcrypt.compare(otp, otpRecord.otp);
         if (!isMatch) {
             return NextResponse.json({ error: 'Invalid or expired verification code' }, { status: 400 });
         }
         
-        // Delete OTP after successful verification
+        
         await OTP.deleteMany({ email: emailLower });
 
         name = sanitizeInput(name);
@@ -120,7 +120,7 @@ export async function POST(request) {
             );
         }
 
-        // Additional validation for staff
+        
         if (userRole === 'staff' && !avatar) {
             return NextResponse.json({ error: 'Profile picture is mandatory for staff members' }, { status: 400 });
         }
@@ -138,7 +138,7 @@ export async function POST(request) {
             );
         }
 
-        // Handle Avatar Upload if provided (Vercel Blob Storage)
+        
         let avatarPath = '';
         let imageBuffer = null;
         if (avatar && avatar instanceof Blob) {
@@ -155,8 +155,8 @@ export async function POST(request) {
             name,
             email: email.toLowerCase(),
             password,
-            // Only include enrollmentNumber if it actually has a value
-            // Passing null breaks the sparse unique index for staff/teachers
+            
+            
             ...(enrollmentNumber ? { enrollmentNumber } : {}),
             course,
             year: year ? parseInt(year) : undefined,
@@ -166,7 +166,7 @@ export async function POST(request) {
             isActive: userRole === 'staff' ? false : true,
         });
 
-        // If staff, send approval email to admin
+        
         if (userRole === 'staff') {
             const approvalToken = jwt.sign(
                 { userId: user._id, type: 'staff-approval' },
@@ -176,7 +176,7 @@ export async function POST(request) {
             
             const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').trim();
             const approvalLink = `${baseUrl}/api/admin/approve-staff?token=${approvalToken}`;
-            // avatarPath is already a full Vercel Blob URL, no need to prepend baseUrl
+            
             const fullAvatarUrl = avatarPath || '';
 
             await sendEmail(

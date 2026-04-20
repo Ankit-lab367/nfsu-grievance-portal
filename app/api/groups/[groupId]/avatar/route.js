@@ -25,7 +25,7 @@ export async function POST(req, { params }) {
             return NextResponse.json({ success: false, error: 'Group not found' }, { status: 404 });
         }
 
-        // Verify that the requester is the admin
+        
         if (group.admin.toString() !== decoded.id) {
             return NextResponse.json({ success: false, error: 'Only the group creator can change the profile picture' }, { status: 403 });
         }
@@ -47,7 +47,7 @@ export async function POST(req, { params }) {
 
         const groupAvatarUrl = url;
 
-        // Update the group record
+        
         group.avatar = groupAvatarUrl;
         await group.save();
 

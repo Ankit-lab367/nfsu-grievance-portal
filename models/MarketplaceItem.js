@@ -22,7 +22,7 @@ const MarketplaceItemSchema = new mongoose.Schema({
         trim: true
     },
     image: {
-        type: String, // base64 or URL
+        type: String, 
         default: null
     },
     uploaderId: {

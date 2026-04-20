@@ -57,7 +57,7 @@ export default function StaffRegisterPage() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'name') {
-            // Only allow letters and spaces
+            
             const alphaValue = value.replace(/[^a-zA-Z\s]/g, '');
             setFormData({ ...formData, [name]: alphaValue });
         } else if (name === 'phone') {
@@ -197,7 +197,7 @@ export default function StaffRegisterPage() {
                     )}
                     {}
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Profile Picture Upload Section */}
+                        {}
                         <div className="flex flex-col items-center mb-8">
                             <div className="relative group">
                                 <div className="w-32 h-32 rounded-full border-4 border-dashed border-white/20 overflow-hidden bg-white/5 flex items-center justify-center relative transition-all group-hover:border-red-500/50">

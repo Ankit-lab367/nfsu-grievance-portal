@@ -41,7 +41,7 @@ const UserSchema = new mongoose.Schema(
                 const now = new Date();
                 const createdDate = new Date(this.createdAt);
                 
-                // Academic cycle starts on August 1st (Month index 7)
+                
                 const currentCycle = now.getMonth() < 7 ? now.getFullYear() - 1 : now.getFullYear();
                 const joinCycle = createdDate.getMonth() < 7 ? createdDate.getFullYear() - 1 : createdDate.getFullYear();
                 

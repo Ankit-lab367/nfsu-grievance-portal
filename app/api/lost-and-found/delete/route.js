@@ -14,7 +14,7 @@ export async function DELETE(req) {
     try {
         await connectDB();
 
-        // 1. Authenticate user
+        
         const authHeader = req.headers.get('Authorization');
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -47,7 +47,7 @@ export async function DELETE(req) {
         
         if (item.image) {
             try {
-                // Delete from Vercel Blob if it's a blob URL
+                
                 if (item.image.includes('public.blob.vercel-storage.com')) {
                     await del(item.image);
                 }

@@ -1,4 +1,4 @@
-// Test script to verify login API
+
 const testLogin = async () => {
     const testEmail = "test@nfsu.ac.in";
     const testPassword = "test123";

@@ -93,7 +93,7 @@ export default function Navbar() {
         }
 
         try {
-            // Task 2: POST request to /api/sso/generate-code to mint a secure ticket
+            
             const response = await axios.post('/api/sso/generate-code', {
                 email: user.email,
                 name: user.name
@@ -101,7 +101,7 @@ export default function Navbar() {
 
             if (response.data.success && response.data.code) {
                 const ssoCode = response.data.code;
-                // Task 2: Redirect to ForenSync's catch page
+                
                 window.location.href = `https://www.forensync.me/sso-verify?code=${ssoCode}`;
             } else {
                 throw new Error('Failed to generate SSO ticket');
@@ -150,7 +150,7 @@ export default function Navbar() {
             }
         };
         fetchUnreadMessages();
-        const interval = setInterval(fetchUnreadMessages, 5000); // Polling every 5 seconds
+        const interval = setInterval(fetchUnreadMessages, 5000); 
         return () => clearInterval(interval);
     }, []);
 
@@ -383,15 +383,15 @@ export default function Navbar() {
                     </div>
                     {}
                     <div className="flex items-center space-x-4">
-                        {/* Mobile Menu Toggle */}
+                        {}
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             className="lg:hidden p-2 text-gray-300 hover:text-white transition-colors"
                         >
                             {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
                         </button>
-                        {/* Desktop & Mobile Top Right Buttons */}
-                        {/* Desktop Only Buttons - Hidden on Mobile */}
+                        {}
+                        {}
                         <div className="hidden lg:flex items-center space-x-4">
                             <div className="relative group">
                                 <motion.button
@@ -426,7 +426,7 @@ export default function Navbar() {
                                     </span>
                                 </motion.button>
                                 
-                                {/* Tooltip */}
+                                {}
                                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-[100] w-max">
                                     <div className="bg-slate-900 border border-white/10 text-white text-[10px] font-bold py-1.5 px-3 rounded-md shadow-2xl uppercase tracking-widest whitespace-nowrap">
                                         for better exam practice go here
@@ -440,7 +440,7 @@ export default function Navbar() {
                             >
                                 {darkMode ? <FaSun /> : <FaMoon />}
                             </button>
-                            {/* Notifications */}
+                            {}
                             <Link href="/notifications" className="relative p-2 text-gray-300 hover:text-white transition-all hover:scale-110">
                                 <FaBell />
                                 {unreadCount > 0 && (
@@ -505,7 +505,7 @@ export default function Navbar() {
                 </div>
             </div>
             
-            {/* Mobile Dropdown Menu */}
+            {}
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div

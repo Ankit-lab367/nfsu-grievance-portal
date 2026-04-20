@@ -28,17 +28,17 @@ export async function POST(req, { params }) {
             return NextResponse.json({ success: false, error: 'Group not found' }, { status: 404 });
         }
 
-        // Verify that the requester is the admin
+        
         if (group.admin.toString() !== decoded.id) {
             return NextResponse.json({ success: false, error: 'Only group admins can remove members' }, { status: 403 });
         }
 
-        // Prevent admin from removing themselves
+        
         if (memberId === group.admin.toString()) {
             return NextResponse.json({ success: false, error: 'Group admin cannot be removed' }, { status: 400 });
         }
 
-        // Remove the member
+        
         group.members = group.members.filter(m => m.toString() !== memberId);
         await group.save();
 

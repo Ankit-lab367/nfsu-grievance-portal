@@ -18,7 +18,7 @@ export async function GET(req, { params }) {
 
         const { userId } = params;
 
-        // Fetch basic public info
+        
         const user = await User.findById(userId).select('-password -permissions -phone -lastLogin');
         
         if (!user) {

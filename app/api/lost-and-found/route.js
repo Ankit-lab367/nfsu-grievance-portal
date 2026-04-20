@@ -14,7 +14,7 @@ function getUserFromToken(request) {
     }
 }
 
-// GET all active lost & found items
+
 export async function GET(request) {
     try {
         await dbConnect();
@@ -32,7 +32,7 @@ export async function GET(request) {
     }
 }
 
-// POST a new lost & found item
+
 export async function POST(request) {
     try {
         await dbConnect();
@@ -64,7 +64,7 @@ export async function POST(request) {
                         const buffer = Buffer.from(base64Data, 'base64');
                         const filename = `lost-found-${Date.now()}.${ext}`;
                         
-                        // Check if BLOB_READ_WRITE_TOKEN is available
+                        
                         if (process.env.BLOB_READ_WRITE_TOKEN) {
                             const { url } = await put(filename, buffer, {
                                 access: 'public',
@@ -73,7 +73,7 @@ export async function POST(request) {
                             imageUrl = url;
                         } else {
                             console.warn('Vercel Blob token is missing. Falling back to base64 storage.');
-                            imageUrl = image; // Fallback to base64 if no token
+                            imageUrl = image; 
                         }
                     }
                 } else if (image.startsWith('http')) {
@@ -82,7 +82,7 @@ export async function POST(request) {
             } catch (imageError) {
                 console.error('Error uploading image to Vercel Blob:', imageError);
                 console.warn('Falling back to direct image storage (base64) due to upload error.');
-                imageUrl = image; // Safe fallback so the request doesn't crash
+                imageUrl = image; 
             }
         }
 

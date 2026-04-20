@@ -17,22 +17,22 @@ export async function POST(request) {
 
 
 
-        // Generate 6-digit OTP
+        
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        // Hash the OTP for database storage
+        
         const hashedOtp = await bcrypt.hash(otp, 10);
 
-        // Delete any existing OTP for this email
+        
         await OTP.deleteMany({ email: emailLower });
 
-        // Save new hashed OTP
+        
         await OTP.create({
             email: emailLower,
             otp: hashedOtp
         });
 
-        // Send email
+        
         const emailContent = `
             <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
                 <h2 style="color: #1d4ed8;">NFSU Grievance Portal - Verification Code</h2>
@@ -53,12 +53,12 @@ export async function POST(request) {
         );
 
         if (!mailResult.success) {
-            // Keep the OTP in console for local dev/testing if mail fails
+            
             console.log(`[DEBUG] OTP for ${emailLower}: ${otp}`);
             return NextResponse.json({ 
                 success: false, 
                 error: 'Failed to send email. If you are a developer, please check the server logs for the code.',
-                debug_otp: otp // Only for local testing, remove in production
+                debug_otp: otp 
             }, { status: 500 });
         }
 

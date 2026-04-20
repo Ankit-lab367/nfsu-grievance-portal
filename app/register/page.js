@@ -46,11 +46,11 @@ export default function RegisterPage() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'name') {
-            // Only allow letters and spaces
+            
             const alphaValue = value.replace(/[^a-zA-Z\s]/g, '');
             setFormData({ ...formData, [name]: alphaValue });
         } else if (name === 'enrollmentNumber' || name === 'phone') {
-            // Only allow numbers and max length for phone
+            
             const numericValue = value.replace(/\D/g, '');
             if (name === 'phone' && numericValue.length > 10) return;
             setFormData({ ...formData, [name]: numericValue });

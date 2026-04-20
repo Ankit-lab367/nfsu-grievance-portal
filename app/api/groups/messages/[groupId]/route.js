@@ -20,7 +20,7 @@ export async function GET(req, { params }) {
 
         const { groupId } = params;
 
-        // Verify group exists and user is part of it
+        
         const group = await ChatGroup.findById(groupId).populate('members', 'name role avatar');
         if (!group) {
             return NextResponse.json({ success: false, error: 'Group not found' }, { status: 404 });
@@ -29,7 +29,7 @@ export async function GET(req, { params }) {
             return NextResponse.json({ success: false, error: 'You are not a member of this group' }, { status: 403 });
         }
 
-        // Update lastSeen timestamp for the current user
+        
         const memberStatusIndex = group.lastSeen.findIndex(ls => ls.user.toString() === decoded.id);
         if (memberStatusIndex > -1) {
             group.lastSeen[memberStatusIndex].timestamp = new Date();
@@ -38,7 +38,7 @@ export async function GET(req, { params }) {
         }
         await group.save();
 
-        // Fetch messages and populate sender info
+        
         const messages = await GroupMessage.find({ groupId })
             .sort({ createdAt: 1 })
             .populate('sender', 'name role avatar')
@@ -71,7 +71,7 @@ export async function POST(req, { params }) {
             return NextResponse.json({ success: false, error: 'Message content or attachment is required' }, { status: 400 });
         }
 
-        // Verify group exists and user is part of it
+        
         const group = await ChatGroup.findById(groupId);
         if (!group) {
             return NextResponse.json({ success: false, error: 'Group not found' }, { status: 404 });
@@ -87,7 +87,7 @@ export async function POST(req, { params }) {
             attachments: attachments || [],
         });
 
-        // Populate sender info to return back so UI can display it
+        
         const populatedMessage = await message.populate('sender', 'name role avatar');
 
         return NextResponse.json({ success: true, message: populatedMessage });

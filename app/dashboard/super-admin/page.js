@@ -73,7 +73,7 @@ export default function SuperAdminDashboard() {
 
     return (
         <div className="min-h-screen relative bg-slate-900 overflow-hidden transition-colors duration-500">
-            {/* Premium Background Image */}
+            {}
             <div className="fixed inset-0 z-0">
                 <img
                     src="/background.jpeg"
@@ -86,7 +86,7 @@ export default function SuperAdminDashboard() {
             <div className="relative z-10">
                 <Navbar />
                 <div className="container mx-auto px-6 py-8">
-                    {/* Header */}
+                    {}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -121,7 +121,7 @@ export default function SuperAdminDashboard() {
                         </div>
                     </motion.div>
 
-                    {/* Stats */}
+                    {}
                     {stats && (
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -193,7 +193,7 @@ export default function SuperAdminDashboard() {
                                 </motion.div>
                             </div>
 
-                            {/* Department Performance */}
+                            {}
                             <div className="glass-card-theme p-6 border-white/10 shadow-xl mb-8">
                                 <h2 className="text-2xl font-bold text-white mb-6">Department Performance</h2>
                                 <div className="space-y-4">
@@ -221,7 +221,7 @@ export default function SuperAdminDashboard() {
                         </>
                     )}
 
-                    {/* Quick Actions */}
+                    {}
                     <div className="grid md:grid-cols-2 gap-6 mb-8">
                         <button
                             onClick={() => {
@@ -260,7 +260,7 @@ export default function SuperAdminDashboard() {
                         </button>
                     </div>
 
-                    {/* All Departments */}
+                    {}
                     <div className="glass-card-theme p-6 border-white/10 shadow-xl">
                         <h2 className="text-2xl font-bold text-white mb-6">All Departments</h2>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -53,7 +53,7 @@ export default function DiscussionPage() {
                 const newMessages = [welcomeMsg, ...formatted];
                 
                 setMessages(prev => {
-                    // Only update if there are new messages or changes
+                    
                     if (prev.length === newMessages.length && 
                         prev[prev.length - 1]?.id === newMessages[newMessages.length - 1]?.id) {
                         return prev;
@@ -77,10 +77,10 @@ export default function DiscussionPage() {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
 
-        // Initial fetch
+        
         fetchMessages(parsedUser);
 
-        // Setup polling every 3 seconds
+        
         pollingInterval.current = setInterval(() => {
             fetchMessages(parsedUser, true);
         }, 3000);
@@ -131,7 +131,7 @@ export default function DiscussionPage() {
             });
             const data = await res.json();
             if (data.success) {
-                // Instantly fetch to sync with DB state (optional but good for consistency)
+                
                 fetchMessages(user, true);
             } else {
                 console.error(data.message);

@@ -49,7 +49,7 @@ export async function PATCH(request) {
                             const filename = `resolution-${uniqueSuffix}-${sanitizedName}`;
                             let fileUrl = null;
 
-                            // Try Vercel Blob
+                            
                             if (hasBlobToken) {
                                 try {
                                     const bytes = await file.arrayBuffer();
@@ -63,7 +63,7 @@ export async function PATCH(request) {
                                 }
                             }
 
-                            // Fallback to local storage
+                            
                             if (!fileUrl) {
                                 const uploadsDir = join(process.cwd(), 'public', 'uploads', 'resolutions');
                                 try {

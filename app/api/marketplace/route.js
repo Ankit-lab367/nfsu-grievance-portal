@@ -21,7 +21,7 @@ function getUserFromToken(request) {
     }
 }
 
-// GET all available marketplace items
+
 export async function GET(request) {
     try {
         await connectDB();
@@ -39,7 +39,7 @@ export async function GET(request) {
     }
 }
 
-// POST a new marketplace item
+
 export async function POST(request) {
     try {
         await connectDB();

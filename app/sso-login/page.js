@@ -38,16 +38,16 @@ function SSOLoginContent() {
             }
 
             try {
-                // Task 1: POST request to /api/auth/forensync with the code
+                
                 const response = await axios.post('/api/auth/forensync', { code });
 
                 if (response.data.success) {
                     const { token, user, isProfileComplete } = response.data;
 
-                    // Save token as requested: grievance_token
+                    
                     localStorage.setItem('grievance_token', token);
                     
-                    // Also save as standard 'token' and 'user' for app compatibility
+                    
                     localStorage.setItem('token', token);
                     localStorage.setItem('user', JSON.stringify(user));
 
@@ -67,7 +67,7 @@ function SSOLoginContent() {
         };
 
         verifySSO();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        
     }, [code]);
 
     const handlePhoneSubmit = async (e) => {
@@ -82,7 +82,7 @@ function SSOLoginContent() {
             });
             
             if (response.data.success) {
-                // Update local storage user
+                
                 const updatedUser = response.data.user;
                 localStorage.setItem('user', JSON.stringify(updatedUser));
                 setShowModal(false);

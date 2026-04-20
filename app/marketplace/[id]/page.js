@@ -47,7 +47,7 @@ export default function MarketplaceItemDetailsPage({ params }) {
                             text: m.text,
                             timestamp: m.timestamp
                         }));
-                        // Prepend the Market Bot message
+                        
                         const botMsg = {
                             id: 1,
                             user: "Market Bot",

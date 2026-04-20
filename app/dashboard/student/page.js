@@ -43,7 +43,7 @@ export default function StudentDashboard() {
             return;
         }
         
-        // Check for 2-step verification
+        
         if (!parsedUser.isVerifiedID) {
             router.push('/verify-id');
             return;

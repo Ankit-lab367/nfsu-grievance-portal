@@ -12,11 +12,11 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Email and name are required for SSO generation' }, { status: 400 });
         }
 
-        // 1. Task: Generate a secure, random 32-character string (16 bytes = 32 hex chars)
+        
         const generatedCode = crypto.randomBytes(16).toString('hex');
 
-        // 2. Task: Save this code into MongoDB (sso_codes collection)
-        // Includes email, name, and timestamp (createdAt handled by Schema TTL)
+        
+        
         await SSOCode.create({
             code: generatedCode,
             email: email.toLowerCase(),
@@ -26,7 +26,7 @@ export async function POST(request) {
 
         console.log(`🎟️  SSO Ticket Generated for ${email}: [${generatedCode.substring(0, 8)}...]`);
 
-        // 3. Task: Return the code to the frontend
+        
         return NextResponse.json({
             success: true,
             code: generatedCode

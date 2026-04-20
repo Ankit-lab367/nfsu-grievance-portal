@@ -7,7 +7,7 @@ export async function POST(request) {
     try {
         await dbConnect();
         
-        // Get token from headers
+        
         const authHeader = request.headers.get('authorization');
         const token = extractToken(authHeader);
         
@@ -25,7 +25,7 @@ export async function POST(request) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
         
-        // Update verification status
+        
         user.isVerifiedID = true;
         await user.save();
         

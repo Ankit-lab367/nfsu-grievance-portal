@@ -16,7 +16,7 @@ export async function GET(req) {
 
         await dbConnect();
 
-        // Find all groups where the user is a member
+        
         const groups = await ChatGroup.find({ members: decoded.id })
             .select('name members admin avatar createdAt')
             .sort({ createdAt: -1 })
