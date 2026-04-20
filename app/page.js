@@ -211,7 +211,7 @@ export default function HomePage() {
                         transition={{ duration: 0.8 }}
                         className="text-center max-w-6xl mx-auto"
                     >
-                        <div className="mb-2 pt-0 pb-2 px-4 relative">
+                        <div className="mb-10 pt-0 pb-2 px-4 relative">
                             <h2 className="text-2xl md:text-5xl lg:text-6xl font-bold font-serif tracking-tighter leading-tight text-center mx-auto overflow-visible relative text-white">
                                 <motion.span
                                     initial={{ opacity: 0 }}
