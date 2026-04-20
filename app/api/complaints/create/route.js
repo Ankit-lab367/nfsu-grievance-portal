@@ -9,6 +9,8 @@ import { verifyToken, extractToken } from '@/lib/auth';
 import { sendEmail, emailTemplates } from '@/lib/mailer';
 import User from '@/models/User';
 import { sanitizeInput } from '@/lib/security';
+import { put } from '@vercel/blob';
+
 export async function POST(request) {
     try {
         await dbConnect();
@@ -20,6 +22,7 @@ export async function POST(request) {
         if (!decoded) {
             return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
         }
+
         const formData = await request.formData();
         const department = formData.get('department');
         const category = formData.get('category');
@@ -28,29 +31,57 @@ export async function POST(request) {
         const priority = formData.get('priority');
         const isAnonymous = formData.get('isAnonymous') === 'true';
         const files = formData.getAll('files');
+        
         const attachments = [];
+
         if (files && files.length > 0) {
-            const uploadsDir = join(process.cwd(), 'public', 'uploads', 'complaints');
-            try {
-                await mkdir(uploadsDir, { recursive: true });
-            } catch (err) {
-                console.log('Directory exists or creation failed:', err);
-            }
+            const hasBlobToken = !!process.env.BLOB_READ_WRITE_TOKEN;
+            
             for (const file of files) {
                 if (file && file.size > 0) {
-                    const bytes = await file.arrayBuffer();
-                    const buffer = Buffer.from(bytes);
                     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-                    const filename = `${uniqueSuffix}-${file.name}`;
-                    const filepath = join(uploadsDir, filename);
-                    await writeFile(filepath, buffer);
+                    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '');
+                    const filename = `complaint-${uniqueSuffix}-${sanitizedName}`;
+                    let fileUrl = null;
+
+                    // Try Vercel Blob first
+                    if (hasBlobToken) {
+                        try {
+                            const bytes = await file.arrayBuffer();
+                            const { url } = await put(filename, bytes, {
+                                access: 'public',
+                                contentType: file.type || 'application/octet-stream'
+                            });
+                            fileUrl = url;
+                        } catch (blobError) {
+                            console.error('Vercel Blob upload failed for complaint attachment:', blobError);
+                        }
+                    }
+
+                    // Fallback to local storage
+                    if (!fileUrl) {
+                        const uploadsDir = join(process.cwd(), 'public', 'uploads', 'complaints');
+                        try {
+                            await mkdir(uploadsDir, { recursive: true });
+                        } catch (err) {
+                            console.log('Directory creation failed:', err);
+                        }
+                        
+                        const bytes = await file.arrayBuffer();
+                        const buffer = Buffer.from(bytes);
+                        const filepath = join(uploadsDir, filename);
+                        await writeFile(filepath, buffer);
+                        fileUrl = `/uploads/complaints/${filename}`;
+                    }
+
                     attachments.push({
                         filename: file.name,
-                        url: `/uploads/complaints/${filename}`,
+                        url: fileUrl,
                     });
                 }
             }
         }
+
         const complaint = await Complaint.create({
             userId: decoded.id,
             department,
@@ -61,6 +92,7 @@ export async function POST(request) {
             isAnonymous,
             attachments,
         });
+
         await Department.findOneAndUpdate(
             { name: department },
             {
@@ -70,6 +102,7 @@ export async function POST(request) {
                 }
             }
         );
+
         await Notification.create({
             userId: decoded.id,
             type: 'complaint',
@@ -78,6 +111,7 @@ export async function POST(request) {
             complaintId: complaint._id,
             link: `/complaint/${complaint.complaintId}`,
         });
+
         const user = await User.findById(decoded.id);
         if (user && user.email) {
             await sendEmail(
@@ -90,6 +124,7 @@ export async function POST(request) {
                 )
             );
         }
+
         return NextResponse.json(
             {
                 success: true,

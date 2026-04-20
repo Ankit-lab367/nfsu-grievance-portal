@@ -8,6 +8,8 @@ import Notification from '@/models/Notification';
 import User from '@/models/User';
 import { verifyToken, extractToken } from '@/lib/auth';
 import { sendEmail, emailTemplates } from '@/lib/mailer';
+import { put } from '@vercel/blob';
+
 export async function PATCH(request) {
     try {
         await dbConnect();
@@ -38,22 +40,48 @@ export async function PATCH(request) {
                 };
                 const proofFiles = formData.getAll('proof');
                 if (proofFiles && proofFiles.length > 0) {
-                    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'resolutions');
-                    try {
-                        await mkdir(uploadsDir, { recursive: true });
-                    } catch (err) {
-                    }
+                    const hasBlobToken = !!process.env.BLOB_READ_WRITE_TOKEN;
+                    
                     for (const file of proofFiles) {
                         if (file && file.size > 0) {
-                            const bytes = await file.arrayBuffer();
-                            const buffer = Buffer.from(bytes);
                             const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-                            const filename = `${uniqueSuffix}-${file.name}`;
-                            const filepath = join(uploadsDir, filename);
-                            await writeFile(filepath, buffer);
+                            const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '');
+                            const filename = `resolution-${uniqueSuffix}-${sanitizedName}`;
+                            let fileUrl = null;
+
+                            // Try Vercel Blob
+                            if (hasBlobToken) {
+                                try {
+                                    const bytes = await file.arrayBuffer();
+                                    const { url } = await put(filename, bytes, {
+                                        access: 'public',
+                                        contentType: file.type || 'application/octet-stream'
+                                    });
+                                    fileUrl = url;
+                                } catch (blobError) {
+                                    console.error('Vercel Blob upload failed for resolution proof:', blobError);
+                                }
+                            }
+
+                            // Fallback to local storage
+                            if (!fileUrl) {
+                                const uploadsDir = join(process.cwd(), 'public', 'uploads', 'resolutions');
+                                try {
+                                    await mkdir(uploadsDir, { recursive: true });
+                                } catch (err) {
+                                    console.log('Directory creation failed:', err);
+                                }
+                                
+                                const bytes = await file.arrayBuffer();
+                                const buffer = Buffer.from(bytes);
+                                const filepath = join(uploadsDir, filename);
+                                await writeFile(filepath, buffer);
+                                fileUrl = `/uploads/resolutions/${filename}`;
+                            }
+
                             resolutionDetails.proof.push({
                                 filename: file.name,
-                                url: `/uploads/resolutions/${filename}`,
+                                url: fileUrl,
                             });
                         }
                     }

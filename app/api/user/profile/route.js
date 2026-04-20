@@ -4,6 +4,8 @@ import { join } from 'path';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import { verifyToken, extractToken } from '@/lib/auth';
+import { put } from '@vercel/blob';
+
 export async function GET(request) {
     try {
         await dbConnect();
@@ -28,6 +30,7 @@ export async function GET(request) {
         );
     }
 }
+
 export async function PUT(request) {
     try {
         await dbConnect();
@@ -63,24 +66,42 @@ export async function PUT(request) {
                 return NextResponse.json({ error: 'Only image files are allowed' }, { status: 400 });
             }
 
-            const uploadsDir = join(process.cwd(), 'public', 'uploads', 'avatars');
-            try {
-                await mkdir(uploadsDir, { recursive: true });
-            } catch (err) {
-                console.error('Directory creation error:', err);
-            }
-
-            const bytes = await file.arrayBuffer();
-            const buffer = Buffer.from(bytes);
-            
             const originalName = file.name || 'avatar.png';
             const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
             const sanitizedName = originalName.replace(/[^a-zA-Z0-9.-]/g, '');
-            const filename = `${uniqueSuffix}-${sanitizedName}`; 
-            const filepath = join(uploadsDir, filename);
+            const filename = `avatar-${uniqueSuffix}-${sanitizedName}`;
+
+            // Check if BLOB_READ_WRITE_TOKEN is available (Vercel Production)
+            if (process.env.BLOB_READ_WRITE_TOKEN) {
+                try {
+                    const bytes = await file.arrayBuffer();
+                    const { url } = await put(filename, bytes, {
+                        access: 'public',
+                        contentType: file.type || 'image/png'
+                    });
+                    avatarUrl = url;
+                } catch (blobError) {
+                    console.error('Vercel Blob upload failed:', blobError);
+                    // Fallback will happen below if needed, but we log the error
+                }
+            }
             
-            await writeFile(filepath, buffer);
-            avatarUrl = `/uploads/avatars/${filename}`;
+            // Fallback to local storage (Development only)
+            if (!avatarUrl) {
+                const uploadsDir = join(process.cwd(), 'public', 'uploads', 'avatars');
+                try {
+                    await mkdir(uploadsDir, { recursive: true });
+                } catch (err) {
+                    console.error('Directory creation error:', err);
+                }
+
+                const bytes = await file.arrayBuffer();
+                const buffer = Buffer.from(bytes);
+                const filepath = join(uploadsDir, filename);
+                
+                await writeFile(filepath, buffer);
+                avatarUrl = `/uploads/avatars/${filename}`;
+            }
         }
 
         const updateData = {};
