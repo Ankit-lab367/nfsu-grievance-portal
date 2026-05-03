@@ -16,6 +16,7 @@ import {
 } from 'react-icons/fa';
 import GlobalBackground from '@/components/GlobalBackground';
 import Navbar from '@/components/Navbar';
+import VerificationGuard from '@/components/VerificationGuard';
 
 const collegeCategories = [
     {
@@ -160,6 +161,12 @@ function CategoryCard({ category, index, onNotify }) {
 
 export default function CollegeHub() {
     const [notification, setNotification] = useState(null);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const userData = localStorage.getItem('user');
+        if (userData) setUser(JSON.parse(userData));
+    }, []);
 
     const triggerNotify = (title) => {
         setNotification(`Synchronizing ${title}... Feature arriving in the next cycle.`);
@@ -191,64 +198,66 @@ export default function CollegeHub() {
                 )}
             </AnimatePresence>
 
-            <main className="relative pt-32 pb-32 px-6 max-w-7xl mx-auto z-10">
-                {}
-                <div className="text-center mb-24 relative">
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8">
-                            <FaUniversity className="text-blue-500 text-[10px]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">NFSU Institutional Core</span>
-                        </div>
-                        
-                        <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter">
-                            <span className="bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent italic">College</span>
-                            <span className="text-white">Hub</span>
-                        </h1>
-                        
-                        <p className="text-gray-500 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
-                            A centralized ecosystem for institutional research, administrative governance, and student life. 
-                            <span className="block mt-2 text-white/20">Version 2.0 Integration Pending</span>
-                        </p>
-                    </motion.div>
+            <VerificationGuard user={user}>
+                <main className="relative pt-32 pb-32 px-6 max-w-7xl mx-auto z-10">
+                    {}
+                    <div className="text-center mb-24 relative">
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
+                        >
+                            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8">
+                                <FaUniversity className="text-blue-500 text-[10px]" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">NFSU Institutional Core</span>
+                            </div>
+                            
+                            <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter">
+                                <span className="bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent italic">College</span>
+                                <span className="text-white">Hub</span>
+                            </h1>
+                            
+                            <p className="text-gray-500 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+                                A centralized ecosystem for institutional research, administrative governance, and student life. 
+                                <span className="block mt-2 text-white/20">Version 2.0 Integration Pending</span>
+                            </p>
+                        </motion.div>
+
+                        {}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-blue-500/5 blur-[120px] -z-10 pointer-events-none" />
+                    </div>
 
                     {}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-blue-500/5 blur-[120px] -z-10 pointer-events-none" />
-                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {collegeCategories.map((category, index) => (
+                            <CategoryCard 
+                                key={category.title} 
+                                category={category} 
+                                index={index} 
+                                onNotify={() => triggerNotify(category.title)}
+                            />
+                        ))}
+                    </div>
 
-                {}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {collegeCategories.map((category, index) => (
-                        <CategoryCard 
-                            key={category.title} 
-                            category={category} 
-                            index={index} 
-                            onNotify={() => triggerNotify(category.title)}
-                        />
-                    ))}
-                </div>
-
-                {}
-                <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1 }}
-                    className="mt-24 text-center"
-                >
-                    <Link 
-                        href="/dashboard/student"
-                        className="group relative inline-flex items-center space-x-3 text-gray-400 hover:text-white transition-all font-black uppercase tracking-[0.4em] text-[10px] py-5 px-10 rounded-2xl overflow-hidden"
+                    {}
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1 }}
+                        className="mt-24 text-center"
                     >
-                        <div className="absolute inset-0 bg-white/[0.03] opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="absolute inset-0 border border-white/10 group-hover:border-white/20 transition-colors" />
-                        <FaArrowLeft className="text-[10px] group-hover:-translate-x-1 transition-transform" />
-                        <span>Return to Ops</span>
-                    </Link>
-                </motion.div>
-            </main>
+                        <Link 
+                            href="/dashboard/student"
+                            className="group relative inline-flex items-center space-x-3 text-gray-400 hover:text-white transition-all font-black uppercase tracking-[0.4em] text-[10px] py-5 px-10 rounded-2xl overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-white/[0.03] opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="absolute inset-0 border border-white/10 group-hover:border-white/20 transition-colors" />
+                            <FaArrowLeft className="text-[10px] group-hover:-translate-x-1 transition-transform" />
+                            <span>Return to Ops</span>
+                        </Link>
+                    </motion.div>
+                </main>
+            </VerificationGuard>
         </div>
     );
 }

@@ -74,7 +74,7 @@ export default function SolvePortalPage() {
                                 Solve Complaints
                             </h1>
                             <p className="text-gray-500 dark:text-gray-400 mt-2 font-medium">
-                                Manage and resolve grievances currently "In Progress"
+                                Manage and resolve grievances currently &quot;In Progress&quot;
                             </p>
                         </div>
                         <div className="relative group w-full md:w-80">
@@ -104,7 +104,7 @@ export default function SolvePortalPage() {
                                     <FaCheckCircle className="text-4xl text-green-500/50" />
                                 </div>
                                 <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Crystal Clear!</h3>
-                                <p className="text-gray-400">There are no "In Progress" complaints waiting for resolution right now.</p>
+                                <p className="text-gray-400">There are no &quot;In Progress&quot; complaints waiting for resolution right now.</p>
                                 <Link
                                     href="/dashboard/admin"
                                     className="inline-block mt-8 px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl transition-all active:scale-95 shadow-lg shadow-blue-500/20"

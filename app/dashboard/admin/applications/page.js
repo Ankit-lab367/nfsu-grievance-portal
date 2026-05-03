@@ -107,7 +107,10 @@ export default function ApplicationsReceivedPage() {
                                                 <div className="relative">
                                                     <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-white/10 shadow-lg group-hover:border-red-500/50 transition-colors">
                                                         {app?.student?.avatar ? (
-                                                            <img src={app.student.avatar} alt={app.student.name} className="w-full h-full object-cover" />
+                                                            <>
+                                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                                <img src={app.student.avatar} alt={app.student.name} className="w-full h-full object-cover" />
+                                                            </>
                                                         ) : (
                                                             <div className="w-full h-full bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center text-white font-black text-xl">
                                                                 {app?.student?.name?.charAt(0).toUpperCase() || '?'}

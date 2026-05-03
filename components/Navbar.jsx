@@ -269,6 +269,7 @@ export default function Navbar() {
                     <div className="flex items-center">
                         {}
                         <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src="/logo.png"
                                 alt="NFSU Logo"
@@ -457,6 +458,7 @@ export default function Navbar() {
                                 >
                                     <div className="w-8 h-8 rounded-full overflow-hidden border border-white/20">
                                         {user.avatar ? (
+                                            /* eslint-disable-next-line @next/next/no-img-element */
                                             <img
                                                 src={user.avatar}
                                                 alt={user.name}

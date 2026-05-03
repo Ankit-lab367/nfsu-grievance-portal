@@ -174,6 +174,7 @@ export default function ItemDetailsPage({ params }) {
                             {}
                             <div className="relative w-full h-[400px] bg-white/5 dark:bg-white/5 overflow-hidden">
                                 {item.image ? (
+                                    /* eslint-disable-next-line @next/next/no-img-element */
                                     <img
                                         src={item.image}
                                         alt={item.subject}
@@ -268,6 +269,7 @@ export default function ItemDetailsPage({ params }) {
                                         <div className="flex items-start space-x-3">
                                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-rose-700 flex items-center justify-center text-white font-bold text-sm border-2 border-white/10 shadow-lg shrink-0 overflow-hidden">
                                                 {comment.avatar ? (
+                                                    /* eslint-disable-next-line @next/next/no-img-element */
                                                     <img src={comment.avatar} alt={comment.user} className="w-full h-full object-cover" />
                                                 ) : comment.user.charAt(0)}
                                             </div>

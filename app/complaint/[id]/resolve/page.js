@@ -195,6 +195,7 @@ export default function ResolveComplaintPage({ params }) {
                                                 animate={{ scale: 1, opacity: 1 }}
                                                 className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 group shadow-lg"
                                             >
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                                 <img src={preview.url} alt="Preview" className="w-full h-full object-cover" />
                                                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                     <button

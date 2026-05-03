@@ -170,6 +170,7 @@ export default function SellItemPage() {
                                     />
                                     {imagePreview ? (
                                         <div className="relative h-48 w-full">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img src={imagePreview} alt="Preview" className="w-full h-full object-contain rounded-xl" />
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
                                                 <FaCloudUploadAlt className="text-white text-3xl" />

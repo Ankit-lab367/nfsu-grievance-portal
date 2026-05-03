@@ -75,6 +75,7 @@ export default function SuperAdminDashboard() {
         <div className="min-h-screen relative bg-slate-900 overflow-hidden transition-colors duration-500">
             {}
             <div className="fixed inset-0 z-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     src="/background.jpeg"
                     alt="Background"

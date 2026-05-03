@@ -110,6 +110,7 @@ export default function LoginPage() {
                 <div className="glass-card-theme p-8 md:p-10 border-white/10 shadow-2xl">
                     <div className="text-center mb-8">
                         <div className="inline-block mb-4">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src="/logo.png"
                                 alt="NFSU Logo"
@@ -177,7 +178,7 @@ export default function LoginPage() {
 
                     <div className="mt-8 text-center border-t border-white/10 pt-6">
                         <p className="dark:text-gray-300 font-medium">
-                            Don't have an account?{' '}
+                            Don&apos;t have an account?{' '}
                             <Link href="/register-selection" className="text-red-600 dark:text-red-400 hover:underline font-bold">
                                 Register here
                             </Link>
@@ -238,6 +239,7 @@ export default function LoginPage() {
                                 transition={{ duration: 0.6, type: 'spring' }}
                                 className="mb-8"
                             >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src="/logo.png" alt="NFSU" className="w-24 h-24 mx-auto object-contain filter drop-shadow-[0_0_15px_rgba(225,29,72,0.5)]" />
                             </motion.div>
 

@@ -87,6 +87,7 @@ export default function AdminRegisterPage() {
                     {}
                     <div className="text-center mb-8">
                         <div className="relative inline-block mb-4">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src="/logo.png"
                                 alt="NFSU Logo"

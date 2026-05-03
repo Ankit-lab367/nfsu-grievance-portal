@@ -9,6 +9,7 @@ import {
     FaCheckSquare, FaRegSquare, FaPaperclip, FaFileAlt, FaImage, FaDownload
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import VerificationGuard from '@/components/VerificationGuard';
 
 const ROLE_META = {
     student: {
@@ -78,6 +79,7 @@ function Avatar({ user, size = 44 }) {
     const meta = ROLE_META[user?.role] || ROLE_META.student;
     if (user?.avatar && !user.avatar.includes('default-avatar')) {
         return (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
                 src={user.avatar}
                 alt={user.name}
@@ -102,6 +104,7 @@ function Avatar({ user, size = 44 }) {
 function GroupAvatar({ group, size = 44 }) {
     if (group?.avatar) {
         return (
+            // eslint-disable-next-line @next/next/no-img-element
             <img 
                 src={group.avatar} 
                 alt={group.name} 
@@ -181,6 +184,7 @@ function ChatPanel({ contact, currentUser, onClose }) {
         }
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (!contact?._id) return;
         setLoading(true);
@@ -188,7 +192,7 @@ function ChatPanel({ contact, currentUser, onClose }) {
         
         const intervalId = setInterval(fetchMessages, 3000);
         return () => clearInterval(intervalId);
-    }, [contact?._id]);
+    }, [contact?._id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -341,6 +345,7 @@ function GroupChatPanel({ group, currentUser, onClose, onDeleted, onUpdate }) {
         }
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (!group?._id) return;
         setLoading(true);
@@ -348,7 +353,7 @@ function GroupChatPanel({ group, currentUser, onClose, onDeleted, onUpdate }) {
         
         const intervalId = setInterval(fetchMessages, 3000);
         return () => clearInterval(intervalId);
-    }, [group?._id]);
+    }, [group?._id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -556,6 +561,7 @@ function GroupChatPanel({ group, currentUser, onClose, onDeleted, onUpdate }) {
                                         {msg.attachments?.map((att, attIdx) => (
                                             <div key={attIdx} style={{ marginTop: msg.content ? 8 : 0 }}>
                                                 {att.type === 'image' ? (
+                                                    /* eslint-disable-next-line @next/next/no-img-element */
                                                     <img 
                                                         src={att.url} 
                                                         alt="attachment" 
@@ -740,9 +746,10 @@ function AddMemberOverlay({ group, onClose, onAdded }) {
     const [selectedIds, setSelectedIds] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         fetchUsers('');
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const fetchUsers = async (q) => {
         setLoading(true);
@@ -901,6 +908,7 @@ export default function PersonalTalkingPage() {
         });
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         const userData = localStorage.getItem('user');
         const token = localStorage.getItem('token');
@@ -915,7 +923,7 @@ export default function PersonalTalkingPage() {
         
         const unreadInterval = setInterval(() => fetchUnread(token), 3000);
         return () => clearInterval(unreadInterval);
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const fetchUnread = async (token) => {
         try {
@@ -1024,285 +1032,210 @@ export default function PersonalTalkingPage() {
     return (
         <div style={{ minHeight: '100vh', background: '#080c14', fontFamily: "'Inter', sans-serif" }}>
             <Navbar />
-
-            {showCreateGroupModal && (
-                <div style={{
-                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 999,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)'
-                }}>
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                        style={{
-                            width: 480, background: '#111827', borderRadius: 24, border: '1px solid rgba(255,255,255,0.1)',
-                            overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '80vh',
-                            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
-                        }}
-                    >
-                        <div style={{ padding: '24px 24px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: '#f8fafc' }}>Create Group</h2>
-                            <button onClick={() => setShowCreateGroupModal(false)} style={{ background:'none', border:'none', color:'#64748b', cursor:'pointer' }}><FaTimes/></button>
-                        </div>
-                        
-                        <div style={{ padding: 24, flex: 1, overflowY: 'auto' }}>
-                            <div style={{ marginBottom: 20 }}>
-                                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#cbd5e1', marginBottom: 8 }}>Group Name</label>
-                                <input
-                                    value={newGroupName} onChange={e => setNewGroupName(e.target.value)}
-                                    placeholder="e.g. History Project"
-                                    style={{
-                                        width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-                                        borderRadius: 12, padding: '12px 16px', color: '#f1f5f9', fontSize: 14, outline: 'none'
+            <VerificationGuard user={currentUser}>
+                <div style={{ height: 'calc(100vh - 73px)', display: 'flex', overflow: 'hidden' }}>
+                    {}
+                    <div style={{
+                        width: (selectedUser || selectedGroup) ? 340 : '100%', maxWidth: (selectedUser || selectedGroup) ? 340 : undefined,
+                        flexShrink: 0, display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(255,255,255,0.07)',
+                        background: 'rgba(255,255,255,0.015)', transition: 'width 0.3s', overflow: 'hidden',
+                    }}>
+                        <div style={{ padding: '28px 24px 20px', flexShrink: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                    <div style={{
+                                        width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg, rgba(225,29,72,0.25), rgba(190,18,60,0.15))',
+                                        border: '1px solid rgba(225,29,72,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    }}>
+                                        <FaCommentDots style={{ color: '#e11d48', fontSize: 18 }} />
+                                    </div>
+                                    <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: '#f1f5f9', letterSpacing: '-0.02em' }}>
+                                        Personal Talking
+                                    </h1>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        const role = currentUser?.role;
+                                        if (role === 'student') router.push('/dashboard/student');
+                                        else if (role === 'super-admin') router.push('/dashboard/super-admin');
+                                        else router.push('/dashboard/admin'); 
                                     }}
-                                />
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px',
+                                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                                        borderRadius: 12, color: '#cbd5e1', fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0
+                                    }}
+                                >
+                                    <FaArrowLeft style={{ fontSize: 10 }} /> Dashboard
+                                </button>
                             </div>
 
-                            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#cbd5e1', marginBottom: 8 }}>
-                                Invite Members ({selectedMembers.length})
-                            </label>
+                            {}
+                            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 4, marginBottom: 16 }}>
+                                <button
+                                    onClick={() => setActiveTab('members')}
+                                    style={{
+                                        flex: 1, padding: '8px', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s',
+                                        background: activeTab === 'members' ? '#e11d48' : 'transparent', color: activeTab === 'members' ? '#fff' : '#94a3b8'
+                                    }}
+                                >
+                                    Members
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('groups')}
+                                    style={{
+                                        flex: 1, padding: '8px', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s',
+                                        background: activeTab === 'groups' ? '#f59e0b' : 'transparent', color: activeTab === 'groups' ? '#fff' : '#94a3b8'
+                                    }}
+                                >
+                                    Groups
+                                </button>
+                            </div>
+
+                            {activeTab === 'members' && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '10px 14px' }}>
+                                    <FaSearch style={{ color: '#475569', fontSize: 13, flexShrink: 0 }} />
+                                    <input
+                                        value={search} onChange={e => handleSearch(e.target.value)} placeholder="Search members…"
+                                        style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#f1f5f9', fontSize: 14 }}
+                                    />
+                                    {search && <button onClick={() => handleSearch('')} style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer' }}><FaTimes style={{ fontSize: 12 }} /></button>}
+                                </div>
+                            )}
                             
-                            <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)', maxHeight: 300, overflowY: 'auto' }}>
-                                {sortedGroups.map(role => (
-                                    <div key={role}>
-                                        <div style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.03)', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
-                                            {role}
-                                        </div>
-                                        {grouped[role].map(u => {
-                                            const isSelected = selectedMembers.find(m => m._id === u._id);
-                                            return (
-                                                <div key={u._id} onClick={() => toggleMemberSelection(u)} style={{
-                                                    display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)', cursor: 'pointer', transition: 'background 0.2s', background: isSelected ? 'rgba(245,158,11,0.08)' : 'transparent'
-                                                }}>
-                                                    {isSelected ? <FaCheckSquare style={{ color: '#f59e0b', fontSize: 18 }} /> : <FaRegSquare style={{ color: '#475569', fontSize: 18 }} />}
-                                                    <Avatar user={u} size={32} />
-                                                    <span style={{ color: isSelected ? '#f8fafc' : '#cbd5e1', fontSize: 14, fontWeight: isSelected ? 600 : 400 }}>{u.name}</span>
-                                                </div>
-                                            );
-                                        })}
+                            {activeTab === 'groups' && (
+                                <button
+                                    onClick={() => setShowCreateGroupModal(true)}
+                                    style={{
+                                        width: '100%', padding: '12px', background: 'rgba(245,158,11,0.1)', border: '1px dashed rgba(245,158,11,0.4)', borderRadius: 12,
+                                        color: '#f59e0b', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.2s'
+                                    }}
+                                >
+                                    <FaPlus /> Create New Group
+                                </button>
+                            )}
+                        </div>
+
+                        <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 16 }}>
+                            {activeTab === 'members' && (
+                                loadingUsers ? (
+                                    <div style={{ textAlign: 'center', padding: '60px 24px' }}>
+                                        <p style={{ color: '#475569', fontSize: 13 }}>Loading members…</p>
                                     </div>
-                                ))}
+                                ) : users.length === 0 ? (
+                                    <div style={{ textAlign: 'center', padding: '60px 24px' }}>
+                                        <p style={{ color: '#475569', fontSize: 14 }}>No members found</p>
+                                    </div>
+                                ) : (
+                                    sortedGroups.map(role => (
+                                        <div key={role}>
+                                            <div style={{ padding: '10px 24px 6px', display: 'flex', alignItems: 'center', gap: 8 }}><RoleBadge role={role} /></div>
+                                            {grouped[role].map(u => (
+                                                <motion.button
+                                                    key={u._id} whileHover={{ backgroundColor: 'rgba(255,255,255,0.06)' }} whileTap={{ scale: 0.98 }}
+                                                    onClick={() => { setSelectedGroup(null); setSelectedUser(u); }}
+                                                    onContextMenu={(e) => handleContextMenu(e, u._id)}
+                                                    style={{
+                                                        width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '12px 24px',
+                                                        background: selectedUser?._id === u._id ? 'rgba(225,29,72,0.08)' : 'transparent', border: 'none', cursor: 'pointer',
+                                                        borderLeft: selectedUser?._id === u._id ? '3px solid #e11d48' : '3px solid transparent', transition: 'all 0.15s',
+                                                    }}
+                                                >
+                                                    <div style={{ position: 'relative' }}>
+                                                        <Avatar user={u} size={44} />
+                                                        {unreadSenders.includes(u._id) && (
+                                                            <span style={{
+                                                                position: 'absolute', top: -1, right: -1,
+                                                                width: 12, height: 12, background: '#ef4444',
+                                                                border: '2px solid #080c14', borderRadius: '50%',
+                                                                boxShadow: '0 0 10px rgba(239,68,68,0.5)',
+                                                                animation: 'pulse 2s infinite'
+                                                            }} />
+                                                        )}
+                                                    </div>
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: selectedUser?._id === u._id ? '#f1f5f9' : '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name}</p>
+                                                        <p style={{ margin: '2px 0 0', fontSize: 12, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email}</p>
+                                                    </div>
+                                                </motion.button>
+                                            ))}
+                                        </div>
+                                    ))
+                                )
+                            )}
+
+                            {activeTab === 'groups' && (
+                                loadingGroups ? (
+                                    <div style={{ textAlign: 'center', padding: '60px 24px' }}>
+                                        <p style={{ color: '#475569', fontSize: 13 }}>Loading groups…</p>
+                                    </div>
+                                ) : groups.length === 0 ? (
+                                    <div style={{ textAlign: 'center', padding: '60px 24px' }}>
+                                        <FaUsers style={{ fontSize: 32, color: '#475569', marginBottom: 12 }} />
+                                        <p style={{ color: '#475569', fontSize: 14, margin: 0 }}>No groups yet. Create one!</p>
+                                    </div>
+                                ) : (
+                                    groups.map(g => (
+                                        <motion.button
+                                            key={g._id} whileHover={{ backgroundColor: 'rgba(255,255,255,0.06)' }} whileTap={{ scale: 0.98 }}
+                                            onClick={() => { setSelectedUser(null); setSelectedGroup(g); }}
+                                            style={{
+                                                width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '12px 24px',
+                                                background: selectedGroup?._id === g._id ? 'rgba(245,158,11,0.08)' : 'transparent', border: 'none', cursor: 'pointer',
+                                                borderLeft: selectedGroup?._id === g._id ? '3px solid #f59e0b' : '3px solid transparent', transition: 'all 0.15s',
+                                            }}
+                                        >
+                                            <div style={{ position: 'relative' }}>
+                                                <GroupAvatar group={g} size={44} />
+                                                {unreadGroups.includes(g._id) && (
+                                                    <span style={{
+                                                        position: 'absolute', top: -1, right: -1,
+                                                        width: 12, height: 12, background: '#f59e0b',
+                                                        border: '2px solid #080c14', borderRadius: '50%',
+                                                        boxShadow: '0 0 10px rgba(245,158,11,0.5)',
+                                                        animation: 'pulse 2s infinite'
+                                                    }} />
+                                                )}
+                                            </div>
+                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                                <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: selectedGroup?._id === g._id ? '#f1f5f9' : '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.name}</p>
+                                                <p style={{ margin: '2px 0 0', fontSize: 12, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.members.length} members</p>
+                                            </div>
+                                        </motion.button>
+                                    ))
+                                )
+                            )}
+                        </div>
+                    </div>
+
+                    <AnimatePresence>
+                        {selectedUser && (
+                            <div style={{ flex: 1, overflow: 'hidden' }}>
+                                <ChatPanel contact={selectedUser} currentUser={currentUser} onClose={() => setSelectedUser(null)} />
                             </div>
-                        </div>
-
-                        <div style={{ padding: 20, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-                            <button onClick={() => setShowCreateGroupModal(false)} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 600, cursor: 'pointer', padding: '10px 16px' }}>Cancel</button>
-                            <button
-                                onClick={createGroup} disabled={isCreating || !newGroupName.trim() || selectedMembers.length === 0}
-                                style={{
-                                    background: (isCreating || !newGroupName.trim() || selectedMembers.length === 0) ? 'rgba(255,255,255,0.1)' : '#f59e0b',
-                                    color: (isCreating || !newGroupName.trim() || selectedMembers.length === 0) ? '#64748b' : '#080c14',
-                                    border: 'none', borderRadius: 12, padding: '10px 24px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s'
-                                }}
-                            >
-                                {isCreating ? 'Creating...' : 'Create Group'}
-                            </button>
-                        </div>
-                    </motion.div>
-                </div>
-            )}
-
-            <div style={{ height: 'calc(100vh - 73px)', display: 'flex', overflow: 'hidden' }}>
-                {}
-                <div style={{
-                    width: (selectedUser || selectedGroup) ? 340 : '100%', maxWidth: (selectedUser || selectedGroup) ? 340 : undefined,
-                    flexShrink: 0, display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(255,255,255,0.07)',
-                    background: 'rgba(255,255,255,0.015)', transition: 'width 0.3s', overflow: 'hidden',
-                }}>
-                    <div style={{ padding: '28px 24px 20px', flexShrink: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <div style={{
-                                    width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg, rgba(225,29,72,0.25), rgba(190,18,60,0.15))',
-                                    border: '1px solid rgba(225,29,72,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                }}>
-                                    <FaCommentDots style={{ color: '#e11d48', fontSize: 18 }} />
-                                </div>
-                                <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: '#f1f5f9', letterSpacing: '-0.02em' }}>
-                                    Personal Talking
-                                </h1>
-                            </div>
-                            <button
-                                onClick={() => {
-                                    const role = currentUser?.role;
-                                    if (role === 'student') router.push('/dashboard/student');
-                                    else if (role === 'super-admin') router.push('/dashboard/super-admin');
-                                    else router.push('/dashboard/admin'); 
-                                }}
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px',
-                                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                                    borderRadius: 12, color: '#cbd5e1', fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0
-                                }}
-                            >
-                                <FaArrowLeft style={{ fontSize: 10 }} /> Dashboard
-                            </button>
-                        </div>
-
-                        {}
-                        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 4, marginBottom: 16 }}>
-                            <button
-                                onClick={() => setActiveTab('members')}
-                                style={{
-                                    flex: 1, padding: '8px', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s',
-                                    background: activeTab === 'members' ? '#e11d48' : 'transparent', color: activeTab === 'members' ? '#fff' : '#94a3b8'
-                                }}
-                            >
-                                Members
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('groups')}
-                                style={{
-                                    flex: 1, padding: '8px', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s',
-                                    background: activeTab === 'groups' ? '#f59e0b' : 'transparent', color: activeTab === 'groups' ? '#fff' : '#94a3b8'
-                                }}
-                            >
-                                Groups
-                            </button>
-                        </div>
-
-                        {activeTab === 'members' && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '10px 14px' }}>
-                                <FaSearch style={{ color: '#475569', fontSize: 13, flexShrink: 0 }} />
-                                <input
-                                    value={search} onChange={e => handleSearch(e.target.value)} placeholder="Search members…"
-                                    style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#f1f5f9', fontSize: 14 }}
+                        )}
+                        {selectedGroup && (
+                            <div style={{ flex: 1, overflow: 'hidden' }}>
+                                <GroupChatPanel 
+                                    group={selectedGroup} 
+                                    currentUser={currentUser} 
+                                    onClose={() => setSelectedGroup(null)}
+                                    onDeleted={() => { setSelectedGroup(null); fetchGroups(); }}
+                                    onUpdate={() => fetchGroups()}
                                 />
-                                {search && <button onClick={() => handleSearch('')} style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer' }}><FaTimes style={{ fontSize: 12 }} /></button>}
                             </div>
                         )}
-                        
-                        {activeTab === 'groups' && (
-                            <button
-                                onClick={() => setShowCreateGroupModal(true)}
-                                style={{
-                                    width: '100%', padding: '12px', background: 'rgba(245,158,11,0.1)', border: '1px dashed rgba(245,158,11,0.4)', borderRadius: 12,
-                                    color: '#f59e0b', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.2s'
-                                }}
-                            >
-                                <FaPlus /> Create New Group
-                            </button>
-                        )}
-                    </div>
-
-                    <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 16 }}>
-                        {activeTab === 'members' && (
-                            loadingUsers ? (
-                                <div style={{ textAlign: 'center', padding: '60px 24px' }}>
-                                    <p style={{ color: '#475569', fontSize: 13 }}>Loading members…</p>
-                                </div>
-                            ) : users.length === 0 ? (
-                                <div style={{ textAlign: 'center', padding: '60px 24px' }}>
-                                    <p style={{ color: '#475569', fontSize: 14 }}>No members found</p>
-                                </div>
-                            ) : (
-                                sortedGroups.map(role => (
-                                    <div key={role}>
-                                        <div style={{ padding: '10px 24px 6px', display: 'flex', alignItems: 'center', gap: 8 }}><RoleBadge role={role} /></div>
-                                        {grouped[role].map(u => (
-                                            <motion.button
-                                                key={u._id} whileHover={{ backgroundColor: 'rgba(255,255,255,0.06)' }} whileTap={{ scale: 0.98 }}
-                                                onClick={() => { setSelectedGroup(null); setSelectedUser(u); }}
-                                                onContextMenu={(e) => handleContextMenu(e, u._id)}
-                                                style={{
-                                                    width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '12px 24px',
-                                                    background: selectedUser?._id === u._id ? 'rgba(225,29,72,0.08)' : 'transparent', border: 'none', cursor: 'pointer',
-                                                    borderLeft: selectedUser?._id === u._id ? '3px solid #e11d48' : '3px solid transparent', transition: 'all 0.15s',
-                                                }}
-                                            >
-                                                <div style={{ position: 'relative' }}>
-                                                    <Avatar user={u} size={44} />
-                                                    {unreadSenders.includes(u._id) && (
-                                                        <span style={{
-                                                            position: 'absolute', top: -1, right: -1,
-                                                            width: 12, height: 12, background: '#ef4444',
-                                                            border: '2px solid #080c14', borderRadius: '50%',
-                                                            boxShadow: '0 0 10px rgba(239,68,68,0.5)',
-                                                            animation: 'pulse 2s infinite'
-                                                        }} />
-                                                    )}
-                                                </div>
-                                                <div style={{ flex: 1, minWidth: 0 }}>
-                                                    <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: selectedUser?._id === u._id ? '#f1f5f9' : '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name}</p>
-                                                    <p style={{ margin: '2px 0 0', fontSize: 12, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email}</p>
-                                                </div>
-                                            </motion.button>
-                                        ))}
-                                    </div>
-                                ))
-                            )
-                        )}
-
-                        {activeTab === 'groups' && (
-                            loadingGroups ? (
-                                <div style={{ textAlign: 'center', padding: '60px 24px' }}>
-                                    <p style={{ color: '#475569', fontSize: 13 }}>Loading groups…</p>
-                                </div>
-                            ) : groups.length === 0 ? (
-                                <div style={{ textAlign: 'center', padding: '60px 24px' }}>
-                                    <FaUsers style={{ fontSize: 32, color: '#475569', marginBottom: 12 }} />
-                                    <p style={{ color: '#475569', fontSize: 14, margin: 0 }}>No groups yet. Create one!</p>
-                                </div>
-                            ) : (
-                                groups.map(g => (
-                                    <motion.button
-                                        key={g._id} whileHover={{ backgroundColor: 'rgba(255,255,255,0.06)' }} whileTap={{ scale: 0.98 }}
-                                        onClick={() => { setSelectedUser(null); setSelectedGroup(g); }}
-                                        style={{
-                                            width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '12px 24px',
-                                            background: selectedGroup?._id === g._id ? 'rgba(245,158,11,0.08)' : 'transparent', border: 'none', cursor: 'pointer',
-                                            borderLeft: selectedGroup?._id === g._id ? '3px solid #f59e0b' : '3px solid transparent', transition: 'all 0.15s',
-                                        }}
-                                    >
-                                        <div style={{ position: 'relative' }}>
-                                            <GroupAvatar group={g} size={44} />
-                                            {unreadGroups.includes(g._id) && (
-                                                <span style={{
-                                                    position: 'absolute', top: -1, right: -1,
-                                                    width: 12, height: 12, background: '#f59e0b',
-                                                    border: '2px solid #080c14', borderRadius: '50%',
-                                                    boxShadow: '0 0 10px rgba(245,158,11,0.5)',
-                                                    animation: 'pulse 2s infinite'
-                                                }} />
-                                            )}
-                                        </div>
-                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                            <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: selectedGroup?._id === g._id ? '#f1f5f9' : '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.name}</p>
-                                            <p style={{ margin: '2px 0 0', fontSize: 12, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.members.length} members</p>
-                                        </div>
-                                    </motion.button>
-                                ))
-                            )
-                        )}
-                    </div>
+                    </AnimatePresence>
                 </div>
-
-                <AnimatePresence>
-                    {selectedUser && (
-                        <div style={{ flex: 1, overflow: 'hidden' }}>
-                            <ChatPanel contact={selectedUser} currentUser={currentUser} onClose={() => setSelectedUser(null)} />
-                        </div>
-                    )}
-                    {selectedGroup && (
-                        <div style={{ flex: 1, overflow: 'hidden' }}>
-                            <GroupChatPanel 
-                                group={selectedGroup} 
-                                currentUser={currentUser} 
-                                onClose={() => setSelectedGroup(null)}
-                                onDeleted={() => { setSelectedGroup(null); fetchGroups(); }}
-                                onUpdate={() => fetchGroups()}
-                            />
-                        </div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {contextMenu.show && (
-                <ContextMenu 
-                    x={contextMenu.x} 
-                    y={contextMenu.y} 
-                    userId={contextMenu.userId} 
-                    onClose={() => setContextMenu({ ...contextMenu, show: false })} 
-                />
-            )}
+                {contextMenu.show && (
+                    <ContextMenu 
+                        x={contextMenu.x} 
+                        y={contextMenu.y} 
+                        userId={contextMenu.userId} 
+                        onClose={() => setContextMenu({ ...contextMenu, show: false })} 
+                    />
+                )}
+            </VerificationGuard>
         </div>
     );
 }

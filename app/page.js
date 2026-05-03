@@ -148,6 +148,7 @@ export default function HomePage() {
                                 pointerEvents: 'none',
                             }}
                         >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src="/logo.png" alt="NFSU" style={{ width: 80, height: 80, objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
                             <p style={{ color: 'white', fontWeight: 900, fontSize: 22, letterSpacing: 8, marginTop: 16, textTransform: 'uppercase', opacity: 0.9 }}>NFSU Portal</p>
                             <div style={{ width: 60, height: 2, background: 'linear-gradient(to right, transparent, #e11d48, transparent)', marginTop: 10, borderRadius: 2 }} />
@@ -161,6 +162,7 @@ export default function HomePage() {
                     <div className="container mx-auto px-6 py-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2 sm:space-x-3">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src="/logo.png"
                                     alt="NFSU Logo"
@@ -457,6 +459,7 @@ export default function HomePage() {
                                                 marginBottom: 12,
                                                 flexShrink: 0,
                                             }}>
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                                 <img
                                                     src={dev.img}
                                                     alt={dev.name}

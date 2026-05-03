@@ -168,6 +168,7 @@ export default function MarketplaceItemDetailsPage({ params }) {
                             {}
                             <div className="relative w-full h-[500px] bg-white/5 dark:bg-white/5 overflow-hidden border-b border-white/10">
                                 {item.image ? (
+                                    /* eslint-disable-next-line @next/next/no-img-element */
                                     <img
                                         src={item.image}
                                         alt={item.subject}

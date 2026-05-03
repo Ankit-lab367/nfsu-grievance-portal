@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
+import BannedEmail from '@/models/BannedEmail';
 import { generateToken } from '@/lib/auth';
 import OTP from '@/models/OTP';
 import { sanitizeInput } from '@/lib/security';
@@ -82,6 +83,12 @@ export async function POST(request) {
         }
 
         const emailLower = email.toLowerCase();
+
+        
+        const isBanned = await BannedEmail.findOne({ email: emailLower });
+        if (isBanned) {
+            return NextResponse.json({ error: 'This email has been banned from the portal.' }, { status: 403 });
+        }
 
         
         const otpRecord = await OTP.findOne({ email: emailLower });

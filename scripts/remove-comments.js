@@ -5,7 +5,7 @@ const ignoreDirs = ['node_modules', '.next', '.git', 'dist', 'build', '.gemini']
 const targetExtensions = ['.js', '.jsx', '.ts', '.tsx', '.css', '.html', '.env', '.local', '.gitignore'];
 function removeComments(content, ext) {
     if (ext === '.js' || ext === '.jsx' || ext === '.ts' || ext === '.tsx' || ext === '.css') {
-        content = content.replace(/\/\*[\s\S]*?\*\
+        content = content.replace(/\/\*[\s\S]*?\*\//g, '');
         content = content.replace(/([^:])\/\/.*$/gm, '$1');
     }
     if (ext === '.html') {

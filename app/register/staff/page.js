@@ -177,6 +177,7 @@ export default function StaffRegisterPage() {
                     {}
                     <div className="text-center mb-8">
                         <div className="relative inline-block mb-4">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src="/logo.png"
                                 alt="NFSU Logo"
@@ -202,6 +203,7 @@ export default function StaffRegisterPage() {
                             <div className="relative group">
                                 <div className="w-32 h-32 rounded-full border-4 border-dashed border-white/20 overflow-hidden bg-white/5 flex items-center justify-center relative transition-all group-hover:border-red-500/50">
                                     {avatarPreview ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
                                         <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
                                     ) : (
                                         <FaUserShield className="text-4xl text-gray-500" />

@@ -112,6 +112,7 @@ export default function ApplicationDetailPage() {
                                 <div className="relative inline-block mb-6">
                                     <div className="w-32 h-32 rounded-3xl overflow-hidden border-4 border-red-500/20 shadow-2xl">
                                         {application?.student?.avatar ? (
+                                            /* eslint-disable-next-line @next/next/no-img-element */
                                             <img src={application.student.avatar} alt={application.student.name} className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="w-full h-full bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center text-white font-black text-4xl">
@@ -238,6 +239,7 @@ export default function ApplicationDetailPage() {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {application.images.map((img, idx) => (
                                                 <div key={idx} className="relative group overflow-hidden rounded-3xl border border-slate-200 dark:border-white/10 shadow-2xl">
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                                     <img src={img} alt={`Attachment ${idx + 1}`} className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" />
                                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                                                         <div className="bg-white/20 backdrop-blur-md px-6 py-3 rounded-2xl flex items-center gap-3 text-white font-bold">

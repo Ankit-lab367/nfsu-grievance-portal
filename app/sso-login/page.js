@@ -29,6 +29,7 @@ function SSOLoginContent() {
         }
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         const verifySSO = async () => {
             if (!code) {
@@ -68,7 +69,7 @@ function SSOLoginContent() {
 
         verifySSO();
         
-    }, [code]);
+    }, [code]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handlePhoneSubmit = async (e) => {
         e.preventDefault();

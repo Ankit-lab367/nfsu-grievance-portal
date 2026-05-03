@@ -15,6 +15,8 @@ export default function VerifyIDPage() {
     const [user, setUser] = useState(null);
     const [progress, setProgress] = useState(0);
     const scanTimerRef = useRef(null);
+    const capturedImageRef = useRef(null);
+    const hasCapturedRef = useRef(false);
 
     useEffect(() => {
         const userData = localStorage.getItem('user');
@@ -125,8 +127,13 @@ export default function VerifyIDPage() {
             const isMatch = checkPattern();
             
             if (isMatch) {
-                
                 currentProgress += Math.random() * 5 + 3;
+                
+                if (currentProgress >= 50 && !hasCapturedRef.current) {
+                    captureCurrentFrame();
+                    hasCapturedRef.current = true;
+                }
+
                 if (currentProgress >= 100) {
                     currentProgress = 100;
                     clearInterval(interval);
@@ -139,17 +146,36 @@ export default function VerifyIDPage() {
         scanTimerRef.current = interval;
     };
 
+    const captureCurrentFrame = () => {
+        if (!videoRef.current || !canvasRef.current) return;
+        const captureCanvas = document.createElement('canvas');
+        captureCanvas.width = 1280;
+        captureCanvas.height = 720;
+        const ctx = captureCanvas.getContext('2d');
+        ctx.drawImage(videoRef.current, 0, 0, 1280, 720);
+        capturedImageRef.current = captureCanvas.toDataURL('image/jpeg', 0.8);
+    };
+
     const handleVerification = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('/api/auth/verify-id', {}, {
+            
+            // Use pre-captured image from 50% mark, or capture now if missing
+            let idImage = capturedImageRef.current;
+            if (!idImage) {
+                captureCurrentFrame();
+                idImage = capturedImageRef.current;
+            }
+
+            const response = await axios.post('/api/auth/verify-id', {
+                idImage: idImage
+            }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             if (response.data.success) {
                 
-                const updatedUser = { ...user, isVerifiedID: true };
-                localStorage.setItem('user', JSON.stringify(updatedUser));
+                
                 setStatus('success');
                 
                 
@@ -289,13 +315,13 @@ export default function VerifyIDPage() {
                                 <div className="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
                                     <FaCheckCircle className="text-5xl text-green-500" />
                                 </div>
-                                <h3 className="text-2xl font-bold mb-4">Identity Verified!</h3>
-                                <p className="text-gray-400 mb-8 max-w-xs">NFSU patterns matched. Your portal access has been activated successfully.</p>
+                                <h3 className="text-2xl font-bold mb-4">Verification Submitted!</h3>
+                                <p className="text-gray-400 mb-8 max-w-xs">NFSU patterns matched. Administrator will review your ID and activate your portal access soon.</p>
                                 <button 
                                     onClick={() => router.push('/dashboard/student')}
-                                    className="px-8 py-3 bg-green-600 hover:bg-green-700 rounded-xl font-bold transition-all flex items-center space-x-2"
+                                    className="px-8 py-3 bg-red-600 hover:bg-red-700 rounded-xl font-bold transition-all flex items-center space-x-2"
                                 >
-                                    <span>Enter Student Portal</span>
+                                    <span>Go to Dashboard</span>
                                     <FaArrowRight className="text-sm" />
                                 </button>
                             </motion.div>
@@ -330,6 +356,7 @@ export default function VerifyIDPage() {
                 <div className="mt-12 text-center text-gray-500 text-xs">
                     <p className="mb-4 uppercase tracking-[0.2em]">Secure Authentication Protocol</p>
                     <div className="flex items-center justify-center space-x-6 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src="/assets/nfsu-logo.png" alt="NFSU Logo" className="h-8 object-contain" />
                         <div className="w-px h-6 bg-white/20" />
                         <span className="font-bold">NFSU SECUREID™</span>

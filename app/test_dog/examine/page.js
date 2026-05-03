@@ -164,6 +164,7 @@ export default function ExamineAccountsPage() {
                                     <div className="relative">
                                         <div className="w-12 h-12 rounded-full border border-[#00ff00]/20 overflow-hidden flex items-center justify-center bg-black group-hover:border-[#00ff00]/60 transition-colors">
                                             {user.avatar ? (
+                                                // eslint-disable-next-line @next/next/no-img-element
                                                 <img src={user.avatar} alt={user.name} className="w-full h-full object-cover opacity-80" />
                                             ) : (
                                                 <FaUser className="text-[#00ff00]/30" />
@@ -215,6 +216,7 @@ export default function ExamineAccountsPage() {
                                 <div className="flex items-center space-x-4">
                                     <div className="w-16 h-16 rounded-full border-2 border-[#00ff00] overflow-hidden bg-zinc-800">
                                         {selectedUser.avatar ? (
+                                            // eslint-disable-next-line @next/next/no-img-element
                                             <img src={selectedUser.avatar} alt={selectedUser.name} className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center"><FaUser className="text-2xl" /></div>

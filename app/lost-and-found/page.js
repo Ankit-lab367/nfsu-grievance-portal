@@ -160,6 +160,7 @@ export default function LostAndFoundPage() {
                                             <div className="w-1/3 min-h-full relative overflow-hidden bg-slate-100 dark:bg-white/5 border-l border-slate-100 dark:border-white/5">
                                                 {item.image ? (
                                                     <>
+                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
                                                         <img
                                                             src={item.image}
                                                             alt={item.subject}

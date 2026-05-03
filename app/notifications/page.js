@@ -172,7 +172,7 @@ export default function NotificationsPage() {
                                     </motion.div>
                                     <h3 className="text-2xl font-bold dark:text-white mb-3">All Caught Up!</h3>
                                     <p className="text-gray-500 dark:text-gray-400 max-w-sm leading-relaxed">
-                                        You don't have any new notifications at the moment.
+                                        You don&apos;t have any new notifications at the moment.
                                     </p>
                                 </motion.div>
                             ) : (

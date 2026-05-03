@@ -145,7 +145,7 @@ export default function ApplicationStatusPage() {
                                         <FaFileInvoice className="text-4xl dark:text-white/10" />
                                     </div>
                                     <h2 className="text-2xl font-bold dark:text-white mb-2">No applications found</h2>
-                                    <p className="dark:text-gray-400 mb-6">You haven't submitted any applications yet.</p>
+                                    <p className="dark:text-gray-400 mb-6">You haven&apos;t submitted any applications yet.</p>
                                     <button
                                         onClick={() => router.push('/application/write')}
                                         className="px-8 py-3 bg-gradient-to-r from-red-700 to-rose-800 text-white rounded-xl font-bold hover:shadow-lg transition-all"

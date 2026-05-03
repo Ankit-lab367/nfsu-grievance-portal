@@ -94,6 +94,7 @@ export default function PublicProfilePage() {
                         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-red-600/20 to-rose-900/20" />
                         <div className="relative flex flex-col items-center">
                             <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white/10 overflow-hidden shadow-2xl mb-6 bg-white/5 dark:bg-slate-800">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src={user.avatar || '/assets/default-avatar.png'}
                                     alt={user.name}

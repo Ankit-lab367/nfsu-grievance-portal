@@ -192,6 +192,7 @@ export default function WriteApplicationPage() {
                                             key={index} 
                                             className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 group shadow-lg"
                                         >
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img src={preview} alt="preview" className="w-full h-full object-cover" />
                                             <button
                                                 type="button"

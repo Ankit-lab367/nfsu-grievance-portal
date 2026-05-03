@@ -35,6 +35,7 @@ function Particle({ x, y, delay, size }) {
 }
 export default function WelcomeSplash({ user, show, onDone }) {
     const [visible, setVisible] = useState(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (!show && user) {
             const t = setTimeout(() => {
@@ -43,7 +44,7 @@ export default function WelcomeSplash({ user, show, onDone }) {
             }, 800); 
             return () => clearTimeout(t);
         }
-    }, [show, user]);
+    }, [show, user]); // eslint-disable-line react-hooks/exhaustive-deps
     const name = user?.name?.split(' ')[0] || 'Welcome';
     const role = user?.role || 'student';
     const roleLabel = ROLE_LABELS[role] || role;

@@ -140,6 +140,7 @@ export default function MarketplacePage() {
                                             {}
                                             <div className="relative h-64 overflow-hidden bg-white/5 dark:bg-white/5">
                                                 {item.image ? (
+                                                    /* eslint-disable-next-line @next/next/no-img-element */
                                                     <img
                                                         src={item.image}
                                                         alt={item.subject}

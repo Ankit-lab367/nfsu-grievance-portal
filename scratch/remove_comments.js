@@ -6,7 +6,7 @@ const FILE_EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx', '.css'];
 
 function stripComments(code, extension) {
   if (extension === '.css') {
-    return code.replace(/\/\*[\s\S]*?\*\
+    return code.replace(/\/\*[\s\S]*?\*\//g, '');
   }
 
   

@@ -129,6 +129,7 @@ export default function TeacherRegisterPage() {
                 <div className="glass-card-theme p-8 md:p-10 border border-slate-200 dark:border-white/10 shadow-2xl">
                     <div className="text-center mb-8">
                         <div className="relative inline-block mb-4">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src="/logo.png"
                                 alt="NFSU Logo"

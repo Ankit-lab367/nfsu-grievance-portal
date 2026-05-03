@@ -139,6 +139,7 @@ export default function UnblockAccountPage() {
                                     <div className="flex items-center space-x-4 flex-1">
                                         <div className="w-10 h-10 rounded-full border border-blue-500/20 overflow-hidden flex items-center justify-center bg-black">
                                             {user.avatar ? (
+                                                // eslint-disable-next-line @next/next/no-img-element
                                                 <img src={user.avatar} alt={user.name} className="w-full h-full object-cover opacity-60" />
                                             ) : (
                                                 <FaUser className="text-blue-500/30" />

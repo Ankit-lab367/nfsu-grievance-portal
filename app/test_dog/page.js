@@ -5,10 +5,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaSkull } from 'react-icons/fa';
 import MatrixParticleBackground from '@/components/GodMode/MatrixParticleBackground';
 import DataStream from '@/components/GodMode/DataStream';
+import axios from 'axios';
 export default function GodModeDashboard() {
     const router = useRouter();
     const [showIntro, setShowIntro] = useState(true);
     const [isTransitioning, setIsTransitioning] = useState(false);
+    const [showUnbanModal, setShowUnbanModal] = useState(false);
+    const [bannedEmails, setBannedEmails] = useState([]);
+    const [modalLoading, setModalLoading] = useState(false);
+
     useEffect(() => {
         const userData = localStorage.getItem('user');
         if (!userData) {
@@ -26,19 +31,61 @@ export default function GodModeDashboard() {
         }, 4500); 
         return () => clearTimeout(timer);
     }, [router]);
+
+    const fetchBannedEmails = async () => {
+        setModalLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/api/admin/banned-emails', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                setBannedEmails(response.data.bannedEmails);
+            }
+        } catch (error) {
+            console.error('Error fetching banned emails:', error);
+        } finally {
+            setModalLoading(false);
+        }
+    };
+
+    const handleUnban = async (id) => {
+        if (!confirm('Are you sure you want to unban this email?')) return;
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.delete(`/api/admin/banned-emails?id=${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                setBannedEmails(bannedEmails.filter(email => email._id !== id));
+            }
+        } catch (error) {
+            alert('Failed to unban email');
+        }
+    };
+
     const handleNavigation = (path) => {
         setIsTransitioning(true);
         setTimeout(() => {
             router.push(path);
         }, 1500);
     };
+
     const buttons = [
         { label: 'BACK', action: () => router.push('/') },
         { label: 'EXAMINE ACCOUNTS', action: () => handleNavigation('/test_dog/examine') },
         { label: 'BLOCK ACCOUNT', action: () => handleNavigation('/test_dog/block') },
         { label: 'UNBLOCK ACCOUNT', action: () => handleNavigation('/test_dog/unblock') },
+        { 
+            label: 'UNBAN GMAILS', 
+            action: () => {
+                setShowUnbanModal(true);
+                fetchBannedEmails();
+            } 
+        },
         { label: 'SEE COMPLAINTS', action: () => handleNavigation('/test_dog/complaints') },
     ];
+
     return (
         <div className="min-h-screen bg-black overflow-hidden font-mono text-[#00ff00]">
             <AnimatePresence mode="wait">
@@ -55,6 +102,61 @@ export default function GodModeDashboard() {
                         <div className="absolute inset-0 z-0 pointer-events-none">
                             <MatrixParticleBackground color="0, 255, 0" />
                         </div>
+                        
+                        {}
+                        <AnimatePresence>
+                            {showUnbanModal && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="fixed inset-0 z-[110] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
+                                >
+                                    <div className="w-full max-w-2xl bg-black border-2 border-[#00ff00] rounded-xl overflow-hidden shadow-[0_0_50px_rgba(0,255,0,0.3)]">
+                                        <div className="p-6 border-b border-[#00ff00]/30 flex justify-between items-center bg-[#00ff00]/5">
+                                            <h2 className="text-2xl font-black tracking-widest uppercase">Banned Emails Database</h2>
+                                            <button 
+                                                onClick={() => setShowUnbanModal(false)}
+                                                className="hover:text-white transition-colors text-2xl font-bold"
+                                            >
+                                                [X]
+                                            </button>
+                                        </div>
+                                        <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                                            {modalLoading ? (
+                                                <div className="text-center py-12 animate-pulse">ACCESSING DATABASE...</div>
+                                            ) : bannedEmails.length === 0 ? (
+                                                <div className="text-center py-12 opacity-50 italic">NO BANNED EMAILS FOUND IN SYSTEM.</div>
+                                            ) : (
+                                                <div className="space-y-4">
+                                                    {bannedEmails.map((item) => (
+                                                        <div key={item._id} className="flex items-center justify-between p-4 border border-[#00ff00]/20 rounded bg-[#00ff00]/5 hover:bg-[#00ff00]/10 transition-all group">
+                                                            <div>
+                                                                <p className="font-bold text-lg">{item.email}</p>
+                                                                <p className="text-xs opacity-50 uppercase tracking-tighter">
+                                                                    Banned: {new Date(item.bannedAt).toLocaleString()}
+                                                                </p>
+                                                                <p className="text-[10px] text-red-500 mt-1 italic">Reason: {item.reason}</p>
+                                                            </div>
+                                                            <button 
+                                                                onClick={() => handleUnban(item._id)}
+                                                                className="px-4 py-2 bg-red-900/20 border border-red-500/50 text-red-500 hover:bg-red-500 hover:text-black font-black transition-all rounded"
+                                                            >
+                                                                UNBAN
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="p-4 bg-[#00ff00]/5 border-t border-[#00ff00]/30 text-center text-[10px] opacity-40 uppercase tracking-[0.3em]">
+                                            Secure Access • Protocol 9.2 Active
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
                         {}
                         <AnimatePresence>
                             {isTransitioning && (
@@ -197,6 +299,7 @@ function IntroSequence() {
         "CONNECTING TO GLOBAL NODE...",
         "IDENTITY VERIFIED: GOD_MODE",
     ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         let i = 0;
         const interval = setInterval(() => {
@@ -208,7 +311,7 @@ function IntroSequence() {
             }
         }, 400);
         return () => clearInterval(interval);
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
     return (
         <motion.div
             exit={{ opacity: 0, scale: 1.5, filter: "blur(20px)" }}

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaTrash, FaChevronDown, FaChevronUp, FaBell } from 'react-icons/fa';
@@ -49,7 +49,7 @@ export default function NoticeList() {
             <div className="text-center py-12 bg-white/5 rounded-xl border border-white/10">
                 <FaBell className="mx-auto text-4xl text-gray-500 mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-2">No New Notices</h3>
-                <p className="text-gray-400">You're all caught up!</p>
+                <p className="text-gray-400">You&apos;re all caught up!</p>
             </div>
         );
     }

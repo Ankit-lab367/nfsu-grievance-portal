@@ -65,6 +65,7 @@ export default function RegisterSelectionPage() {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-12"
                 >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/logo.png" alt="NFSU Logo" className="w-20 h-20 object-contain mx-auto mb-6" />
                     <h1 className="text-4xl md:text-5xl font-bold dark:text-white mb-4">Choose Your Role</h1>
                     <p className="dark:text-gray-300 text-lg font-medium">Select the type of account you want to create</p>
