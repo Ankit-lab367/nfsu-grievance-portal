@@ -10,6 +10,7 @@ import {
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import VerificationGuard from '@/components/VerificationGuard';
+import GlobalBackground from '@/components/GlobalBackground';
 
 const ROLE_META = {
     student: {
@@ -53,25 +54,31 @@ function RoleBadge({ role }) {
     const meta = ROLE_META[role] || ROLE_META.student;
     const Icon = meta.icon;
     return (
-        <span
+        <motion.span
+            animate={{ 
+                boxShadow: [`0 4px 12px ${meta.color}15`, `0 4px 20px ${meta.color}25`, `0 4px 12px ${meta.color}15`]
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 4,
-                padding: '2px 10px',
-                borderRadius: 999,
-                fontSize: 11,
-                fontWeight: 700,
+                gap: 5,
+                padding: '4px 12px',
+                borderRadius: 12,
+                fontSize: 10,
+                fontWeight: 900,
                 background: meta.bg,
                 border: `1px solid ${meta.border}`,
                 color: meta.color,
-                letterSpacing: '0.04em',
-                textTransform: 'capitalize',
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+                backdropFilter: 'blur(4px)',
+                textShadow: `0 0 8px ${meta.color}40`
             }}
         >
             <Icon style={{ fontSize: 9 }} />
             {meta.label}
-        </span>
+        </motion.span>
     );
 }
 
@@ -88,16 +95,20 @@ function Avatar({ user, size = 44 }) {
         );
     }
     return (
-        <div style={{
-            width: size, height: size, borderRadius: '50%',
-            background: `linear-gradient(135deg, ${meta.color}33, ${meta.color}66)`,
-            border: `2px solid ${meta.color}40`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: size * 0.38, fontWeight: 800, color: meta.color,
-            flexShrink: 0,
-        }}>
+        <motion.div 
+            whileHover={{ scale: 1.05, boxShadow: `0 0 20px ${meta.color}33` }}
+            style={{
+                width: size, height: size, borderRadius: '50%',
+                background: `linear-gradient(135deg, ${meta.color}33, ${meta.color}66)`,
+                border: `2px solid ${meta.color}40`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: size * 0.38, fontWeight: 800, color: meta.color,
+                flexShrink: 0,
+                transition: 'all 0.3s ease'
+            }}
+        >
             {user?.name?.charAt(0).toUpperCase()}
-        </div>
+        </motion.div>
     );
 }
 
@@ -232,7 +243,14 @@ function ChatPanel({ contact, currentUser, onClose }) {
     return (
         <motion.div
             initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }}
-            style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'rgba(15,15,30,0.98)', borderLeft: '1px solid rgba(255,255,255,0.08)' }}
+            style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                height: '100%', 
+                background: 'rgba(5, 5, 12, 0.5)', 
+                backdropFilter: 'blur(24px)',
+                borderLeft: '1px solid rgba(255,255,255,0.05)' 
+            }}
         >
             <div style={{
                 display: 'flex', alignItems: 'center', gap: 14, padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.08)',
@@ -273,12 +291,15 @@ function ChatPanel({ contact, currentUser, onClose }) {
                         return (
                             <div key={msg._id} style={{ display: 'flex', justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
                                 <div style={{
-                                    maxWidth: '72%', padding: '10px 14px', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                                    background: isMe ? 'linear-gradient(135deg, #e11d48, #be123c)' : 'rgba(255,255,255,0.07)',
-                                    border: isMe ? 'none' : '1px solid rgba(255,255,255,0.08)', color: '#f1f5f9', fontSize: 14, lineHeight: 1.5,
+                                    maxWidth: '72%', padding: '12px 16px', borderRadius: isMe ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+                                    background: isMe ? 'linear-gradient(135deg, #e11d48, #be123c)' : 'rgba(255,255,255,0.04)',
+                                    backdropFilter: isMe ? 'none' : 'blur(10px)',
+                                    border: isMe ? 'none' : '1px solid rgba(255,255,255,0.08)', 
+                                    color: '#f1f5f9', fontSize: 14, lineHeight: 1.6,
+                                    boxShadow: isMe ? '0 10px 20px rgba(225,29,72,0.15)' : '0 10px 20px rgba(0,0,0,0.1)',
                                 }}>
-                                    <p style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{msg.content}</p>
-                                    <p style={{ margin: '4px 0 0', fontSize: 10, color: isMe ? 'rgba(255,255,255,0.55)' : '#475569', textAlign: 'right' }}>
+                                    <p style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontWeight: 500 }}>{msg.content}</p>
+                                    <p style={{ margin: '6px 0 0', fontSize: 9, fontWeight: 700, color: isMe ? 'rgba(255,255,255,0.5)' : '#475569', textAlign: 'right', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                         {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </p>
                                 </div>
@@ -493,7 +514,14 @@ function GroupChatPanel({ group, currentUser, onClose, onDeleted, onUpdate }) {
     return (
         <motion.div
             initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }}
-            style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'rgba(15,15,30,0.98)', borderLeft: '1px solid rgba(255,255,255,0.08)' }}
+            style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                height: '100%', 
+                background: 'rgba(5, 5, 12, 0.5)', 
+                backdropFilter: 'blur(24px)',
+                borderLeft: '1px solid rgba(255,255,255,0.05)' 
+            }}
         >
             <div style={{
                 display: 'flex', alignItems: 'center', gap: 14, padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.08)',
@@ -889,8 +917,16 @@ export default function PersonalTalkingPage() {
     const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, userId: null });
     const [unreadSenders, setUnreadSenders] = useState([]);
     const [unreadGroups, setUnreadGroups] = useState([]);
+    const [isMobile, setIsMobile] = useState(false);
 
     const searchTimeout = useRef(null);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const handleClick = () => setContextMenu(prev => prev.show ? { ...prev, show: false } : prev);
@@ -1030,15 +1066,20 @@ export default function PersonalTalkingPage() {
     const sortedGroups = roleOrder.filter(r => grouped[r]);
 
     return (
-        <div style={{ minHeight: '100vh', background: '#080c14', fontFamily: "'Inter', sans-serif" }}>
+        <div style={{ minHeight: '100vh', background: '#02040a', color: 'white', selectionBackground: 'rgba(225,29,72,0.3)' }}>
+            <GlobalBackground />
             <Navbar />
             <VerificationGuard user={currentUser}>
-                <div style={{ height: 'calc(100vh - 73px)', display: 'flex', overflow: 'hidden' }}>
+                <div style={{ height: 'calc(100vh - 73px)', display: 'flex', overflow: 'hidden', position: 'relative', zIndex: 10 }}>
                     {}
                     <div style={{
-                        width: (selectedUser || selectedGroup) ? 340 : '100%', maxWidth: (selectedUser || selectedGroup) ? 340 : undefined,
-                        flexShrink: 0, display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(255,255,255,0.07)',
-                        background: 'rgba(255,255,255,0.015)', transition: 'width 0.3s', overflow: 'hidden',
+                        width: isMobile ? ((selectedUser || selectedGroup) ? 0 : '100%') : 380,
+                        flexShrink: 0, display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(255,255,255,0.05)',
+                        background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(40px)', 
+                        transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)', 
+                        overflow: 'hidden',
+                        opacity: isMobile && (selectedUser || selectedGroup) ? 0 : 1,
+                        visibility: isMobile && (selectedUser || selectedGroup) ? 'hidden' : 'visible'
                     }}>
                         <div style={{ padding: '28px 24px 20px', flexShrink: 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
@@ -1071,12 +1112,22 @@ export default function PersonalTalkingPage() {
                             </div>
 
                             {}
-                            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 4, marginBottom: 16 }}>
+                            <div style={{ 
+                                display: 'flex', 
+                                background: 'rgba(255,255,255,0.03)', 
+                                border: '1px solid rgba(255,255,255,0.08)',
+                                borderRadius: 16, 
+                                padding: 4, 
+                                marginBottom: 16 
+                            }}>
                                 <button
                                     onClick={() => setActiveTab('members')}
                                     style={{
-                                        flex: 1, padding: '8px', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s',
-                                        background: activeTab === 'members' ? '#e11d48' : 'transparent', color: activeTab === 'members' ? '#fff' : '#94a3b8'
+                                        flex: 1, padding: '10px', border: 'none', borderRadius: 12, fontSize: 12, fontWeight: 900, cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        background: activeTab === 'members' ? 'linear-gradient(135deg, #e11d48, #be123c)' : 'transparent', 
+                                        color: activeTab === 'members' ? '#fff' : '#475569',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.1em'
                                     }}
                                 >
                                     Members
@@ -1084,8 +1135,11 @@ export default function PersonalTalkingPage() {
                                 <button
                                     onClick={() => setActiveTab('groups')}
                                     style={{
-                                        flex: 1, padding: '8px', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s',
-                                        background: activeTab === 'groups' ? '#f59e0b' : 'transparent', color: activeTab === 'groups' ? '#fff' : '#94a3b8'
+                                        flex: 1, padding: '10px', border: 'none', borderRadius: 12, fontSize: 12, fontWeight: 900, cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        background: activeTab === 'groups' ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'transparent', 
+                                        color: activeTab === 'groups' ? '#fff' : '#475569',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.1em'
                                     }}
                                 >
                                     Groups
@@ -1093,11 +1147,20 @@ export default function PersonalTalkingPage() {
                             </div>
 
                             {activeTab === 'members' && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '10px 14px' }}>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: 10, 
+                                    background: 'rgba(255,255,255,0.03)', 
+                                    border: '1px solid rgba(255,255,255,0.08)', 
+                                    borderRadius: 16, 
+                                    padding: '12px 18px',
+                                    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
+                                }}>
                                     <FaSearch style={{ color: '#475569', fontSize: 13, flexShrink: 0 }} />
                                     <input
                                         value={search} onChange={e => handleSearch(e.target.value)} placeholder="Search members…"
-                                        style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#f1f5f9', fontSize: 14 }}
+                                        style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#f1f5f9', fontSize: 14, fontWeight: 500 }}
                                     />
                                     {search && <button onClick={() => handleSearch('')} style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer' }}><FaTimes style={{ fontSize: 12 }} /></button>}
                                 </div>
@@ -1132,13 +1195,18 @@ export default function PersonalTalkingPage() {
                                             <div style={{ padding: '10px 24px 6px', display: 'flex', alignItems: 'center', gap: 8 }}><RoleBadge role={role} /></div>
                                             {grouped[role].map(u => (
                                                 <motion.button
-                                                    key={u._id} whileHover={{ backgroundColor: 'rgba(255,255,255,0.06)' }} whileTap={{ scale: 0.98 }}
+                                                    key={u._id} 
+                                                    whileHover={{ backgroundColor: 'rgba(255,255,255,0.05)', x: 4 }} 
+                                                    whileTap={{ scale: 0.98 }}
                                                     onClick={() => { setSelectedGroup(null); setSelectedUser(u); }}
                                                     onContextMenu={(e) => handleContextMenu(e, u._id)}
                                                     style={{
-                                                        width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '12px 24px',
-                                                        background: selectedUser?._id === u._id ? 'rgba(225,29,72,0.08)' : 'transparent', border: 'none', cursor: 'pointer',
-                                                        borderLeft: selectedUser?._id === u._id ? '3px solid #e11d48' : '3px solid transparent', transition: 'all 0.15s',
+                                                        width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 24px',
+                                                        background: selectedUser?._id === u._id ? 'rgba(225,29,72,0.1)' : 'transparent', border: 'none', cursor: 'pointer',
+                                                        borderLeft: selectedUser?._id === u._id ? '3px solid #e11d48' : '3px solid transparent',
+                                                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                        marginBottom: 2,
+                                                        borderRadius: '0 12px 12px 0'
                                                     }}
                                                 >
                                                     <div style={{ position: 'relative' }}>
@@ -1208,14 +1276,13 @@ export default function PersonalTalkingPage() {
                         </div>
                     </div>
 
-                    <AnimatePresence>
-                        {selectedUser && (
-                            <div style={{ flex: 1, overflow: 'hidden' }}>
+                    <AnimatePresence mode="wait">
+                        {selectedUser ? (
+                            <div key="user-chat" style={{ flex: 1, overflow: 'hidden' }}>
                                 <ChatPanel contact={selectedUser} currentUser={currentUser} onClose={() => setSelectedUser(null)} />
                             </div>
-                        )}
-                        {selectedGroup && (
-                            <div style={{ flex: 1, overflow: 'hidden' }}>
+                        ) : selectedGroup ? (
+                            <div key="group-chat" style={{ flex: 1, overflow: 'hidden' }}>
                                 <GroupChatPanel 
                                     group={selectedGroup} 
                                     currentUser={currentUser} 
@@ -1224,6 +1291,67 @@ export default function PersonalTalkingPage() {
                                     onUpdate={() => fetchGroups()}
                                 />
                             </div>
+                        ) : (
+                            <motion.div 
+                                key="empty-state"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.05 }}
+                                style={{ 
+                                    flex: 1, 
+                                    display: 'flex', 
+                                    flexDirection: 'column', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center',
+                                    background: 'rgba(2, 4, 10, 0.2)',
+                                    backdropFilter: 'blur(10px)',
+                                    position: 'relative',
+                                    overflow: 'hidden'
+                                }}
+                            >
+                                {}
+                                <div style={{ 
+                                    position: 'absolute', 
+                                    top: '50%', left: '50%', 
+                                    width: '100%', height: '100%', 
+                                    background: 'radial-gradient(circle at center, rgba(225,29,72,0.05) 0%, transparent 70%)',
+                                    transform: 'translate(-50%, -50%)',
+                                    pointerEvents: 'none'
+                                }} />
+                                
+                                <motion.div
+                                    animate={{ 
+                                        y: [0, -15, 0],
+                                        rotate: [0, 5, -5, 0]
+                                    }}
+                                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                                    style={{
+                                        width: 120, height: 120, borderRadius: 40,
+                                        background: 'linear-gradient(135deg, rgba(225,29,72,0.2), rgba(190,18,60,0.1))',
+                                        border: '1px solid rgba(225,29,72,0.2)',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        marginBottom: 32,
+                                        boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+                                        position: 'relative'
+                                    }}
+                                >
+                                    <FaCommentDots style={{ fontSize: 48, color: '#e11d48', filter: 'drop-shadow(0 0 10px #e11d48)' }} />
+                                    <div style={{ position: 'absolute', inset: -20, borderRadius: 50, border: '1px dashed rgba(225,29,72,0.1)', animation: 'spin 20s linear infinite' }} />
+                                </motion.div>
+
+                                <h2 style={{ fontSize: 32, fontWeight: 900, color: 'white', marginBottom: 12, textAlign: 'center', letterSpacing: '-0.03em' }}>
+                                    Secure <span style={{ color: '#e11d48' }}>Conversations</span>
+                                </h2>
+                                <p style={{ color: '#475569', fontSize: 16, fontWeight: 500, maxWidth: 300, textAlign: 'center', lineHeight: 1.6 }}>
+                                    Select a colleague or group to begin your encrypted discussion.
+                                </p>
+
+                                <div style={{ marginTop: 40, display: 'flex', gap: 12 }}>
+                                    <div style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, fontSize: 11, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                                        End-to-End Encrypted
+                                    </div>
+                                </div>
+                            </motion.div>
                         )}
                     </AnimatePresence>
                 </div>

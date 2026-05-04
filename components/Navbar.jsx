@@ -341,7 +341,7 @@ export default function Navbar() {
                                                 className="w-full flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
                                             >
                                                 <FaUniversity className="text-red-400 text-sm" />
-                                                <span className="text-sm font-medium">College Details</span>
+                                                <span className="text-sm font-medium">College Hub</span>
                                             </Link>
                                             <Link
                                                 href="/emergency-contacts"
@@ -550,7 +550,7 @@ export default function Navbar() {
                             <div className="pt-4 border-t border-white/5 space-y-4">
                                 <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold px-3">More Links</p>
                                 <Link href="/college" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-red-400">
-                                    <FaUniversity className="text-sm" /><span>College Details</span>
+                                    <FaUniversity className="text-sm" /><span>College Hub</span>
                                 </Link>
                                 <Link href="/emergency-contacts" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-3 text-gray-300 hover:text-white">
                                     <FaPhone className="text-sm" /><span>Emergency Contacts</span>
