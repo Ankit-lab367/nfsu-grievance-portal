@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import ChatbotWidget from '@/components/ChatbotWidget';
 import { motion } from 'framer-motion';
-import { FaArrowLeft, FaCloudUploadAlt, FaTag, FaRupeeSign } from 'react-icons/fa';
+import { FaArrowLeft, FaCloudUploadAlt, FaTag, FaRupeeSign, FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
 export default function SellItemPage() {
     const router = useRouter();
@@ -213,7 +213,10 @@ export default function SellItemPage() {
                                         <span>Listing Item...</span>
                                     </div>
                                 ) : (
-                                    "Launch into Marketplace 🚀"
+                                    <div className="flex items-center justify-center gap-3 group">
+                                        <span>Launch into Marketplace</span>
+                                        <FaArrowRight className="text-lg group-hover:translate-x-1 transition-transform" />
+                                    </div>
                                 )}
                             </motion.button>
                         </form>
