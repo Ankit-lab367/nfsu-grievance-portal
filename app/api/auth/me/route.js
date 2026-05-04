@@ -42,6 +42,7 @@ export async function GET(request) {
                     permissions: user.permissions,
                     avatar: user.avatar,
                     lastLogin: user.lastLogin,
+                    isVerifiedID: user.isVerifiedID,
                 },
             },
             { status: 200 }

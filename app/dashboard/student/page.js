@@ -30,6 +30,8 @@ export default function StudentDashboard() {
     const [complaints, setComplaints] = useState([]);
     const [hasNotices, setHasNotices] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         const userData = localStorage.getItem('user');
@@ -43,14 +45,11 @@ export default function StudentDashboard() {
             return;
         }
         
-        
-        // We no longer redirect to verify-id immediately.
-        // We allow viewing the dashboard but restrict data.
-
         setUser(parsedUser);
         fetchComplaints(token);
         checkNotices(token);
     }, [router]);
+
     const checkNotices = async (token) => {
         try {
             const response = await axios.get('/api/notices', {
@@ -63,6 +62,7 @@ export default function StudentDashboard() {
             console.error('Error checking notices:', error);
         }
     };
+
     const fetchComplaints = async (token) => {
         try {
             const response = await axios.get('/api/complaints/get', {
@@ -82,6 +82,37 @@ export default function StudentDashboard() {
             console.error('Error fetching complaints:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleCheckVerification = async () => {
+        setIsCheckingStatus(true);
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axios.get('/api/auth/me', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.data.success) {
+                const updatedUser = response.data.user;
+                
+                // Update local storage
+                const currentUserData = JSON.parse(localStorage.getItem('user'));
+                const newUserData = { ...currentUserData, isVerifiedID: updatedUser.isVerifiedID };
+                localStorage.setItem('user', JSON.stringify(newUserData));
+                
+                if (updatedUser.isVerifiedID) {
+                    // Success! Reload the page to refresh all components and states
+                    window.location.reload();
+                } else {
+                    alert('Status: PENDING\n\nYour ID verification is still being reviewed by the administration. Please check back later.');
+                }
+            }
+        } catch (error) {
+            console.error('Error checking verification status:', error);
+            alert('Unable to reach the security server. Please check your internet connection.');
+        } finally {
+            setIsCheckingStatus(false);
         }
     };
     const statCards = [
@@ -220,12 +251,13 @@ export default function StudentDashboard() {
                             <p className="text-gray-400 max-w-md mx-auto">
                                 Your ID verification is pending administrator approval. Once verified, you will be able to see and manage your complaints here.
                             </p>
-                            <Link
-                                href="/verify-id"
-                                className="mt-6 inline-block px-6 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-500 rounded-lg font-bold border border-red-500/30 transition-all"
+                            <button
+                                onClick={handleCheckVerification}
+                                disabled={isCheckingStatus}
+                                className="mt-6 inline-block px-6 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-500 rounded-lg font-bold border border-red-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Check Verification Status
-                            </Link>
+                                {isCheckingStatus ? 'Checking...' : 'Check Verification Status'}
+                            </button>
                         </div>
                     ) : complaints.filter(c => c.status !== 'Resolved').length === 0 ? (
                         <div className="text-center py-12">

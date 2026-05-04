@@ -1,9 +1,41 @@
 'use client';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaLock, FaShieldAlt, FaClock } from 'react-icons/fa';
+import { FaLock, FaShieldAlt, FaClock, FaSpinner } from 'react-icons/fa';
 import Link from 'next/link';
+import axios from 'axios';
 
 export default function VerificationGuard({ children, user }) {
+    const [isChecking, setIsChecking] = useState(false);
+
+    const handleCheckStatus = async () => {
+        setIsChecking(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/api/auth/me', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.data.success) {
+                const updatedUser = response.data.user;
+                if (updatedUser.isVerifiedID) {
+                    // Update local storage
+                    const userData = JSON.parse(localStorage.getItem('user'));
+                    localStorage.setItem('user', JSON.stringify({ ...userData, isVerifiedID: true }));
+                    // Refresh to show content
+                    window.location.reload();
+                } else {
+                    alert('Status: PENDING\n\nYour account is still awaiting administrator approval. Please check back in a few moments.');
+                }
+            }
+        } catch (error) {
+            console.error('Check status error:', error);
+            alert('Security server unreachable. Please try again later.');
+        } finally {
+            setIsChecking(false);
+        }
+    };
+
     if (user && user.role === 'student' && !user.isVerifiedID) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center p-6">
@@ -36,12 +68,23 @@ export default function VerificationGuard({ children, user }) {
                         </div>
                     </div>
 
-                    <Link 
-                        href="/dashboard/student"
-                        className="inline-block px-8 py-3 bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-red-600/30 transition-all active:scale-95"
-                    >
-                        Back to Dashboard
-                    </Link>
+                    <div className="flex flex-col space-y-4">
+                        <button 
+                            onClick={handleCheckStatus}
+                            disabled={isChecking}
+                            className="w-full py-3 bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-red-600/30 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center space-x-2"
+                        >
+                            {isChecking && <FaSpinner className="animate-spin" />}
+                            <span>{isChecking ? 'Checking Status...' : 'Check Verification Status'}</span>
+                        </button>
+                        
+                        <Link 
+                            href="/dashboard/student"
+                            className="text-gray-500 hover:text-white text-sm font-bold transition-colors"
+                        >
+                            Back to Dashboard
+                        </Link>
+                    </div>
                 </motion.div>
             </div>
         );

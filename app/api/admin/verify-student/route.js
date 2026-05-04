@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
+import { sendEmail, emailTemplates } from '@/lib/mailer';
 
 export async function GET(request) {
     try {
@@ -20,7 +21,17 @@ export async function GET(request) {
         user.isVerifiedID = true;
         await user.save();
 
-        
+        // Send notification email to the student
+        try {
+            await sendEmail(
+                user.email,
+                '🛡️ Account Verified - NFSU Grievance Portal',
+                emailTemplates.studentVerifiedNotification(user.name)
+            );
+        } catch (emailErr) {
+            console.error('Failed to send verification approval email:', emailErr);
+            // We continue as the DB was already updated
+        }
         return new NextResponse(`
             <html>
                 <body style="font-family: sans-serif; display: flex; flex-direction: column; items-center; justify-content: center; height: 100vh; background-color: #f0fdf4; color: #166534; text-align: center;">
