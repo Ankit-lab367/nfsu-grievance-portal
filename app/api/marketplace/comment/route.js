@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import MarketplaceItem from '@/models/MarketplaceItem';
-import jwt from 'jsonwebtoken';
+import { extractTokenFromRequest, verifyToken } from '@/lib/auth';
 
 const connectDB = async () => {
     if (mongoose.connections[0].readyState) return;
@@ -11,13 +11,9 @@ const connectDB = async () => {
 };
 
 function getUserFromToken(request) {
-    const token = request.headers.get('authorization')?.split(' ')[1];
+    const token = extractTokenFromRequest(request);
     if (!token) return null;
-    try {
-        return jwt.verify(token, process.env.JWT_SECRET);
-    } catch {
-        return null;
-    }
+    return verifyToken(token);
 }
 
 export async function POST(request) {

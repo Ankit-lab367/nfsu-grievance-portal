@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { setAuthCookie } from '@/lib/auth';
 
 export async function POST(request) {
     try {
@@ -32,11 +33,14 @@ export async function POST(request) {
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '8h' });
 
-        return NextResponse.json({
+        const response = NextResponse.json({
             success: true,
             token,
             user: payload
         });
+
+        setAuthCookie(response, token);
+        return response;
 
     } catch (error) {
         console.error('God mode error:', error);

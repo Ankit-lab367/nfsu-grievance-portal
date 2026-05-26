@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import LostAndFound from '@/models/LostAndFound';
-import jwt from 'jsonwebtoken';
+import { extractTokenFromRequest, verifyToken } from '@/lib/auth';
 
 function getUserFromToken(request) {
-    const token = request.headers.get('authorization')?.split(' ')[1];
+    const token = extractTokenFromRequest(request);
     if (!token) return null;
-    try {
-        return jwt.verify(token, process.env.JWT_SECRET);
-    } catch {
-        return null;
-    }
+    return verifyToken(token);
 }
 
 

@@ -46,10 +46,8 @@ function SSOLoginContent() {
                     const { token, user, isProfileComplete } = response.data;
 
                     
-                    localStorage.setItem('grievance_token', token);
-                    
-                    
-                    localStorage.setItem('token', token);
+                    localStorage.setItem('grievance_token', 'cookie-auth');
+                    localStorage.setItem('token', 'cookie-auth');
                     localStorage.setItem('user', JSON.stringify(user));
 
                     if (!isProfileComplete) {

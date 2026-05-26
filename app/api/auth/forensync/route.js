@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
-import { generateToken } from '@/lib/auth';
+import { generateToken, setAuthCookie } from '@/lib/auth';
 import axios from 'axios';
 import crypto from 'crypto';
 
@@ -114,7 +114,7 @@ export async function POST(request) {
         
         const token = generateToken(user);
 
-        return NextResponse.json({
+        const apiResponse = NextResponse.json({
             success: true,
             token,
             isProfileComplete,
@@ -128,6 +128,9 @@ export async function POST(request) {
                 phone: user.phone
             }
         }, { status: 200 });
+
+        setAuthCookie(apiResponse, token);
+        return apiResponse;
 
     } catch (error) {
         console.error('Unexpected SSO error:', error.message);

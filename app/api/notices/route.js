@@ -2,20 +2,15 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import Notice from '@/models/Notice';
 import User from '@/models/User';
-import jwt from 'jsonwebtoken';
+import { extractTokenFromRequest, verifyToken } from '@/lib/auth';
 const connectDB = async () => {
     if (mongoose.connections[0].readyState) return;
     await mongoose.connect(process.env.MONGODB_URI);
 };
 async function getUserFromToken(request) {
-    const token = request.headers.get('authorization')?.split(' ')[1];
+    const token = extractTokenFromRequest(request);
     if (!token) return null;
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        return decoded;
-    } catch (error) {
-        return null;
-    }
+    return verifyToken(token);
 }
 export async function GET(request) {
     try {

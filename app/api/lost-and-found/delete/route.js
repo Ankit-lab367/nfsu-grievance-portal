@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import LostAndFound from '@/models/LostAndFound';
 import User from '@/models/User';
-import jwt from 'jsonwebtoken';
+import { extractTokenFromRequest, verifyToken } from '@/lib/auth';
 import { del } from '@vercel/blob';
 
 const connectDB = async () => {
@@ -14,18 +14,14 @@ export async function DELETE(req) {
     try {
         await connectDB();
 
-        
-        const authHeader = req.headers.get('Authorization');
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        const token = extractTokenFromRequest(req);
+        if (!token) {
             return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
         }
         
-        const token = authHeader.split(' ')[1];
-        let decoded;
-        try {
-            decoded = jwt.verify(token, process.env.JWT_SECRET);
-        } catch (error) {
-            return NextResponse.json({ success: false, message: 'Invalid token' }, { status: 401 });
+        const decoded = verifyToken(token);
+        if (!decoded) {
+            return NextResponse.json({ success: false, message: 'Invalid or expired token' }, { status: 401 });
         }
         
         const user = await User.findById(decoded.id);

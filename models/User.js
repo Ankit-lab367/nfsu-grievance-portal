@@ -78,6 +78,12 @@ const UserSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        otpCode: {
+            type: String,
+        },
+        otpExpires: {
+            type: Date,
+        },
     },
     {
         timestamps: true,
@@ -109,4 +115,9 @@ UserSchema.methods.toJSON = function () {
     delete obj.password;
     return obj;
 };
+
+if (process.env.NODE_ENV === 'development' && mongoose.models.User) {
+    delete mongoose.models.User;
+}
+
 export default mongoose.models.User || mongoose.model('User', UserSchema);

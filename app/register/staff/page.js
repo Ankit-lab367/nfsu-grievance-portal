@@ -141,11 +141,11 @@ export default function StaffRegisterPage() {
 
             if (response.data.success) {
                 if (response.data.pendingVerification) {
-                    localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('token', 'cookie-auth');
                     localStorage.setItem('user', JSON.stringify(response.data.user));
                     router.push('/registration-pending');
                 } else {
-                    localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('token', 'cookie-auth');
                     localStorage.setItem('user', JSON.stringify(response.data.user));
                     router.push('/dashboard/admin');
                 }

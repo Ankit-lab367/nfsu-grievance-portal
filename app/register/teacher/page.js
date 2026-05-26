@@ -104,7 +104,7 @@ export default function TeacherRegisterPage() {
                 otp: otp
             });
             if (response.data.success) {
-                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('token', 'cookie-auth');
                 localStorage.setItem('user', JSON.stringify(response.data.user));
                 router.push('/');
             }

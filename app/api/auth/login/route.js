@@ -5,6 +5,8 @@ import { generateToken } from '@/lib/auth';
 import { sanitizeInput } from '@/lib/security';
 import { z } from 'zod';
 import { rateLimit } from '@/lib/rateLimit';
+import { sendEmail, emailTemplates } from '@/lib/mailer';
+import crypto from 'crypto';
 
 const loginSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -61,24 +63,31 @@ export async function POST(request) {
                 { status: 401 }
             );
         }
-        user.lastLogin = new Date();
+
+        // Generate 6-digit OTP
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const hashedOtp = crypto.createHash('sha256').update(otpCode).digest('hex');
+        user.otpCode = hashedOtp;
+        user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
         await user.save();
-        const token = generateToken(user);
+
+        // Send OTP email
+        const mailResult = await sendEmail(
+            user.email,
+            'NFSU Grievance Portal - Login OTP Verification Code',
+            emailTemplates.loginOtp(otpCode, user.name)
+        );
+
+        if (!mailResult.success) {
+            console.error('❌ Failed to send OTP email:', mailResult.error);
+        }
+
         return NextResponse.json(
             {
                 success: true,
-                message: 'Login successful',
-                token,
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    role: user.role,
-                    enrollmentNumber: user.enrollmentNumber,
-                    departmentId: user.departmentId,
-                    avatar: user.avatar,
-                    isVerifiedID: user.isVerifiedID,
-                },
+                otpRequired: true,
+                email: user.email,
+                message: 'Verification code sent to your email.'
             },
             { status: 200 }
         );

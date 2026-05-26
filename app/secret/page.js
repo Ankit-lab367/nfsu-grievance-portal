@@ -16,7 +16,7 @@ export default function SecretPage() {
             const data = await res.json();
             
             if (data.success) {
-                localStorage.setItem('token', data.token);
+                localStorage.setItem('token', 'cookie-auth');
                 localStorage.setItem('user', JSON.stringify(data.user));
                 router.push('/dashboard/super-admin');
             } else {

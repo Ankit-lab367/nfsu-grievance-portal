@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import BannedEmail from '@/models/BannedEmail';
-import { generateToken } from '@/lib/auth';
+import { generateToken, setAuthCookie } from '@/lib/auth';
 import OTP from '@/models/OTP';
 import { sanitizeInput } from '@/lib/security';
 import bcrypt from 'bcryptjs';
@@ -204,7 +204,7 @@ export async function POST(request) {
 
             const token = generateToken(user);
 
-            return NextResponse.json({
+            const response = NextResponse.json({
                 success: true,
                 message: 'Registration successful. Your account is pending administrator verification.',
                 pendingVerification: true,
@@ -217,10 +217,13 @@ export async function POST(request) {
                     avatar: user.avatar
                 }
             }, { status: 201 });
+
+            setAuthCookie(response, token);
+            return response;
         }
 
         const token = generateToken(user);
-        return NextResponse.json(
+        const response = NextResponse.json(
             {
                 success: true,
                 message: 'Registration successful',
@@ -236,6 +239,9 @@ export async function POST(request) {
             },
             { status: 201 }
         );
+
+        setAuthCookie(response, token);
+        return response;
     } catch (error) {
         console.error('Registration error:', error);
         return NextResponse.json(
