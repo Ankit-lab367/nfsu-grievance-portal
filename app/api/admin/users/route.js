@@ -4,6 +4,7 @@ import User from '@/models/User';
 import Department from '@/models/Department';
 import { hashPassword, verifyToken, extractToken } from '@/lib/auth';
 import { z } from 'zod';
+import { sendEmail, emailTemplates } from '@/lib/mailer';
 
 const adminUserSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -196,10 +197,29 @@ export async function DELETE(request) {
         const User = (await import('@/models/User')).default;
         const Complaint = (await import('@/models/Complaint')).default;
 
-        const deletedUser = await User.findByIdAndDelete(id);
-        if (!deletedUser) {
+        // Fetch user details before deletion so we can email them
+        const userToDelete = await User.findById(id);
+        if (!userToDelete) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
+
+        // Send deletion notification email (non-blocking — don't fail on email error)
+        try {
+            await sendEmail(
+                userToDelete.email,
+                '⚠️ Your NFSU Portal Account Has Been Deleted',
+                emailTemplates.accountDeleted(
+                    userToDelete.name,
+                    userToDelete.email,
+                    userToDelete.role
+                )
+            );
+        } catch (emailErr) {
+            console.error('Failed to send account deletion email:', emailErr);
+        }
+
+        // Now permanently delete the user
+        await User.findByIdAndDelete(id);
 
         // Clean up associated complaints
         await Complaint.deleteMany({ userId: id });
