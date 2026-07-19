@@ -203,24 +203,28 @@ export async function DELETE(request) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        // Send deletion notification email (non-blocking — don't fail on email error)
+        // Attempt to send email notification (non‑blocking on failure but log result)
         try {
+            const rawComment = request.headers.get('X-Deletion-Comment') || '';
+            const comment = decodeURIComponent(rawComment);
             await sendEmail(
                 userToDelete.email,
                 '⚠️ Your NFSU Portal Account Has Been Deleted',
                 emailTemplates.accountDeleted(
                     userToDelete.name,
                     userToDelete.email,
-                    userToDelete.role
+                    userToDelete.role,
+                    comment
                 )
             );
+            console.log('✅ Deletion email sent to', userToDelete.email);
         } catch (emailErr) {
-            console.error('Failed to send account deletion email:', emailErr);
+            console.error('❌ Failed to send account deletion email:', emailErr);
         }
 
         // Now permanently delete the user
         await User.findByIdAndDelete(id);
-
+        
         // Clean up associated complaints
         await Complaint.deleteMany({ userId: id });
 

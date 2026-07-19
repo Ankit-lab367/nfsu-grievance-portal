@@ -22,15 +22,19 @@ import DataStream from '@/components/GodMode/DataStream';
 
 export default function DeleteAccountsPage() {
     const router = useRouter();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [deletionComment, setDeletionComment] = useState('');
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
     const [userDetails, setUserDetails] = useState(null);
     const [detailsLoading, setDetailsLoading] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
+    
     const [activeTab, setActiveTab] = useState('all');
     const [isDeleting, setIsDeleting] = useState(false);
+    const [showPurgePanel, setShowPurgePanel] = useState(false);
+    const [commentError, setCommentError] = useState('');
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -97,16 +101,12 @@ export default function DeleteAccountsPage() {
     };
 
     const handleDeleteAccount = async (userId) => {
-        const confirmMsg =
-            `⚠️ PURGE PROTOCOL INITIATED\n\n` +
-            `Are you absolutely sure you want to PERMANENTLY DELETE this account?\n\n` +
-            `This action is IRREVERSIBLE and will:\n` +
-            `  • Delete the user's account from the mainframe\n` +
-            `  • Erase all their associated complaints\n` +
-            `  • Revoke all access tokens\n\n` +
-            `Proceed with account purge?`;
-
-        if (!confirm(confirmMsg)) return;
+        // Comment is mandatory
+        if (!deletionComment.trim()) {
+            setCommentError('⚠ You MUST provide a reason for deletion before proceeding.');
+            return;
+        }
+        setCommentError('');
 
         setIsDeleting(true);
         const token = localStorage.getItem('token');
@@ -115,12 +115,15 @@ export default function DeleteAccountsPage() {
 
         try {
             const res = await axios.delete(`/api/admin/users?id=${userId}`, {
-                headers: { Authorization: `Bearer ${authToken}` }
+                headers: { Authorization: `Bearer ${authToken}`, 'X-Deletion-Comment': encodeURIComponent(deletionComment.trim()) }
             });
 
             if (res.data.success) {
                 setSelectedUser(null);
                 setUserDetails(null);
+                setDeletionComment('');
+                setShowPurgePanel(false);
+                setCommentError('');
                 await fetchUsers(authToken);
             }
         } catch (error) {
@@ -318,7 +321,7 @@ export default function DeleteAccountsPage() {
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => { setSelectedUser(null); setUserDetails(null); }}
+                                    onClick={() => { setSelectedUser(null); setUserDetails(null); setShowPurgePanel(false); setDeletionComment(''); setCommentError(''); }}
                                     className="p-2 hover:bg-red-500/10 text-red-500/70 hover:text-red-400 rounded-full transition-all"
                                 >
                                     <FaTimes className="text-xl" />
@@ -471,34 +474,90 @@ export default function DeleteAccountsPage() {
                                 )}
                             </div>
 
+                            {/* ====== PURGE COMMENT PANEL ====== */}
+                            <AnimatePresence>
+                                {showPurgePanel && userDetails && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="overflow-hidden border-t border-red-500/30"
+                                    >
+                                        <div className="p-5 bg-red-950/20">
+                                            <div className="text-[10px] text-red-500 font-black uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block"></span>
+                                                ADMINISTRATOR COMMENT — REQUIRED FOR PURGE
+                                            </div>
+                                            <p className="text-[11px] text-red-400/60 mb-3">
+                                                Write the reason for deleting this account. This message will be sent to the user&apos;s email.
+                                            </p>
+                                            <textarea
+                                                placeholder="State the cause of deletion... (e.g. Violation of university code of conduct, fraudulent identity, etc.)"
+                                                value={deletionComment}
+                                                onChange={(e) => { setDeletionComment(e.target.value); setCommentError(''); }}
+                                                rows={4}
+                                                className="w-full bg-black border border-red-500/30 text-red-300 rounded-lg px-4 py-3 text-xs focus:outline-none focus:border-red-500 focus:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all placeholder-red-500/20 font-mono resize-none"
+                                            />
+                                            {commentError && (
+                                                <motion.p
+                                                    initial={{ opacity: 0, y: -5 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    className="text-[11px] text-yellow-400 mt-2 font-bold"
+                                                >
+                                                    {commentError}
+                                                </motion.p>
+                                            )}
+                                            <div className="flex items-center justify-between mt-4 gap-3">
+                                                <button
+                                                    onClick={() => { setShowPurgePanel(false); setDeletionComment(''); setCommentError(''); }}
+                                                    className="px-4 py-2 border border-red-500/20 hover:border-red-500/50 text-red-500/60 hover:text-red-400 transition-all font-bold text-[10px] uppercase rounded tracking-wider"
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <motion.button
+                                                    whileHover={{ scale: 1.03 }}
+                                                    whileTap={{ scale: 0.97 }}
+                                                    onClick={() => handleDeleteAccount(userDetails.user._id)}
+                                                    disabled={isDeleting}
+                                                    className="px-6 py-2.5 bg-red-600 border border-red-500 text-white hover:bg-red-500 font-black text-xs uppercase tracking-widest transition-all rounded flex items-center space-x-2 shadow-[0_0_20px_rgba(239,68,68,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    {isDeleting ? (
+                                                        <>
+                                                            <FaSpinner className="animate-spin" />
+                                                            <span>PURGING DATA...</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <FaSkull />
+                                                            <span>CONFIRM PURGE</span>
+                                                        </>
+                                                    )}
+                                                </motion.button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
                             {/* Modal Footer */}
                             <div className="p-4 border-t border-red-500/30 bg-black/80 flex justify-between items-center gap-4">
                                 <button
-                                    onClick={() => { setSelectedUser(null); setUserDetails(null); }}
+                                    onClick={() => { setSelectedUser(null); setUserDetails(null); setShowPurgePanel(false); setDeletionComment(''); setCommentError(''); }}
                                     className="px-5 py-2 border border-red-500/20 hover:border-red-500/50 text-red-500/60 hover:text-red-400 transition-all font-bold text-xs uppercase rounded"
                                 >
                                     Abort
                                 </button>
 
-                                {userDetails && (
+                                {userDetails && !showPurgePanel && (
                                     <motion.button
                                         whileHover={{ scale: 1.03 }}
                                         whileTap={{ scale: 0.97 }}
-                                        onClick={() => handleDeleteAccount(userDetails.user._id)}
-                                        disabled={isDeleting}
-                                        className="px-6 py-2.5 bg-red-600 border border-red-500 text-white hover:bg-red-500 font-black text-sm uppercase tracking-widest transition-all rounded flex items-center space-x-2 shadow-[0_0_20px_rgba(239,68,68,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                        onClick={() => setShowPurgePanel(true)}
+                                        className="px-6 py-2.5 bg-red-600 border border-red-500 text-white hover:bg-red-500 font-black text-sm uppercase tracking-widest transition-all rounded flex items-center space-x-2 shadow-[0_0_20px_rgba(239,68,68,0.4)]"
                                     >
-                                        {isDeleting ? (
-                                            <>
-                                                <FaSpinner className="animate-spin" />
-                                                <span>PURGING DATA...</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <FaTrash />
-                                                <span>PURGE ACCOUNT</span>
-                                            </>
-                                        )}
+                                        <FaTrash />
+                                        <span>PURGE ACCOUNT</span>
                                     </motion.button>
                                 )}
                             </div>
