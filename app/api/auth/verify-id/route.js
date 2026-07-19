@@ -28,7 +28,8 @@ export async function POST(request) {
         
         const { idImage } = await request.json();
         
-        
+        user.idCardPhoto = idImage;
+        await user.save();
         
         const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').trim();
         const verifyLink = `${baseUrl}/api/admin/verify-student?userId=${user._id}`;

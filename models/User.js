@@ -78,6 +78,9 @@ const UserSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        idCardPhoto: {
+            type: String,
+        },
         otpCode: {
             type: String,
         },

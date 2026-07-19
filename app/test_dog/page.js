@@ -74,6 +74,7 @@ export default function GodModeDashboard() {
     const buttons = [
         { label: 'BACK', action: () => router.push('/') },
         { label: 'EXAMINE ACCOUNTS', action: () => handleNavigation('/test_dog/examine') },
+        { label: 'DELETE ACCOUNTS', action: () => handleNavigation('/test_dog/delete') },
         { label: 'BLOCK ACCOUNT', action: () => handleNavigation('/test_dog/block') },
         { label: 'UNBLOCK ACCOUNT', action: () => handleNavigation('/test_dog/unblock') },
         { 

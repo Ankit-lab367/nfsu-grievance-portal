@@ -170,4 +170,46 @@ export async function PATCH(request) {
             { status: 500 }
         );
     }
+}
+
+export async function DELETE(request) {
+    try {
+        await dbConnect();
+        const authHeader = request.headers.get('authorization');
+        const token = extractToken(authHeader);
+
+        if (!token) {
+            return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+        }
+        const decoded = verifyToken(token);
+        if (!decoded || decoded.role !== 'super-admin') {
+            return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+        }
+
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+        }
+
+        const User = (await import('@/models/User')).default;
+        const Complaint = (await import('@/models/Complaint')).default;
+
+        const deletedUser = await User.findByIdAndDelete(id);
+        if (!deletedUser) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        // Clean up associated complaints
+        await Complaint.deleteMany({ userId: id });
+
+        return NextResponse.json({
+            success: true,
+            message: 'Account and associated data deleted successfully.'
+        }, { status: 200 });
+    } catch (error) {
+        console.error('Delete user error:', error);
+        return NextResponse.json({ error: 'Failed to delete user' }, { status: 500 });
+    }
 }
