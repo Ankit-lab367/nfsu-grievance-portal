@@ -36,18 +36,31 @@ export default function VerifyIDPage() {
         try {
             setError('');
             setStatus('scanning');
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
-            });
+            
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error("Camera API not supported in this browser/context (requires HTTPS or localhost).");
+            }
+
+            let stream;
+            try {
+                // Try ideal constraints first (rear camera, 720p)
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
+                });
+            } catch (fallbackErr) {
+                console.warn("Ideal camera constraints failed, falling back to basic video...", fallbackErr);
+                // Fallback to any available camera without specific constraints
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            }
+            
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
             }
             
-            
             simulateScan();
         } catch (err) {
             console.error('Camera error:', err);
-            setError('Unable to access camera. Please ensure permissions are granted.');
+            setError(`Unable to access camera (${err.name || err.message}). Please ensure permissions are granted.`);
             setStatus('error');
         }
     };
