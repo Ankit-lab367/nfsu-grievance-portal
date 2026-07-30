@@ -38,9 +38,8 @@ export default function VerifyIDPage() {
             setStatus('scanning');
             
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                throw new Error("Camera API not supported in this browser/context (requires HTTPS or localhost).");
+                throw new Error("Camera API not supported in this browser/context (requires HTTPS). Please use the manual upload option below.");
             }
-
             let stream;
             try {
                 // Try ideal constraints first (rear camera, 720p)
@@ -60,7 +59,7 @@ export default function VerifyIDPage() {
             simulateScan();
         } catch (err) {
             console.error('Camera error:', err);
-            setError(`Unable to access camera (${err.name || err.message}). Please ensure permissions are granted.`);
+            setError(`Failed: ${err.message || err.name}`);
             setStatus('error');
         }
     };
@@ -354,12 +353,14 @@ export default function VerifyIDPage() {
                                 </div>
                                 <h3 className="text-xl font-bold mb-4 text-red-500">Scan Interrupted</h3>
                                 <p className="text-gray-400 mb-8 max-w-xs">{error}</p>
-                                <button 
-                                    onClick={startCamera}
-                                    className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition-all"
-                                >
-                                    Try Again
-                                </button>
+                                <div className="flex flex-col space-y-3 w-full">
+                                    <button 
+                                        onClick={startCamera}
+                                        className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition-all w-full"
+                                    >
+                                        Try Again
+                                    </button>
+                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
