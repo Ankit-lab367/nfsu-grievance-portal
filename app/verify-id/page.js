@@ -353,14 +353,12 @@ export default function VerifyIDPage() {
                                 </div>
                                 <h3 className="text-xl font-bold mb-4 text-red-500">Scan Interrupted</h3>
                                 <p className="text-gray-400 mb-8 max-w-xs">{error}</p>
-                                <div className="flex flex-col space-y-3 w-full">
-                                    <button 
-                                        onClick={startCamera}
-                                        className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition-all w-full"
-                                    >
-                                        Try Again
-                                    </button>
-                                </div>
+                                <button 
+                                    onClick={startCamera}
+                                    className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition-all"
+                                >
+                                    Try Again
+                                </button>
                             </motion.div>
                         )}
                     </AnimatePresence>

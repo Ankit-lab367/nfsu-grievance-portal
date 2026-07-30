@@ -40,7 +40,7 @@ export function middleware(request) {
     // Restrict browser features
     response.headers.set(
         'Permissions-Policy',
-        'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+        'camera=(self), microphone=(), geolocation=(), interest-cohort=()'
     );
 
     // Force HTTPS in production
