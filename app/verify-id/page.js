@@ -86,7 +86,7 @@ export default function VerifyIDPage() {
             const g = data[i + 1];
             const b = data[i + 2];
 
-            
+            // Convert to HSL for color analysis
             const max = Math.max(r, g, b);
             const min = Math.min(r, g, b);
             const l = (max + min) / 2;
@@ -102,13 +102,13 @@ export default function VerifyIDPage() {
             }
             const s = l > 0 && l < 255 ? d / (255 - Math.abs(2 * l - 255)) : 0;
 
+            // Navy blue strip detection (NFSU card header — dark blue, hue ~200-250)
+            if (h > 200 && h < 250 && l > 40 && l < 170 && s > 0.15) blueScore++;
             
-            if (h > 180 && h < 280 && l < 160 && s > 0.1) blueScore++;
+            // Red/Gold NFSU emblem detection (hue ~340-360 or 0-30, saturated)
+            if ((h > 340 || h < 30) && s > 0.3 && l > 30 && l < 200) logoScore++;
             
-            
-            if (h < 85 && s > 0.25 && l > 30) logoScore++;
-            
-            
+            // White card body detection (high lightness, low saturation)
             if (l > 200 && s < 0.2) whiteScore++;
         }
 
@@ -116,10 +116,10 @@ export default function VerifyIDPage() {
         const lPerc = (logoScore / totalPixels) * 100;
         const wPerc = (whiteScore / totalPixels) * 100;
 
-        
-        
-        const isStrictMatch = bPerc > 5 && lPerc > 0.08;
-        const isPartialMatch = bPerc > 2;
+        // Strict match: Need significant blue strip (>10%), white card body (>15%), and some emblem color (>0.5%)
+        const isStrictMatch = bPerc > 10 && wPerc > 15 && lPerc > 0.5;
+        // Partial match: Some blue strip visible, hold steady
+        const isPartialMatch = bPerc > 5 && wPerc > 8;
 
         if (isStrictMatch) {
             setPatternMatch('detected');
