@@ -3,11 +3,11 @@ import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import { verifyToken, extractToken } from '@/lib/auth';
 import { sendEmail, emailTemplates } from '@/lib/mailer';
+import { validateNFSUIDCard } from '@/lib/idCardValidator';
 
 export async function POST(request) {
     try {
         await dbConnect();
-        
         
         const authHeader = request.headers.get('authorization');
         const token = extractToken(authHeader);
@@ -27,6 +27,17 @@ export async function POST(request) {
         }
         
         const { idImage } = await request.json();
+        if (!idImage) {
+            return NextResponse.json({ error: 'No ID image provided' }, { status: 400 });
+        }
+
+        // Strict NFSU ID Card Verification
+        const validation = await validateNFSUIDCard(idImage);
+        if (!validation.isValid) {
+            return NextResponse.json({
+                error: validation.reason || 'Image is not recognized as a valid NFSU Student ID Card. Please ensure the blue header and NFSU logo are clearly visible.'
+            }, { status: 400 });
+        }
         
         user.idCardPhoto = idImage;
         await user.save();
