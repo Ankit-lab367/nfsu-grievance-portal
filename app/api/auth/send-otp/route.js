@@ -46,19 +46,21 @@ export async function POST(request) {
             </div>
         `;
 
+        const textContent = `NFSU Grievance Portal - Verification Code\n\nHello,\nYour verification code is: ${otp}\nThis code will expire in 5 minutes.\n\n© 2024 National Forensic Sciences University`;
+
         const mailResult = await sendEmail(
             emailLower,
             'Verification Code - NFSU Grievance Portal',
-            emailContent
+            emailContent,
+            [],
+            textContent
         );
 
         if (!mailResult.success) {
-            
-            console.log(`[DEBUG] OTP for ${emailLower}: ${otp}`);
+            console.error('Email send failed:', mailResult.error);
             return NextResponse.json({ 
                 success: false, 
-                error: 'Failed to send email. If you are a developer, please check the server logs for the code.',
-                debug_otp: otp 
+                error: 'Failed to send verification email. Please check your email address or try again later.' 
             }, { status: 500 });
         }
 
